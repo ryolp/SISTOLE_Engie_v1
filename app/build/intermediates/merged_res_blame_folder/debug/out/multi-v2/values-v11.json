@@ -1,0 +1,28 @@
+{
+    "logs": [
+        {
+            "outputFile": "enruta.sistole_gen.app-mergeDebugResources-7:/values-v11/values-v11.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Reynol\\Documents\\Apps\\Enruta\\Sist\\Sistole\\Apps\\Android\\SISTOLE_Engie_v1\\app\\src\\main\\res\\values-v11\\styles.xml",
+                    "from": {
+                        "startLines": "1",
+                        "startColumns": "5",
+                        "startOffsets": "77",
+                        "endLines": "3",
+                        "endColumns": "12",
+                        "endOffsets": "249"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "4",
+                        "endColumns": "12",
+                        "endOffsets": "225"
+                    }
+                }
+            ]
+        }
+    ]
+}
