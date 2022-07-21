@@ -1,9 +1,7 @@
 package enruta.sistole_gen.interfaces;
 
-import java.util.List;
-
-import enruta.sistole_gen.entities.LoginRequest;
-import enruta.sistole_gen.entities.LoginResponse;
+import enruta.sistole_gen.entities.LoginRequestEntity;
+import enruta.sistole_gen.entities.LoginResponseEntity;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -15,14 +13,14 @@ public interface ILoginApi  {
     Call<String>echoping();
 
     @POST("api/login/autenticarEmpleado")
-    Call<LoginResponse>autenticarEmpleado(@Body LoginRequest loginRequest);
+    Call<LoginResponseEntity>autenticarEmpleado(@Body LoginRequestEntity loginRequestEntity);
 
     @POST("api/login/validarEmpleadoSMS")
-    Call<LoginResponse>validarEmpleadoSMS(@Body LoginRequest loginRequest);
+    Call<LoginResponseEntity>validarEmpleadoSMS(@Body LoginRequestEntity loginRequestEntity);
 
     @GET("autenticarEmpleado.aspx")
-    Call<LoginResponse>autenticarEmpleado2(@Query("usuario") String usuario, @Query("password") String password);
+    Call<LoginResponseEntity>autenticarEmpleado2(@Query("usuario") String usuario, @Query("password") String password);
 
     @GET("validarEmpleadoSMS.aspx")
-    Call<LoginResponse>validarEmpleadoSMS2(@Query("usuario") String usuario, @Query("codigosms") String codigoSMS);
+    Call<LoginResponseEntity>validarEmpleadoSMS2(@Query("usuario") String usuario, @Query("codigosms") String codigoSMS);
 }
