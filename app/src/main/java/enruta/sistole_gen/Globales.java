@@ -390,7 +390,7 @@ public class Globales extends Application {
      */
 
     public UsuarioEntity usuarioEntity = null;
-    public boolean conservarSesion = false;
+    public boolean conservarSesion = true;
 
     public String getUsuario() {
 

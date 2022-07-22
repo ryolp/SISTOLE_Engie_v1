@@ -175,6 +175,22 @@ public class CPL extends Activity {
 
     }
 
+    protected boolean esSesionActiva(){
+        if (globales.usuarioEntity == null)
+            return false;
+
+        if (!globales.conservarSesion)
+            return false;
+
+        if (globales.usuarioEntity.esSesionVencida())
+            return false;
+        else
+            globales.usuarioEntity.inicializarHoraVencimiento();
+
+        return true;
+    }
+
+
     public void entrarAdministrador(View v) {
         entrarAdministrador2(v, false);
     }
@@ -188,7 +204,7 @@ public class CPL extends Activity {
         et_contrasena.setFilters(new InputFilter[]{new InputFilter.LengthFilter(globales.longCampoContrasena)});
         tv_msj_login.setText(R.string.str_login_msj_admon);
 
-        if (globales.usuarioEntity ==null || !globales.conservarSesion) {
+        if (!esSesionActiva()) {
             if (globales.tipoDeValidacion == globales.CON_SMS && !bForzarAdministrador)
                 habilitarControlesAutenticacionSMS();
             else {
@@ -228,7 +244,7 @@ public class CPL extends Activity {
 
         //Hay que adaptar según el tipo de validacion
 
-        if (globales.usuarioEntity == null || !globales.conservarSesion) {
+        if (!esSesionActiva()) {
             deshabilitarControlesAutenticacionSMS();
             switch (globales.tipoDeValidacion) {
 
@@ -851,7 +867,38 @@ public class CPL extends Activity {
     }
 
     public void salir() {
+        if (globales != null ) {
+            globales.usuarioEntity = null;
+        }
         finish();
+    }
+
+    protected void limpiarVariables(){
+        if (globales != null ) {
+            globales.usuarioEntity = null;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        limpiarVariables();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        if (globales == null)
+            return;
+
+        if (globales.usuarioEntity == null)
+            return;
+
+        if (globales.usuarioEntity.esSesionVencida())
+            globales.usuarioEntity = null;
+        else
+            globales.usuarioEntity.inicializarHoraVencimiento();
     }
 
     public void onBackPressed() {
