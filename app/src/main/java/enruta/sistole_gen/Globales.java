@@ -393,8 +393,9 @@ public class Globales extends Application {
     public boolean conservarSesion = true;
 
     public String getUsuario() {
-
-        return usuario;
+        if (usuarioEntity == null)
+            return "";
+        return usuarioEntity.NumCPL;
     }
 
     public void setUsuario(String s) {

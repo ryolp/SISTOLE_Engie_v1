@@ -800,7 +800,8 @@ public class Serializacion {
 		    		}
 		    			
 		    		else{
-		    			ls_urlConArchivo= "/" +is_carpeta + "/" + nombre;
+		    			//ls_urlConArchivo= "/" +is_carpeta + "/2022/202207/20220724/" + nombre;
+						ls_urlConArchivo= "/" +is_carpeta + "/" + nombre;
 		    			ls_url= is_carpeta ;
 		    		}
 		        	params.put("ruta", ls_urlConArchivo);

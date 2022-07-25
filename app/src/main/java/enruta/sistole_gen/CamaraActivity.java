@@ -554,7 +554,8 @@ public class CamaraActivity extends Activity {
 		ImageView imageView = new ImageView(this);
 		int padding = /*context.getResources().getDimensionPixelSize(R.dimen.padding_medium)*/0;
 		imageView.setPadding(padding, padding, padding, padding);
-		imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+		//imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+		imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
 		ByteArrayInputStream imageStream = new ByteArrayInputStream(foto);
 		Bitmap theImage =rotateImage(imageStream);

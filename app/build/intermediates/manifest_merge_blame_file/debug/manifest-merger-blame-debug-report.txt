@@ -3,7 +3,7 @@
 3    package="enruta.sistole_gen"
 4    android:installLocation="preferExternal"
 5    android:versionCode="39"
-6    android:versionName="ENGIE CPL (1.0.0)" >
+6    android:versionName="ENGIE CPL (1.0.6)" >
 7
 8    <uses-sdk
 8-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_v1\app\src\main\AndroidManifest.xml:8:5-10:41
