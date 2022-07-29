@@ -309,12 +309,14 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         long ll_lectAct = Long.parseLong(ls_lectAct);
 
         //Es valida
-        if ((globales.il_lect_max >= ll_lectAct && globales.il_lect_min <= ll_lectAct && is_lectAnt.equals("")
+        // RL, 2022-07-28, Queremos foto en consumo 0
+        //if ((globales.il_lect_max >= ll_lectAct && globales.il_lect_min <= ll_lectAct && is_lectAnt.equals("")
+
+        if ((globales.il_lect_max >= ll_lectAct && globales.il_lect_min < ll_lectAct && is_lectAnt.equals("")
                 && !globales.tll.getLecturaActual().confirmarLectura())) {
             is_lectAnt = "";
             return "";
         }
-
 
         if (!is_lectAnt.equals(ls_lectAct)) {
             if (!is_lectAnt.equals("") || globales.bModificar) {
