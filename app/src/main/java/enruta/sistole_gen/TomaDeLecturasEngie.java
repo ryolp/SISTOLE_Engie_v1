@@ -1485,8 +1485,8 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
         // RLR, 2022-08, Se agregan los datos del lecturista
         if (globales.usuarioEntity != null) {
-            resumen.add(new EstructuraResumen(globales.usuarioEntity.NombreCompleto, "Lecturista:"));
-            resumen.add(new EstructuraResumen(globales.usuarioEntity.Telefono,"Celular:"));
+            resumen.add(new EstructuraResumen(globales.usuarioEntity.NombreCompleto, "Lect:"));
+            resumen.add(new EstructuraResumen(globales.usuarioEntity.Telefono,"Cel:"));
             resumen.add(new EstructuraResumen("", "")); //Agregamos una linea mas
         }
 

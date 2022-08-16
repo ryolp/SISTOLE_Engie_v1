@@ -418,9 +418,6 @@ id label_campo2
 id label_campo3
 id label_campo4
 id lblCodigoSMS
-id lbl_activoDesde
-id lbl_celular
-id lbl_lecturista
 id left
 id line1
 id line3

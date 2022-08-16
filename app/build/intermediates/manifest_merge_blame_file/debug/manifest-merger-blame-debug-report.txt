@@ -62,165 +62,164 @@
 33-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:31:9-45
 34        android:label="@string/app_name"
 34-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:32:9-41
-35        android:testOnly="true"
-36        android:theme="@style/AppTheme"
-36-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:33:9-40
-37        android:usesCleartextTraffic="true" >
-37-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:34:9-44
-38        <activity
-38-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:35:9-39:20
-39            android:name="enruta.sistole_gen.Main"
-39-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:36:13-51
-40            android:label="@string/app_name"
-40-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:37:13-45
-41            android:screenOrientation="portrait" >
-41-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:38:13-49
-42        </activity>
-43        <activity
-43-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:40:9-46:20
-44            android:name="enruta.sistole_gen.TomaDeLecturas"
-44-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:41:13-61
-45            android:configChanges="keyboardHidden|navigation|orientation|screenSize"
-45-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:42:13-85
-46            android:label="@string/title_activity_toma_de_lecturas"
-46-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:43:13-68
-47            android:screenOrientation="portrait"
-47-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:44:13-49
-48            android:windowSoftInputMode="stateAlwaysHidden" >
-48-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:45:13-60
-49        </activity>
-50        <activity
-50-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:47:9-50:20
-51            android:name="enruta.sistole_gen.CamaraActivity"
-51-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:48:13-61
-52            android:screenOrientation="portrait" >
-52-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:49:13-49
-53        </activity>
-54        <activity
-54-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:51:9-54:20
-55            android:name="enruta.sistole_gen.trasmisionDatos"
-55-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:52:13-62
-56            android:screenOrientation="portrait" >
-56-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:53:13-49
-57        </activity>
-58        <activity
-58-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:55:9-58:20
-59            android:name="enruta.sistole_gen.VerFotos"
-59-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:56:13-55
-60            android:screenOrientation="portrait" >
-60-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:57:13-49
-61        </activity>
-62        <activity
-62-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:59:9-64:20
-63            android:name="enruta.sistole_gen.Filtrado"
-63-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:60:13-55
-64            android:label="@string/title_activity_filtrado"
-64-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:61:13-60
-65            android:screenOrientation="portrait"
-65-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:62:13-49
-66            android:windowSoftInputMode="stateHidden" >
-66-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:63:13-54
-67        </activity>
-68        <activity
-68-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:65:9-69:20
-69            android:name="enruta.sistole_gen.Input"
-69-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:66:13-52
-70            android:screenOrientation="portrait"
-70-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:67:13-49
-71            android:windowSoftInputMode="stateVisible" >
-71-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:68:13-55
-72        </activity>
-73        <activity
-73-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:70:9-74:20
-74            android:name="enruta.sistole_gen.PantallaAnomalias"
-74-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:71:13-64
-75            android:screenOrientation="portrait"
-75-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:72:13-49
-76            android:windowSoftInputMode="stateHidden" >
-76-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:73:13-54
-77        </activity>
-78        <activity
-78-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:75:9-80:20
-79            android:name="enruta.sistole_gen.BuscarMedidor"
-79-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:76:13-60
-80            android:label="@string/title_activity_buscar_medidor"
-80-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:77:13-66
-81            android:screenOrientation="portrait"
-81-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:78:13-49
-82            android:windowSoftInputMode="stateVisible|adjustResize" >
-82-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:79:13-68
-83        </activity>
-84        <activity
-84-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:81:9-86:20
-85            android:name="enruta.sistole_gen.Configuracion"
-85-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:82:13-60
-86            android:label="@string/title_activity_configuracion"
-86-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:83:13-65
-87            android:screenOrientation="portrait"
-87-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:84:13-49
-88            android:windowSoftInputMode="stateHidden|adjustPan" >
-88-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:85:13-64
-89        </activity>
-90        <activity
-90-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:87:9-90:20
-91            android:name="enruta.sistole_gen.Informacion"
-91-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:88:13-58
-92            android:screenOrientation="portrait" >
-92-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:89:13-49
-93        </activity>
-94        <activity
-94-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:91:9-95:20
-95            android:name="enruta.sistole_gen.NoRegistrados"
-95-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:92:13-60
-96            android:label="@string/title_activity_no_registrados"
-96-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:93:13-66
-97            android:screenOrientation="portrait" >
-97-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:94:13-49
-98        </activity>
-99        <activity
-99-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:96:9-99:20
-100            android:name="enruta.sistole_gen.trasmisionDatosBt"
-100-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:97:13-64
-101            android:screenOrientation="portrait" >
-101-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:98:13-49
-102        </activity>
-103        <activity
-103-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:100:9-110:20
-104            android:name="enruta.sistole_gen.CPL"
-104-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:101:13-50
-105            android:configChanges="keyboardHidden|orientation|screenLayout|screenSize"
-105-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:102:13-87
-106            android:screenOrientation="portrait"
-106-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:103:13-49
-107            android:windowSoftInputMode="adjustPan" >
-107-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:104:13-52
-108            <intent-filter>
-108-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:105:13-109:29
-109                <action android:name="android.intent.action.MAIN" />
-109-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:106:17-69
-109-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:106:25-66
-110
-111                <category android:name="android.intent.category.LAUNCHER" />
-111-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:108:17-77
-111-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:108:27-74
-112            </intent-filter>
-113        </activity>
-114        <activity
-114-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:111:9-115:20
-115            android:name="enruta.sistole_gen.InputCamposGenerico"
-115-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:112:13-66
-116            android:screenOrientation="portrait"
-116-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:113:13-49
-117            android:windowSoftInputMode="stateHidden" >
-117-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:114:13-54
-118        </activity>
-119        <activity
-119-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:116:9-119:20
-120            android:name="enruta.sistole_gen.PantallaCodigos"
-120-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:117:13-62
-121            android:label="@string/title_activity_pantalla_codigos" >
-121-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:118:13-68
-122        </activity>
-123    </application>
-124
-125</manifest>
+35        android:theme="@style/AppTheme"
+35-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:33:9-40
+36        android:usesCleartextTraffic="true" >
+36-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:34:9-44
+37        <activity
+37-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:35:9-39:20
+38            android:name="enruta.sistole_gen.Main"
+38-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:36:13-51
+39            android:label="@string/app_name"
+39-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:37:13-45
+40            android:screenOrientation="portrait" >
+40-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:38:13-49
+41        </activity>
+42        <activity
+42-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:40:9-46:20
+43            android:name="enruta.sistole_gen.TomaDeLecturas"
+43-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:41:13-61
+44            android:configChanges="keyboardHidden|navigation|orientation|screenSize"
+44-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:42:13-85
+45            android:label="@string/title_activity_toma_de_lecturas"
+45-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:43:13-68
+46            android:screenOrientation="portrait"
+46-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:44:13-49
+47            android:windowSoftInputMode="stateAlwaysHidden" >
+47-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:45:13-60
+48        </activity>
+49        <activity
+49-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:47:9-50:20
+50            android:name="enruta.sistole_gen.CamaraActivity"
+50-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:48:13-61
+51            android:screenOrientation="portrait" >
+51-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:49:13-49
+52        </activity>
+53        <activity
+53-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:51:9-54:20
+54            android:name="enruta.sistole_gen.trasmisionDatos"
+54-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:52:13-62
+55            android:screenOrientation="portrait" >
+55-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:53:13-49
+56        </activity>
+57        <activity
+57-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:55:9-58:20
+58            android:name="enruta.sistole_gen.VerFotos"
+58-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:56:13-55
+59            android:screenOrientation="portrait" >
+59-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:57:13-49
+60        </activity>
+61        <activity
+61-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:59:9-64:20
+62            android:name="enruta.sistole_gen.Filtrado"
+62-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:60:13-55
+63            android:label="@string/title_activity_filtrado"
+63-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:61:13-60
+64            android:screenOrientation="portrait"
+64-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:62:13-49
+65            android:windowSoftInputMode="stateHidden" >
+65-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:63:13-54
+66        </activity>
+67        <activity
+67-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:65:9-69:20
+68            android:name="enruta.sistole_gen.Input"
+68-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:66:13-52
+69            android:screenOrientation="portrait"
+69-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:67:13-49
+70            android:windowSoftInputMode="stateVisible" >
+70-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:68:13-55
+71        </activity>
+72        <activity
+72-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:70:9-74:20
+73            android:name="enruta.sistole_gen.PantallaAnomalias"
+73-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:71:13-64
+74            android:screenOrientation="portrait"
+74-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:72:13-49
+75            android:windowSoftInputMode="stateHidden" >
+75-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:73:13-54
+76        </activity>
+77        <activity
+77-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:75:9-80:20
+78            android:name="enruta.sistole_gen.BuscarMedidor"
+78-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:76:13-60
+79            android:label="@string/title_activity_buscar_medidor"
+79-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:77:13-66
+80            android:screenOrientation="portrait"
+80-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:78:13-49
+81            android:windowSoftInputMode="stateVisible|adjustResize" >
+81-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:79:13-68
+82        </activity>
+83        <activity
+83-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:81:9-86:20
+84            android:name="enruta.sistole_gen.Configuracion"
+84-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:82:13-60
+85            android:label="@string/title_activity_configuracion"
+85-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:83:13-65
+86            android:screenOrientation="portrait"
+86-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:84:13-49
+87            android:windowSoftInputMode="stateHidden|adjustPan" >
+87-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:85:13-64
+88        </activity>
+89        <activity
+89-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:87:9-90:20
+90            android:name="enruta.sistole_gen.Informacion"
+90-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:88:13-58
+91            android:screenOrientation="portrait" >
+91-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:89:13-49
+92        </activity>
+93        <activity
+93-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:91:9-95:20
+94            android:name="enruta.sistole_gen.NoRegistrados"
+94-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:92:13-60
+95            android:label="@string/title_activity_no_registrados"
+95-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:93:13-66
+96            android:screenOrientation="portrait" >
+96-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:94:13-49
+97        </activity>
+98        <activity
+98-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:96:9-99:20
+99            android:name="enruta.sistole_gen.trasmisionDatosBt"
+99-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:97:13-64
+100            android:screenOrientation="portrait" >
+100-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:98:13-49
+101        </activity>
+102        <activity
+102-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:100:9-110:20
+103            android:name="enruta.sistole_gen.CPL"
+103-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:101:13-50
+104            android:configChanges="keyboardHidden|orientation|screenLayout|screenSize"
+104-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:102:13-87
+105            android:screenOrientation="portrait"
+105-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:103:13-49
+106            android:windowSoftInputMode="adjustPan" >
+106-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:104:13-52
+107            <intent-filter>
+107-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:105:13-109:29
+108                <action android:name="android.intent.action.MAIN" />
+108-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:106:17-69
+108-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:106:25-66
+109
+110                <category android:name="android.intent.category.LAUNCHER" />
+110-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:108:17-77
+110-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:108:27-74
+111            </intent-filter>
+112        </activity>
+113        <activity
+113-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:111:9-115:20
+114            android:name="enruta.sistole_gen.InputCamposGenerico"
+114-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:112:13-66
+115            android:screenOrientation="portrait"
+115-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:113:13-49
+116            android:windowSoftInputMode="stateHidden" >
+116-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:114:13-54
+117        </activity>
+118        <activity
+118-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:116:9-119:20
+119            android:name="enruta.sistole_gen.PantallaCodigos"
+119-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:117:13-62
+120            android:label="@string/title_activity_pantalla_codigos" >
+120-->C:\Users\Reynol\Documents\Apps\Enruta\Sist\Sistole\Apps\Android\SISTOLE_Engie_dev\app\src\main\AndroidManifest.xml:118:13-68
+121        </activity>
+122    </application>
+123
+124</manifest>

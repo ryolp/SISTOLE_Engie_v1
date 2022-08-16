@@ -36,10 +36,9 @@ public class Principal extends Fragment {
         rootView = inflater.inflate(R.layout.entrada_principal, container, false);
 
         ma_papa = (Main) getActivity();
-        globales = (Globales)rootView.getContext().getApplicationContext();
+        globales = (Globales) rootView.getContext().getApplicationContext();
 
         actualizaResumen();
-        llenarInfoLecturista();
 
         //Esto fue una prueba... es la manera de comunicarme con su padre...
         //((Main)getActivity()).finish();
@@ -160,36 +159,5 @@ public class Principal extends Fragment {
         closeDatabase();
 
 
-    }
-
-    private void llenarInfoLecturista() {
-        TextView lblLecturista;
-        TextView lblActivoDesde;
-        TextView lblCelular;
-        EmpleadoCplEntity emp;
-
-        lblLecturista = (TextView)rootView.findViewById(R.id.lbl_lecturista);
-        lblActivoDesde = (TextView)rootView.findViewById(R.id.lbl_activoDesde);
-        lblCelular = (TextView)rootView.findViewById(R.id.lbl_celular);
-
-        if (lblLecturista == null || lblActivoDesde == null || lblCelular == null) {
-            showMessageLong("Error al crear controles");
-            return;
-        }
-
-        if (globales.usuarioEntity == null)
-            return;
-
-        lblLecturista.setText(globales.usuarioEntity.NombreCompleto);
-        //lblActivoDesde.setText(globales.usuarioEntity.FechaActivo);
-        lblCelular.setText(globales.usuarioEntity.Telefono);
-    }
-
-    private void showMessageLong(String sMessage) {
-        Toast.makeText(rootView.getContext(), sMessage, Toast.LENGTH_LONG).show();
-    }
-
-    private void showMessageShort(String sMessage) {
-        Toast.makeText(rootView.getContext(), sMessage, Toast.LENGTH_SHORT).show();
     }
 }
