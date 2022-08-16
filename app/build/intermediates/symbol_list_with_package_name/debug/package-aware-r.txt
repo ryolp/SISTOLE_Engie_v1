@@ -418,6 +418,9 @@ id label_campo2
 id label_campo3
 id label_campo4
 id lblCodigoSMS
+id lbl_activoDesde
+id lbl_celular
+id lbl_lecturista
 id left
 id line1
 id line3
@@ -619,6 +622,7 @@ layout configuracion
 layout cpl
 layout enproceso
 layout entrada
+layout entrada_principal
 layout filtrado
 layout fotos
 layout hexateclado
@@ -851,13 +855,16 @@ string msj_warning_pendientes_continuar
 string registros
 string reintentar
 string status_bar_notification_info_overflow
+string str_activoDesde
 string str_ajustar_fuente_areaCaptura
 string str_ajustar_fuente_informacion
 string str_anomalia
+string str_antiguedad
 string str_buscar
 string str_buscar_lowercase
 string str_captura
 string str_caseta
+string str_celular
 string str_ciudad
 string str_cliente
 string str_comentarios
@@ -878,6 +885,7 @@ string str_lect
 string str_lectura
 string str_lecturaAnterior
 string str_lectura_verifique
+string str_lecturista
 string str_login_msj_admon
 string str_login_msj_lecturista
 string str_login_msj_lecturista_contrasena
@@ -914,6 +922,8 @@ string title_activity_toma_de_lecturas
 string version
 style AppBaseTheme
 style AppTheme
+style CPL_PrincipalTheme
+style CPL_PrincipalTheme_Labels
 style TextAppearance_Compat_Notification
 style TextAppearance_Compat_Notification_Info
 style TextAppearance_Compat_Notification_Info_Media

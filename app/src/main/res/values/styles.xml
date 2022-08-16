@@ -16,6 +16,13 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
-    
 
+    <style name="CPL_PrincipalTheme" parent="android:Theme.Light">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="CPL_PrincipalTheme_Labels" parent="android:Theme.Light">
+        <item name="android:textSize">18sp</item>
+        <item name="android:background">#8dbdea</item>
+    </style>
 </resources>

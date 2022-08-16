@@ -86,12 +86,12 @@
 
     <include
         android:id="@+id/i_teclado"
+        layout="@layout/teclado"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/tv_info"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        layout="@layout/teclado" />
+        android:layout_alignParentBottom="true" />
 
     <EditText
         android:id="@+id/et_generico"

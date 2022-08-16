@@ -28,12 +28,12 @@
         "source": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-main-11:\\menu\\m_input.xml"
     },
     {
-        "merged": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-merged_res-9:\\drawable-xhdpi_ic_action_exportar.png.flat",
-        "source": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-main-11:\\drawable-xhdpi\\ic_action_exportar.png"
-    },
-    {
         "merged": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-merged_res-9:\\drawable-xhdpi_ic_action_correccion.png.flat",
         "source": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-main-11:\\drawable-xhdpi\\ic_action_correccion.png"
+    },
+    {
+        "merged": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-merged_res-9:\\drawable-xhdpi_ic_action_exportar.png.flat",
+        "source": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-main-11:\\drawable-xhdpi\\ic_action_exportar.png"
     },
     {
         "merged": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-merged_res-9:\\drawable-hdpi_textfield_focused_holo_light.9.png.flat",
@@ -50,10 +50,6 @@
     {
         "merged": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-merged_res-9:\\drawable-hdpi_textfield_disabled_focused_holo_light.9.png.flat",
         "source": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-main-11:\\drawable-hdpi\\textfield_disabled_focused_holo_light.9.png"
-    },
-    {
-        "merged": "enruta.sistole_gen.app-merged_res-9:/layout_cpl.xml.flat",
-        "source": "enruta.sistole_gen.app-main-11:/layout/cpl.xml"
     },
     {
         "merged": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-merged_res-9:\\drawable-ldpi_ic_nuevos_medidores.png.flat",
@@ -456,6 +452,10 @@
         "source": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-main-11:\\layout\\enproceso.xml"
     },
     {
+        "merged": "enruta.sistole_gen.app-merged_res-9:/layout_entrada_principal.xml.flat",
+        "source": "enruta.sistole_gen.app-main-11:/layout/entrada_principal.xml"
+    },
+    {
         "merged": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-merged_res-9:\\drawable-mdpi_logo.png.flat",
         "source": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-main-11:\\drawable-mdpi\\logo.png"
     },
@@ -586,6 +586,10 @@
     {
         "merged": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-merged_res-9:\\drawable-xhdpi_ic_action_name.png.flat",
         "source": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-main-11:\\drawable-xhdpi\\ic_action_name.png"
+    },
+    {
+        "merged": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-merged_res-9:\\layout_entrada_principal.xml.flat",
+        "source": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-main-11:\\layout\\entrada_principal.xml"
     },
     {
         "merged": "C:\\Users\\Reynol\\.gradle\\daemon\\7.3.3\\enruta.sistole_gen.app-merged_res-9:\\drawable-xhdpi_ic_nuevos_medidores.png.flat",

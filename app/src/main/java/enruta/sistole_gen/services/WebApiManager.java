@@ -5,18 +5,17 @@ import enruta.sistole_gen.TransmisionesPadre;
 import enruta.sistole_gen.TransmitionObject;
 import enruta.sistole_gen.entities.LoginRequestEntity;
 import enruta.sistole_gen.entities.LoginResponseEntity;
-import enruta.sistole_gen.interfaces.ILoginApi;
+import enruta.sistole_gen.interfaces.IWebApi;
 import enruta.sistole_gen.trasmisionDatos;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 
-public class LoginApiManager {
-    private ILoginApi service = null;
-    private static LoginApiManager apiManager;
+public class WebApiManager {
+    private IWebApi service = null;
+    private static WebApiManager apiManager;
     private static String _Url="";
 
-    private LoginApiManager(TomaDeLecturasGenerica tdlg, String servidor) throws Exception {
+    private WebApiManager(TomaDeLecturasGenerica tdlg, String servidor) throws Exception {
         createConection(tdlg, servidor);
     }
 
@@ -43,9 +42,9 @@ public class LoginApiManager {
     }
 
     // Para crear una sola instancia de esta clase que será de gestión para solicitar la autenticación
-    public static LoginApiManager getInstance(TomaDeLecturasGenerica tdlg, String servidor) throws Exception {
+    public static WebApiManager getInstance(TomaDeLecturasGenerica tdlg, String servidor) throws Exception {
         if (apiManager == null)
-            apiManager = new LoginApiManager(tdlg, servidor);
+            apiManager = new WebApiManager(tdlg, servidor);
         else
             apiManager.createConection(tdlg, servidor);
 
@@ -83,18 +82,18 @@ public class LoginApiManager {
         autenticarCall.enqueue(callBack);
     }
 
-    public String echoPing(){
-        try {
-            String resultado;
-
-            Call<String> echoPingCall = service.echoping();
-
-            Response<String> respuesta = echoPingCall.execute();
-
-            return respuesta.body();
-        }
-        catch (Exception ex ){
-            return "";
-        }
-    }
+//    public String echoPing(){
+//        try {
+//            String resultado;
+//
+//            Call<String> echoPingCall = service.echoping();
+//
+//            Response<String> respuesta = echoPingCall.execute();
+//
+//            return respuesta.body();
+//        }
+//        catch (Exception ex ){
+//            return "";
+//        }
+//    }
 }

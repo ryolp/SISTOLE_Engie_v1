@@ -8,7 +8,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
-public interface ILoginApi  {
+public interface IWebApi {
     @GET("api/login/echoping")
     Call<String>echoping();
 

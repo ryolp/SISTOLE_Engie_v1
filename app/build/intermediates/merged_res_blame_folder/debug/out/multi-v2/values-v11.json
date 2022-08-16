@@ -4,7 +4,7 @@
             "outputFile": "enruta.sistole_gen.app-mergeDebugResources-7:/values-v11/values-v11.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Reynol\\Documents\\Apps\\Enruta\\Sist\\Sistole\\Apps\\Android\\SISTOLE_Engie_v1\\app\\src\\main\\res\\values-v11\\styles.xml",
+                    "source": "C:\\Users\\Reynol\\Documents\\Apps\\Enruta\\Sist\\Sistole\\Apps\\Android\\SISTOLE_Engie_dev\\app\\src\\main\\res\\values-v11\\styles.xml",
                     "from": {
                         "startLines": "1",
                         "startColumns": "5",
