@@ -107,6 +107,10 @@ public class CPL extends Activity {
         lblMensaje = (TextView) findViewById(R.id.txtMensaje);
     }
 
+    /*
+        Validación de permisos
+     */
+
     private void validarPermisos() {
         boolean tienePermisos = true;
         String msg = "";
