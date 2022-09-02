@@ -13,58 +13,66 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.w3c.dom.Text;
+
+import enruta.sistole_gen.entities.EmpleadoCplEntity;
 
 public class Principal extends Fragment {
-	
-	DBHelper dbHelper;
-	SQLiteDatabase db;
-	View rootView;
-	TextView tv_resumen;
-	Main ma_papa;
-	
-		 
-	   @Override
-	   public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	          Bundle savedInstanceState) {
-	 
-	       rootView = inflater.inflate(R.layout.entrada, container, false);
-	        
-	       ma_papa=(Main) getActivity();
-	       actualizaResumen();
-	       
-	       //Esto fue una prueba... es la manera de comunicarme con su padre...
-	       //((Main)getActivity()).finish();
-	       
-	       return rootView;
-	   }
-	   
-	   private void openDatabase(){
-	    	dbHelper= new DBHelper(getActivity());
-			
-	        db = dbHelper.getReadableDatabase();
-	    }
-		
-		 private void closeDatabase(){
-		    	db.close();
-		        dbHelper.close();
-		        
-		    }
-	
-		 public void actualizaResumen(){
-			 
-			 
-		    	String lote="";
-		    	String cpl="";
-		    	String mac_bt="";
-		    	String mac_impr="";
-		    	
-		    	
-		    	String ls_resumen;
-		    	
-		    	tv_resumen= (TextView) rootView.findViewById(R.id.tv_resumen);
-		    	
-		    	Cursor c;
-		    	openDatabase();
+
+    private DBHelper dbHelper;
+    private SQLiteDatabase db;
+    private View rootView;
+    private TextView tv_resumen;
+    private Main ma_papa;
+    private Globales globales;
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        rootView = inflater.inflate(R.layout.entrada_principal, container, false);
+
+        ma_papa = (Main) getActivity();
+        globales = (Globales) rootView.getContext().getApplicationContext();
+
+        actualizaResumen();
+
+        //Esto fue una prueba... es la manera de comunicarme con su padre...
+        //((Main)getActivity()).finish();
+
+        return rootView;
+    }
+
+    private void openDatabase() {
+        dbHelper = new DBHelper(getActivity());
+
+        db = dbHelper.getReadableDatabase();
+    }
+
+    private void closeDatabase() {
+        db.close();
+        dbHelper.close();
+
+    }
+
+    public void actualizaResumen() {
+
+
+        String lote = "";
+        String cpl = "";
+        String mac_bt = "";
+        String mac_impr = "";
+
+
+        String ls_resumen;
+
+        tv_resumen = (TextView) rootView.findViewById(R.id.tv_resumen);
+
+        Cursor c;
+        openDatabase();
 
 //		    		try{
 //		    			c=db.rawQuery("Select value from config where key='cpl'", null);
@@ -139,18 +147,17 @@ public class Principal extends Fragment {
 ////		        	tv_resumen.setText(ls_resumen);
 //		        	
 //		        	//Establecemos el adaptador
-		        	GridView gv_resumen= (GridView) rootView.findViewById(R.id.gv_resumen);
-		    		
-		        	Vector <EstructuraResumen>resumen=ma_papa.globales.tdlg.getPrincipal(db);
-		    		
-		        	
-		        	gv_resumen.setAdapter(new ResumenGridAdapter(getActivity(), resumen, ma_papa.infoFontSize *ma_papa.porcentaje));
-		    	
-		        	tv_resumen.setVisibility(View.GONE);
-		        	gv_resumen.setVisibility(View.VISIBLE);
-		    	closeDatabase();
-		    	
-		    	
-		    }
-	
+        GridView gv_resumen = (GridView) rootView.findViewById(R.id.gv_resumen);
+
+        Vector<EstructuraResumen> resumen = ma_papa.globales.tdlg.getPrincipal(db);
+
+
+        gv_resumen.setAdapter(new ResumenGridAdapter(getActivity(), resumen, ma_papa.infoFontSize * ma_papa.porcentaje));
+
+        tv_resumen.setVisibility(View.GONE);
+        gv_resumen.setVisibility(View.VISIBLE);
+        closeDatabase();
+
+
+    }
 }

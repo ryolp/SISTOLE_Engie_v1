@@ -90,6 +90,10 @@
     <string name="str_usuario">Usuario:</string>
     <string name="str_contrasena">Contraseña:</string>
     <string name="lbl_entrar">Entrar</string>
+    <string name="str_activoDesde">Activo desde:</string>
+    <string name="str_antiguedad">Antiguedad:</string>
+    <string name="str_lecturista">Lecturista:</string>
+    <string name="str_celular">Celular #:</string>
 
     <string-array name="Modo">
         <item>Normal</item>
@@ -154,7 +158,8 @@
     <string name="lbl_todas">Todas</string>
     <!--
     <string name="lbl_informacion">"Información"</string>
-    <string name="lbl_area_de_captura">"Area de Captura" </string>
+    <string name="lbl_area_de_captura">"Area de Captura" </string>
+
     -->
 
     <string name="lbl_informacion">"Cambiar Font Superior"</string>

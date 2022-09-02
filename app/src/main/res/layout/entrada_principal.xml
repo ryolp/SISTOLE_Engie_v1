@@ -1,0 +1,25 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:theme="@style/CPL_PrincipalTheme"
+    tools:context=".Main">
+
+    <TextView
+        android:id="@+id/tv_resumen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:gravity="center"
+        android:text="@string/msj_main_no_hay_itinerarios"
+        android:textSize="25sp" />
+
+    <GridView
+        android:id="@+id/gv_resumen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:numColumns="1"
+        android:visibility="gone"></GridView>
+</LinearLayout>

@@ -246,7 +246,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         globales.tiempoPausaActiva = 7200000;
         globales.fechaEnMilisegundos = 0;
 
-        globales.quitarPrimerCaracterNombreFoto=false;
+        globales.quitarPrimerCaracterNombreFoto = false;
 
         globales.GPS = true;
         globales.bloquearBorrarSiIntento = false;
@@ -1482,6 +1482,13 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 //		resumen.add(new EstructuraResumen(mac_bt, "Servidor"));
 
         resumen.add(new EstructuraResumen("", "")); //Agregamos una linea mas
+
+        // RLR, 2022-08, Se agregan los datos del lecturista
+        if (globales.usuarioEntity != null) {
+            resumen.add(new EstructuraResumen(globales.usuarioEntity.NombreCompleto, "Lect:"));
+            resumen.add(new EstructuraResumen(globales.usuarioEntity.Telefono,"Cel:"));
+            resumen.add(new EstructuraResumen("", "")); //Agregamos una linea mas
+        }
 
         return resumen;
 //		String ls_resumen;

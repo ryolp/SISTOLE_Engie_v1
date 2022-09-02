@@ -2,6 +2,7 @@ package enruta.sistole_gen;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
@@ -27,7 +28,7 @@ import android.widget.TextView.OnEditorActionListener;
 import enruta.sistole_gen.entities.LoginRequestEntity;
 import enruta.sistole_gen.entities.LoginResponseEntity;
 import enruta.sistole_gen.entities.UsuarioEntity;
-import enruta.sistole_gen.services.LoginApiManager;
+import enruta.sistole_gen.services.WebApiManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -105,6 +106,10 @@ public class CPL extends Activity {
         tv_version = (TextView) findViewById(R.id.tv_version_lbl);
         lblMensaje = (TextView) findViewById(R.id.txtMensaje);
     }
+
+    /*
+        Validación de permisos
+     */
 
     private void validarPermisos() {
         boolean tienePermisos = true;
@@ -636,12 +641,41 @@ public class CPL extends Activity {
 
     }
 
-    private LoginApiManager getLoginApiManager() throws Exception {
+    private WebApiManager getLoginApiManager() throws Exception {
         try {
-            return LoginApiManager.getInstance(globales.tdlg, globales.defaultServidorGPRS);
+            return WebApiManager.getInstance(globales.tdlg, globales.defaultServidorGPRS);
         } catch (Exception ex) {
             throw ex;
         }
+    }
+
+    private String getVersionName(){
+        String versionName;
+
+        try {
+            versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+        }
+        catch (Exception ex){
+            versionName = "";
+        }
+
+        return versionName;
+    }
+
+    private String getVersionCode(){
+        long versionCodeMajor;
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+                versionCodeMajor = getPackageManager().getPackageInfo(getPackageName(), 0).getLongVersionCode();
+            else
+                versionCodeMajor = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+        }
+        catch (Exception ex){
+            versionCodeMajor = 0;
+        }
+
+        return Long.toString(versionCodeMajor);
     }
 
     private void autenticar(View view) {
@@ -664,11 +698,11 @@ public class CPL extends Activity {
 
             boolean finalEsSuperUsuario = esSuperUsuario;
 
-            LoginRequestEntity loginRequestEntity = new LoginRequestEntity(usuario, "", password, "");
+            LoginRequestEntity loginRequestEntity = new LoginRequestEntity(usuario, "", password, "",getVersionName(), getVersionCode());
 
             showMessageLong("Autenticando y enviando SMS");
 
-            getLoginApiManager().autenticarEmpleado2(loginRequestEntity, new Callback<LoginResponseEntity>() {
+            getLoginApiManager().autenticarEmpleado(loginRequestEntity, new Callback<LoginResponseEntity>() {
                         @Override
                         public void onResponse(Call<LoginResponseEntity> call, Response<LoginResponseEntity> response) {
                             String valor;
@@ -749,10 +783,10 @@ public class CPL extends Activity {
             usuario = et_usuario.getText().toString().trim();
             codigoSMS = txtCodigoSMS.getText().toString().trim();
 
-            LoginRequestEntity loginRequestEntity = new LoginRequestEntity(usuario, "", "", codigoSMS);
+            LoginRequestEntity loginRequestEntity = new LoginRequestEntity(usuario, "", "", codigoSMS, getVersionName(), getVersionCode());
 
             showMessageLong("Validando código SMS");
-            getLoginApiManager().validarEmpleadoSMS2(loginRequestEntity, new Callback<LoginResponseEntity>() {
+            getLoginApiManager().validarEmpleadoSMS(loginRequestEntity, new Callback<LoginResponseEntity>() {
                         @Override
                         public void onResponse(Call<LoginResponseEntity> call, Response<LoginResponseEntity> response) {
                             String valor;

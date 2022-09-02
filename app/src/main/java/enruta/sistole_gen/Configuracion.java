@@ -86,7 +86,7 @@ public class Configuracion extends Activity {
 
         if (globales.mostrarCPL) {
             objetosAMostar.add(new XmlTextView(getString(R.string.info_CPL), "16", "TextView", null, true, "", 0, Typeface.ITALIC));
-            objetosAMostar.add(new XmlEditText(globales.defaultCPL, "16", "EditText", null, true, "cpl", "6", InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS, "cpl"));
+            objetosAMostar.add(new XmlEditText(globales.defaultCPL, "16", "EditText", null, true, "cpl", "10", InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS, "cpl"));
         }
 
         if (globales.mostrarUnicom) {
