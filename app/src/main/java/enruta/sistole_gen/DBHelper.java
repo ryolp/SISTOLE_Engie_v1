@@ -25,7 +25,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	
 	private static DBHelper mInstance = null;
 	
-	private static int version=35;
+	private static int version=36;
 
 	/**
 	 * Constructor Toma referencia hacia el contexto de la aplicación que lo
@@ -201,6 +201,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL("CREATE TABLE config (key, value, selected)");
 		//Configuraciones globales y extras
 		db.execSQL("CREATE TABLE usoAnomalias (anomalia, veces default 0, fecha )");
+		//fotos de lecturista: para su perfil y de las evidencias de inicio y finalización de labores.
+		db.execSQL("CREATE TABLE fotosLecturista (secuencial, nombre, tipo, foto, envio default 0)");
 	}
 
 	@Override

@@ -25,4 +25,19 @@
         <item name="android:textSize">18sp</item>
         <item name="android:background">#8dbdea</item>
     </style>
+
+    <style name="Estilo_Boton_Lectura" parent="android:Theme.Light">
+        <item name="android:background">@color/LawnGreen</item>
+        <item name="android:backgroundTint">@color/LawnGreen</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="Estilo_Boton_Anomalia" parent="android:Theme.Light">
+        <item name="android:background">@color/Red</item>
+        <item name="android:backgroundTint">@color/Red</item>
+        <item name="android:textColor">@color/White</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
 </resources>

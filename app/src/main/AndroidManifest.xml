@@ -3,12 +3,12 @@
     package="enruta.sistole_gen"
     android:installLocation="preferExternal"
     android:versionCode="39"
-    android:versionName="ENGIE CPL (1.0.8)"
-    android:versionCodeMajor="10007">
+    android:versionName="ENGIE CPL (1.1.0)"
+    android:versionCodeMajor="10100">
 
     <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="15" />
+        android:minSdkVersion="21"
+        android:targetSdkVersion="21" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />

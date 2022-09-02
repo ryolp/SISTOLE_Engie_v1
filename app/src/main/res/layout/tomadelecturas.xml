@@ -63,7 +63,8 @@
            		android:layout_marginTop="-3dip"
             	android:layout_marginBottom="-3dip"
                 android:text="@string/str_lectura"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+				android:theme="@style/Estilo_Boton_Lectura"/>
 
             <Button
                 android:id="@+id/button2"
@@ -89,7 +90,8 @@
             	android:layout_marginBottom="-3dip"
                 android:enabled="true"
                 android:text="@string/str_anomalia"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+				android:theme="@style/Estilo_Boton_Anomalia"/>
 
         </LinearLayout>
 
