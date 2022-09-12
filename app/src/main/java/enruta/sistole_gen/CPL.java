@@ -765,6 +765,7 @@ public class CPL extends Activity {
             if (esSuperUsuario)
                 entrarAdministrador2(null, true);
 
+            globales.usuarioEntity = null;
             intentosAutenticacion++;
 
             if (intentosAutenticacion >= 5) {
@@ -795,6 +796,7 @@ public class CPL extends Activity {
                             if (response.isSuccessful())
                                 procesarValidacionSMS(response.body());
                             else {
+                                globales.usuarioEntity = null;
                                 showMessageLong("Error al validar SMS (1)");
                                 Log.d("CPL", "Error al validar SMS (1)");
                             }
@@ -802,12 +804,14 @@ public class CPL extends Activity {
 
                         @Override
                         public void onFailure(Call<LoginResponseEntity> call, Throwable t) {
+                            globales.usuarioEntity = null;
                             showMessageLong("Error al validar SMS (2):" + t.getMessage());
                             Log.d("CPL", "Error al validar SMS (2):" + t.getMessage());
                         }
                     }
             );
         } catch (Exception ex) {
+            globales.usuarioEntity = null;
             showMessageLong("Error al validar SMS (3):" + ex.getMessage());
             Log.d("CPL", "Error al validar SMS (3):" + ex.getMessage());
         }
@@ -830,6 +834,7 @@ public class CPL extends Activity {
             if (intentosCodigoSMS >= 5) {
                 showMessageLong("Se alcanzó el máximo de intentos");
                 deshabilitarAutenticacionSMS();
+                globales.usuarioEntity = null;
             } else
                 showMessageLong("Código SMS incorrecto. Intento " + intentosCodigoSMS + " de 5");
         }

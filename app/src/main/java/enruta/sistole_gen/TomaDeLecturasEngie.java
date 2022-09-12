@@ -1487,6 +1487,8 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         if (globales.usuarioEntity != null) {
             resumen.add(new EstructuraResumen(globales.usuarioEntity.NombreCompleto, "Lect:"));
             resumen.add(new EstructuraResumen(globales.usuarioEntity.Telefono,"Cel:"));
+            resumen.add(new EstructuraResumen(globales.usuarioEntity.Regional,"Reg.:"));
+            resumen.add(new EstructuraResumen(globales.usuarioEntity.Agencia,"Agencia:"));
             resumen.add(new EstructuraResumen("", "")); //Agregamos una linea mas
         }
 

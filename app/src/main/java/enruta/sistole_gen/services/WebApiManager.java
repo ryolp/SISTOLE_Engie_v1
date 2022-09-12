@@ -3,6 +3,8 @@ package enruta.sistole_gen.services;
 import enruta.sistole_gen.TomaDeLecturasGenerica;
 import enruta.sistole_gen.TransmisionesPadre;
 import enruta.sistole_gen.TransmitionObject;
+import enruta.sistole_gen.entities.EmpleadoOperRequest;
+import enruta.sistole_gen.entities.EmpleadoOperResponse;
 import enruta.sistole_gen.entities.LoginRequestEntity;
 import enruta.sistole_gen.entities.LoginResponseEntity;
 import enruta.sistole_gen.interfaces.IWebApi;
@@ -80,6 +82,36 @@ public class WebApiManager {
         Call<LoginResponseEntity> autenticarCall = service.validarEmpleadoSMS2(loginRequestEntity.Usuario, loginRequestEntity.CodigoSMS);
 
         autenticarCall.enqueue(callBack);
+    }
+
+    public void checkIn(EmpleadoOperRequest request, Callback<EmpleadoOperResponse> callBack){
+        Call<EmpleadoOperResponse> call = service.checkIn(request);
+
+        call.enqueue(callBack);
+    }
+
+    public void checkOut(EmpleadoOperRequest request, Callback<EmpleadoOperResponse> callBack){
+        Call<EmpleadoOperResponse> call = service.checkOut(request);
+
+        call.enqueue(callBack);
+    }
+
+    public void checkSeguridad(EmpleadoOperRequest request, Callback<EmpleadoOperResponse> callBack){
+        Call<EmpleadoOperResponse> call = service.checkSeguridad(request);
+
+        call.enqueue(callBack);
+    }
+
+    public void cerrarArchivo(EmpleadoOperRequest request, Callback<EmpleadoOperResponse> callBack){
+        Call<EmpleadoOperResponse> call = service.cerrarArchivo(request);
+
+        call.enqueue(callBack);
+    }
+
+    public void panico(EmpleadoOperRequest request, Callback<EmpleadoOperResponse> callBack){
+        Call<EmpleadoOperResponse> call = service.panico(request);
+
+        call.enqueue(callBack);
     }
 
 //    public String echoPing(){

@@ -1,6 +1,8 @@
 package enruta.sistole_gen.entities;
 
+import android.graphics.Bitmap;
 import android.text.format.DateUtils;
+import android.widget.ImageView;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -25,6 +27,12 @@ public class UsuarioEntity {
     public String Telefono = "";
     public Date FechaAntiguedad;
     public Date FechaActivo;
+    public int idAgencia;
+    public String Agencia;
+    public String Regional;
+    public String FotoURL;
+    public int idEmpleadoOperEstatus;
+    public Bitmap fotoEmpleado=null;
 
     public UsuarioEntity(){
 
@@ -51,6 +59,11 @@ public class UsuarioEntity {
             this.Telefono = loginResponseEntity.Empleado.Telefono;
             this.FechaAntiguedad = loginResponseEntity.Empleado.FechaAntiguedad;
             this.FechaActivo = loginResponseEntity.Empleado.FechaActivo;
+            this.idAgencia =  loginResponseEntity.Empleado.idAgencia;
+            this.Agencia =  loginResponseEntity.Empleado.Agencia;
+            this.Regional =  loginResponseEntity.Empleado.Regional;
+            this.FotoURL =  loginResponseEntity.Empleado.FotoURL;
+            this.idEmpleadoOperEstatus =  loginResponseEntity.Empleado.idEmpleadoOperEstatus;
         }
 
         inicializarHoraVencimiento();

@@ -15,4 +15,9 @@ public class EmpleadoCplEntity {
     public String Telefono;
     public Date FechaAntiguedad;
     public Date FechaActivo;
+    public int idAgencia;
+    public String Agencia;
+    public String Regional;
+    public String FotoURL;
+    public int idEmpleadoOperEstatus;
 }
