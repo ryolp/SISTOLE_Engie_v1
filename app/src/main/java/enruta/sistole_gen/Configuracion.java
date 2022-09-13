@@ -290,6 +290,11 @@ public class Configuracion extends Activity {
                         et_view.setEnabled(false);
                         break;
                 }
+                /* RL - 2022-09-12
+                Deshabilitar el control Edit Text del modo */
+
+                if (tmp.view_name.equals("calidad_foto"))
+                    et_view.setEnabled(false);
 
 
                 //Agregamos al layout
@@ -308,7 +313,11 @@ public class Configuracion extends Activity {
                     spinner = new Spinner(this);
                     spinner.setTag(tmp.view_name);
                 }
+                /* RL / 2022-09-12
+                Deshabilitar el control Spinner del modo */
 
+                if (tmp.view_name.equals("modo"))
+                    spinner.setEnabled(false);
 
                 ArrayList<String> spinnerArray = new ArrayList<String>();
 
@@ -689,7 +698,8 @@ public class Configuracion extends Activity {
 			}
 			else */
 
-            if (size.width == 320 && size.height == 240) {
+            // RL - 2022-09-12 - Se cambia la resolución que ha resultado buena con Engie
+            if (size.width == 640 && size.height == 480) {
                 return i;
             }
 
