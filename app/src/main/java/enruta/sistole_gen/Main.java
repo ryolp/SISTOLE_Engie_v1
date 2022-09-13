@@ -110,6 +110,7 @@ public class Main extends FragmentActivity implements TabListener {
     boolean cambiarDeUsuario = true;
 
     private Button btnOperacion;
+    private Button btnCerrarArchivo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -1875,6 +1876,7 @@ public class Main extends FragmentActivity implements TabListener {
     private void inicializarControles() {
         b_lecturas = (Button) this.findViewById(R.id.b_lecturas);
         btnOperacion = (Button) this.findViewById(R.id.btnOperacion);
+        btnCerrarArchivo= (Button) this.findViewById(R.id.btnCerrarArchivo);
 
         btnOperacion.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1900,6 +1902,13 @@ public class Main extends FragmentActivity implements TabListener {
                         break;
                 }
 
+            }
+        });
+
+        btnCerrarArchivo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cerrarArchivo();
             }
         });
 
@@ -2086,6 +2095,55 @@ public class Main extends FragmentActivity implements TabListener {
         } catch (Exception ex) {
             showMessageLong("Error al hacer Check Out (4). Intente nuevamente : " + ex.getMessage());
             Log.d("CPL", "Error al hacer Check Out (4). Intente nuevamente : " + ex.getMessage());
+        }
+    }
+
+    protected void cerrarArchivo() {
+        EmpleadoOperRequest req;
+        EmpleadoOperResponse resp;
+
+        try {
+            if (globales == null) {
+                showMessageLong("Error al cerrar archivo. Intente nuevamente");
+                return;
+            }
+
+            if (globales.usuarioEntity == null) {
+                showMessageLong("Error al cerrar archivo. Intente nuevamente");
+                return;
+            }
+
+            req = new EmpleadoOperRequest();
+            req.idEmpleado = globales.usuarioEntity.IdEmpleado;
+            req.FechaOperacion = getDateTime();
+
+            getWebApiManager().cerrarArchivo(req, new Callback<EmpleadoOperResponse>() {
+                        @Override
+                        public void onResponse(Call<EmpleadoOperResponse> call, Response<EmpleadoOperResponse> response) {
+                            String valor;
+                            EmpleadoOperResponse resp;
+
+                            if (response.isSuccessful()) {
+                                resp = response.body();
+                                if (resp.Exito) {
+                                    showMessageLong("Archivo cerrado");
+                                } else {
+                                    showMessageLong("Error al hacer cerrar archivo (1). Intente nuevamente");
+                                }
+                            } else
+                                showMessageLong("Error al hacer cerrar archivo (2). Intente nuevamente");
+                        }
+
+                        @Override
+                        public void onFailure(Call<EmpleadoOperResponse> call, Throwable t) {
+                            showMessageLong("Error al hacer cerrar archivo (3). Intente nuevamente : " + t.getMessage());
+                            Log.d("CPL", "Error al hacer cerrar archivo (3). Intente nuevamente : " + t.getMessage());
+                        }
+                    }
+            );
+        } catch (Exception ex) {
+            showMessageLong("Error al hacer cerrar archivo (4). Intente nuevamente : " + ex.getMessage());
+            Log.d("CPL", "Error al hacer cerrar archivo (4). Intente nuevamente : " + ex.getMessage());
         }
     }
 

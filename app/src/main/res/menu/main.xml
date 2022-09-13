@@ -41,10 +41,18 @@
         android:orderInCategory="5"
         android:title="@string/m_str_borrarRuta"
         android:visible="true"></item>
+
+    <item
+        android:id="@+id/m_ayuda"
+        android:orderInCategory="6"
+        android:title="Ayuda..."
+        android:visible="true"></item>
+
     <item
         android:id="@+id/m_salir"
-        android:orderInCategory="6"
+        android:orderInCategory="7"
         android:title="@string/Salir"></item>
+
     <item
         android:id="@+id/probar_bt"
         android:title="Probar bt"
