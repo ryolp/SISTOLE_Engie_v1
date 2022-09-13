@@ -191,8 +191,10 @@ public class ThreadTransmitirWifi extends TimerTask {
 					}
 
 					String fecha= c.getString(c.getColumnIndex("nombre")).substring(c.getString(c.getColumnIndex("nombre")).length() - 18,c.getString(c.getColumnIndex("nombre")).length() - 10 );
+					String fechaAnio = fecha.substring(0, 4);
+					String fechaAnioMes =  fecha.substring(0, 6);
 
-					serial.open(ls_servidor, ls_capertaFotos + fecha+"/", "",
+					serial.open(ls_servidor, ls_capertaFotos + fechaAnio + "/" + fechaAnioMes+ "/" + fecha+"/", "",
 							Serializacion.ESCRITURA, 0, 0);
 
 					String nombreFoto = c.getString(c.getColumnIndex("nombre"));
