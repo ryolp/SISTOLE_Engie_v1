@@ -1,7 +1,7 @@
 package enruta.sistole_gen.interfaces;
 
-import enruta.sistole_gen.entities.EmpleadoOperRequest;
-import enruta.sistole_gen.entities.EmpleadoOperResponse;
+import enruta.sistole_gen.entities.OperacionRequest;
+import enruta.sistole_gen.entities.OperacionResponse;
 import enruta.sistole_gen.entities.LoginRequestEntity;
 import enruta.sistole_gen.entities.LoginResponseEntity;
 import retrofit2.Call;
@@ -26,18 +26,21 @@ public interface IWebApi {
     @GET("validarEmpleadoSMS.aspx")
     Call<LoginResponseEntity>validarEmpleadoSMS2(@Query("usuario") String usuario, @Query("codigosms") String codigoSMS);
 
-    @POST("api/login/checkin")
-    Call<EmpleadoOperResponse>checkIn(@Body EmpleadoOperRequest request);
+    @POST("api/operaciones/CheckIn")
+    Call<OperacionResponse>checkIn(@Body OperacionRequest request);
 
-    @POST("api/login/checkseguridad")
-    Call<EmpleadoOperResponse>checkSeguridad(@Body EmpleadoOperRequest request);
+    @POST("api/operaciones/CheckSeguridad")
+    Call<OperacionResponse>checkSeguridad(@Body OperacionRequest request);
 
-    @POST("api/login/checkout")
-    Call<EmpleadoOperResponse>checkOut(@Body EmpleadoOperRequest request);
+    @POST("api/operaciones/CheckOut")
+    Call<OperacionResponse>checkOut(@Body OperacionRequest request);
 
-    @POST("api/login/cerrararchivo")
-    Call<EmpleadoOperResponse>cerrarArchivo(@Body EmpleadoOperRequest request);
+    @POST("api/operaciones/CerrarArchivo")
+    Call<OperacionResponse>cerrarArchivo(@Body OperacionRequest request);
 
-    @POST("api/login/panico")
-    Call<EmpleadoOperResponse>panico(@Body EmpleadoOperRequest request);
+    @POST("api/operaciones/SolicitarAyuda")
+    Call<OperacionResponse>solicitarAyuda(@Body OperacionRequest request);
+
+    @POST("api/operaciones/marcarArchivoDescargado")
+    Call<OperacionResponse>marcarArchivoDescargado(@Body OperacionRequest request);
 }

@@ -14,6 +14,7 @@ public class LoginResponseEntity {
     public boolean EsSuperUsuario;
     public boolean AutenticarConSMS;
     public String NumCPL;
+    public String VersionWeb;
     public EmpleadoCplEntity Empleado;
 
     public LoginResponseEntity(String Usuario, String Email, String Token, String Mensaje, boolean Exito, boolean Error,

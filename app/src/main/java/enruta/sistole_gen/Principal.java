@@ -175,7 +175,14 @@ public class Principal extends Fragment {
             return;
         }
 
-        if (globales.usuarioEntity.FotoURL.trim().equals(""))
+        if (globales.usuarioEntity.empleado == null) {
+            return;
+        }
+
+        if (globales.usuarioEntity.empleado.FotoURL == null)
+            return;
+
+        if (globales.usuarioEntity.empleado.FotoURL.trim().equals(""))
             return;
 
         if (fotoEmpleado == null)
@@ -184,7 +191,7 @@ public class Principal extends Fragment {
         if (globales.usuarioEntity.fotoEmpleado == null){
             AsyncTaskRunner runner = new AsyncTaskRunner();
 
-            runner.execute(globales.usuarioEntity.FotoURL);
+            runner.execute(globales.usuarioEntity.empleado.FotoURL);
         }
         else
             fotoEmpleado.setImageBitmap(globales.usuarioEntity.fotoEmpleado);
@@ -197,7 +204,7 @@ public class Principal extends Fragment {
         @Override
         protected String doInBackground(String... params) {
             try {
-                URL url = new URL(globales.usuarioEntity.FotoURL);
+                URL url = new URL(globales.usuarioEntity.empleado.FotoURL);
                 globales.usuarioEntity.fotoEmpleado = BitmapFactory.decodeStream(url.openConnection().getInputStream());
                 fotoEmpleado.setImageBitmap(globales.usuarioEntity.fotoEmpleado);
             } catch (Exception e){

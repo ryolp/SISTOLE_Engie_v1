@@ -2,9 +2,12 @@ package enruta.sistole_gen;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -24,10 +27,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
+import android.graphics.drawable.ColorDrawable;
 
+import java.util.Calendar;
+import java.util.Date;
+
+import enruta.sistole_gen.entities.OperacionRequest;
+import enruta.sistole_gen.entities.OperacionResponse;
 import enruta.sistole_gen.entities.LoginRequestEntity;
 import enruta.sistole_gen.entities.LoginResponseEntity;
 import enruta.sistole_gen.entities.UsuarioEntity;
+import enruta.sistole_gen.services.DbConfigMgr;
 import enruta.sistole_gen.services.WebApiManager;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -78,6 +88,18 @@ public class CPL extends Activity {
     int intentosAutenticacion = 0;
     int intentosCodigoSMS = 0;
 
+    // RL, 2022-09-13, Se agrega referencia al logo de Enruta
+    ImageView iv_nosotros;
+
+    // RL, 2022-09-13, Variables para activar el modo de ayuda
+
+    int clicksModoAyuda0 = 0;
+    int clicksModoAyuda1 = 0;
+    Date fechaModoAyuda0= null;
+    Date fechaModoAyuda1= null;
+    ColorDrawable lastBackgroundColor;
+    boolean dialogoConfirmarAyuda = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //	requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -101,10 +123,35 @@ public class CPL extends Activity {
         validarPermisos();
     }
 
+    protected void onStart() {
+        super.onStart();
+
+        inicializarControles();
+    }
+
+    /*
+        Inicializar las referencias a los controles del activity
+     */
+
     private void inicializarControles() {
         iv_logo = (ImageView) findViewById(R.id.iv_logo);
+        iv_nosotros = (ImageView) findViewById(R.id.iv_nosotros);
         tv_version = (TextView) findViewById(R.id.tv_version_lbl);
         lblMensaje = (TextView) findViewById(R.id.txtMensaje);
+
+        iv_logo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                activarModoAyuda(0);
+            }
+        });
+
+        iv_nosotros.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                activarModoAyuda(1);
+            }
+        });
     }
 
     /*
@@ -641,13 +688,6 @@ public class CPL extends Activity {
 
     }
 
-    private WebApiManager getLoginApiManager() throws Exception {
-        try {
-            return WebApiManager.getInstance(globales.tdlg, globales.defaultServidorGPRS);
-        } catch (Exception ex) {
-            throw ex;
-        }
-    }
 
     private String getVersionName(){
         String versionName;
@@ -678,6 +718,51 @@ public class CPL extends Activity {
         return Long.toString(versionCodeMajor);
     }
 
+    protected Date getDateTime() {
+        Calendar calendar = Calendar.getInstance();
+
+        return calendar.getTime();
+    }
+
+    private void showMessageLong(String sMessage) {
+        Toast.makeText(this, sMessage, Toast.LENGTH_LONG).show();
+    }
+
+    private void showMessageShort(String sMessage) {
+        Toast.makeText(this, sMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    protected WebApiManager getWebApiManager() throws Exception {
+        try {
+            TransmitionObject to= new TransmitionObject();
+            TomaDeLecturasGenerica tdlg;
+            String servidor = "";
+
+            tdlg =globales.tdlg;
+
+            if (tdlg != null){
+                if(!tdlg.getEstructuras( to, trasmisionDatos.TRANSMISION, TransmisionesPadre.WIFI).equals("")){
+                    //throw new Exception("Error al leer configuración");
+                    servidor = to.ls_servidor.trim();
+                    globales.defaultServidorGPRS = servidor;
+                }
+            }
+
+            if (servidor.trim().equals(""))
+                servidor = DbConfigMgr.getInstance().getServidor(this);
+
+            if (servidor.trim().equals(""))
+                servidor = globales.defaultServidorGPRS;
+            else
+                globales.defaultServidorGPRS = servidor;
+
+
+            return WebApiManager.getInstance(servidor);
+        } catch (Exception ex) {
+            throw ex;
+        }
+    }
+
     private void autenticar(View view) {
         String usuario = "";
         String password = "";
@@ -702,7 +787,7 @@ public class CPL extends Activity {
 
             showMessageLong("Autenticando y enviando SMS");
 
-            getLoginApiManager().autenticarEmpleado(loginRequestEntity, new Callback<LoginResponseEntity>() {
+            getWebApiManager().autenticarEmpleado(loginRequestEntity, new Callback<LoginResponseEntity>() {
                         @Override
                         public void onResponse(Call<LoginResponseEntity> call, Response<LoginResponseEntity> response) {
                             String valor;
@@ -787,7 +872,7 @@ public class CPL extends Activity {
             LoginRequestEntity loginRequestEntity = new LoginRequestEntity(usuario, "", "", codigoSMS, getVersionName(), getVersionCode());
 
             showMessageLong("Validando código SMS");
-            getLoginApiManager().validarEmpleadoSMS(loginRequestEntity, new Callback<LoginResponseEntity>() {
+            getWebApiManager().validarEmpleadoSMS(loginRequestEntity, new Callback<LoginResponseEntity>() {
                         @Override
                         public void onResponse(Call<LoginResponseEntity> call, Response<LoginResponseEntity> response) {
                             String valor;
@@ -897,14 +982,6 @@ public class CPL extends Activity {
         startActivityForResult(intent, MAIN);
     }
 
-    private void showMessageLong(String sMessage) {
-        Toast.makeText(this, sMessage, Toast.LENGTH_LONG).show();
-    }
-
-    private void showMessageShort(String sMessage) {
-        Toast.makeText(this, sMessage, Toast.LENGTH_SHORT).show();
-    }
-
     public void salir() {
         if (globales != null ) {
             globales.usuarioEntity = null;
@@ -963,6 +1040,164 @@ public class CPL extends Activity {
     public void mostrarTeclado() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+    }
+
+    private Date getFechaAgregarSegundos(int segundos){
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.add(Calendar.SECOND, segundos);
+        return calendar.getTime();
+    }
+
+//    private Date getDateTime() {
+//        Calendar calendar = Calendar.getInstance();
+//
+//        return calendar.getTime();
+//    }
+
+    private void activarModoAyuda(int modo)
+    {
+        Date horaActual;
+
+        horaActual = Calendar.getInstance().getTime();
+
+        if (modo == 0) {
+            if (clicksModoAyuda0 == 0) {
+                fechaModoAyuda0 = getFechaAgregarSegundos(30);
+                clicksModoAyuda0++;
+            }
+            else {
+                if (horaActual.after(fechaModoAyuda0))
+                    clicksModoAyuda0 = 0;
+                else
+                    clicksModoAyuda0++;
+
+                if (clicksModoAyuda0 >= 2) {
+                    lastBackgroundColor = (ColorDrawable) iv_logo.getBackground();
+                    iv_logo.setPadding(2, 2, 2, 2);
+                    iv_logo.setBackgroundColor(Color.parseColor("red"));
+                }
+            }
+        }
+
+        if (modo == 1 && clicksModoAyuda0 > 2) {
+            if (clicksModoAyuda1 == 0){
+                fechaModoAyuda1 = getFechaAgregarSegundos(30);
+                clicksModoAyuda1++;
+            }
+            else {
+                if (horaActual.after(fechaModoAyuda1))
+                    clicksModoAyuda1 = 0;
+                else
+                    clicksModoAyuda1++;
+
+                if (clicksModoAyuda1 > 2) {
+                    iv_nosotros.setPadding(2, 2, 2, 2);
+                    iv_nosotros.setBackgroundColor(Color.parseColor("red"));
+
+                    dialogoConfirmarAyuda();
+                }
+            }
+        }
+    }
+
+    private void dialogoConfirmarAyuda() {
+        if (!dialogoConfirmarAyuda ) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setTitle("Confirmar ayuda");
+            builder.setMessage("¿Está seguro de la ayuda?");
+
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    iv_logo.setPadding(0, 0, 0, 0);
+                    iv_logo.setBackgroundColor(Color.parseColor("white"));
+
+                    iv_nosotros.setPadding(0, 0, 0, 0);
+                    iv_nosotros.setBackgroundColor(Color.parseColor("white"));
+
+                    solicitarAyuda();
+
+                    dialogoConfirmarAyuda = false;
+                    dialog.dismiss();
+                }
+            });
+
+            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    iv_logo.setPadding(0, 0, 0, 0);
+                    iv_logo.setBackgroundColor(Color.parseColor("white"));
+
+                    iv_nosotros.setPadding(0, 0, 0, 0);
+                    iv_nosotros.setBackgroundColor(Color.parseColor("white"));
+
+                    dialogoConfirmarAyuda = false;
+                    dialog.dismiss();
+                }
+            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+            dialogoConfirmarAyuda = true;
+        }
+    }
+
+    protected void solicitarAyuda() {
+        OperacionRequest req;
+        OperacionResponse resp;
+
+        try {
+            if (globales == null) {
+                showMessageLong("Error al solicitar ayuda. Intente nuevamente");
+                return;
+            }
+
+            if (globales.usuarioEntity == null) {
+                showMessageLong("No se ha autenticado en la aplicación");
+                return;
+            }
+
+            if (globales.usuarioEntity.empleado == null) {
+                showMessageLong("No se ha autenticado en la aplicación");
+                return;
+            }
+
+            req = new OperacionRequest();
+            req.idEmpleado = globales.usuarioEntity.empleado.IdEmpleado;
+            req.FechaOperacion = getDateTime();
+
+            getWebApiManager().solicitarAyuda(req, new Callback<OperacionResponse>() {
+                        @Override
+                        public void onResponse(Call<OperacionResponse> call, Response<OperacionResponse> response) {
+                            String valor;
+                            OperacionResponse resp;
+
+                            if (response.isSuccessful()) {
+                                resp = response.body();
+                                if (resp.Exito) {
+                                    showMessageLong("Fue enviada la solicitud");
+                                } else {
+                                    showMessageLong("Error al solicitar ayuda (1). Intente nuevamente");
+                                }
+                            } else
+                                showMessageLong("Error al solicitar ayuda (2). Intente nuevamente");
+                        }
+
+                        @Override
+                        public void onFailure(Call<OperacionResponse> call, Throwable t) {
+                            showMessageLong("Error al solicitar ayuda (3). Intente nuevamente : " + t.getMessage());
+                            Log.d("CPL", "Error al solicitar ayuda (3). Intente nuevamente : " + t.getMessage());
+                        }
+                    }
+            );
+        } catch (Exception ex) {
+            showMessageLong("Error al solicitar ayuda (4). Intente nuevamente : " + ex.getMessage());
+            Log.d("CPL", "Error al solicitar ayuda (4). Intente nuevamente : " + ex.getMessage());
+        }
     }
 
 }

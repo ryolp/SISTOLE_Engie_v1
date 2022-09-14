@@ -1,54 +1,43 @@
 package enruta.sistole_gen.services;
 
-import enruta.sistole_gen.TomaDeLecturasGenerica;
-import enruta.sistole_gen.TransmisionesPadre;
-import enruta.sistole_gen.TransmitionObject;
-import enruta.sistole_gen.entities.EmpleadoOperRequest;
-import enruta.sistole_gen.entities.EmpleadoOperResponse;
+import enruta.sistole_gen.entities.OperacionRequest;
+import enruta.sistole_gen.entities.OperacionResponse;
 import enruta.sistole_gen.entities.LoginRequestEntity;
 import enruta.sistole_gen.entities.LoginResponseEntity;
 import enruta.sistole_gen.interfaces.IWebApi;
-import enruta.sistole_gen.trasmisionDatos;
 import retrofit2.Call;
 import retrofit2.Callback;
 
 public class WebApiManager {
     private IWebApi service = null;
     private static WebApiManager apiManager;
-    private static String _Url="";
+    private static String _servidorUrl="";
 
-    private WebApiManager(TomaDeLecturasGenerica tdlg, String servidor) throws Exception {
-        createConection(tdlg, servidor);
+    private WebApiManager(String servidor) throws Exception {
+        createConection(servidor);
     }
 
-    protected void createConection(TomaDeLecturasGenerica tdlg, String servidor)  throws Exception {
-        TransmitionObject to= new TransmitionObject();
-
-        if(!tdlg.getEstructuras( to, trasmisionDatos.TRANSMISION, TransmisionesPadre.WIFI).equals("")){
-            //throw new Exception("Error al leer configuración");
-            to.ls_servidor = servidor;
-        }
-
+    protected void createConection(String servidor)  throws Exception {
         if (service == null) {
-            _Url = to.ls_servidor;
-            service = WebApiService.Create(_Url);
+            _servidorUrl = servidor;
+            service = WebApiService.Create(servidor);
         }
-        else if (!to.ls_servidor.equals(_Url)){
+        else if (!_servidorUrl.equals(servidor)){
             // Si la URL cambió entonces destruye el objeto de transmisión de Retrofil y crea uno nuevo..
             // ... con la nueva URL
 
-            _Url = to.ls_servidor;
+            _servidorUrl = servidor;
             service = null;
-            service = WebApiService.Create(_Url);
+            service = WebApiService.Create(_servidorUrl);
         }
     }
 
     // Para crear una sola instancia de esta clase que será de gestión para solicitar la autenticación
-    public static WebApiManager getInstance(TomaDeLecturasGenerica tdlg, String servidor) throws Exception {
+    public static WebApiManager getInstance(String servidor) throws Exception {
         if (apiManager == null)
-            apiManager = new WebApiManager(tdlg, servidor);
+            apiManager = new WebApiManager(servidor);
         else
-            apiManager.createConection(tdlg, servidor);
+            apiManager.createConection(servidor);
 
         return apiManager;
     }
@@ -84,32 +73,38 @@ public class WebApiManager {
         autenticarCall.enqueue(callBack);
     }
 
-    public void checkIn(EmpleadoOperRequest request, Callback<EmpleadoOperResponse> callBack){
-        Call<EmpleadoOperResponse> call = service.checkIn(request);
+    public void checkIn(OperacionRequest request, Callback<OperacionResponse> callBack){
+        Call<OperacionResponse> call = service.checkIn(request);
 
         call.enqueue(callBack);
     }
 
-    public void checkOut(EmpleadoOperRequest request, Callback<EmpleadoOperResponse> callBack){
-        Call<EmpleadoOperResponse> call = service.checkOut(request);
+    public void checkOut(OperacionRequest request, Callback<OperacionResponse> callBack){
+        Call<OperacionResponse> call = service.checkOut(request);
 
         call.enqueue(callBack);
     }
 
-    public void checkSeguridad(EmpleadoOperRequest request, Callback<EmpleadoOperResponse> callBack){
-        Call<EmpleadoOperResponse> call = service.checkSeguridad(request);
+    public void checkSeguridad(OperacionRequest request, Callback<OperacionResponse> callBack){
+        Call<OperacionResponse> call = service.checkSeguridad(request);
 
         call.enqueue(callBack);
     }
 
-    public void cerrarArchivo(EmpleadoOperRequest request, Callback<EmpleadoOperResponse> callBack){
-        Call<EmpleadoOperResponse> call = service.cerrarArchivo(request);
+    public void cerrarArchivo(OperacionRequest request, Callback<OperacionResponse> callBack){
+        Call<OperacionResponse> call = service.cerrarArchivo(request);
 
         call.enqueue(callBack);
     }
 
-    public void panico(EmpleadoOperRequest request, Callback<EmpleadoOperResponse> callBack){
-        Call<EmpleadoOperResponse> call = service.panico(request);
+    public void marcarArchivoDescargado(OperacionRequest request, Callback<OperacionResponse> callBack){
+        Call<OperacionResponse> call = service.marcarArchivoDescargado(request);
+
+        call.enqueue(callBack);
+    }
+
+    public void solicitarAyuda(OperacionRequest request, Callback<OperacionResponse> callBack){
+        Call<OperacionResponse> call = service.solicitarAyuda(request);
 
         call.enqueue(callBack);
     }

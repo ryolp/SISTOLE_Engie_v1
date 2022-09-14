@@ -2,12 +2,14 @@ package enruta.sistole_gen.entities;
 
 import java.util.Date;
 
-public class EmpleadoOperResponse {
+public class OperacionResponse {
     public long idEmpleado = 0;
-    public int idEmpleadoEstatusOper;
-    public String EmpleadoEstatusOper  = "";
+    public int idOperacionTipo;
+    public String OperacionTipo = "";
     public Date FechaEstatus = null;
     public Boolean Exito =false;
     public String Mensaje = "";
     public String MensajeError = "";
+    public long idArchivo;
+    public String Archivo;
 }

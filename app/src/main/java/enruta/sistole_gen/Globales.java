@@ -133,7 +133,7 @@ public class Globales extends Application {
     String defaultUnicom = "";
     String defaultRuta = "";
     String defaultItinerario = "";
-    String defaultServidorGPRS = "http://www.espinosacarlos.com";
+    public String defaultServidorGPRS = "http://www.espinosacarlos.com";
     String defaultServidorWIFI = "http://www.espinosacarlos.com";
     String defaultServidorDeActualizacion = "";
     String defaultRutaDescarga = "C:\\Apps\\SGL\\Lectura";
@@ -213,7 +213,7 @@ public class Globales extends Application {
      **/
 
     TodosLosCampos tlc /*=new TodosLosCampos()*/;
-    TomaDeLecturasGenerica tdlg;
+    public TomaDeLecturasGenerica tdlg;
 
     //TomaDeLecturasGenerica tdlGenerica= new TomaDeLecturasGenerica(this);
 

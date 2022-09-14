@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import enruta.sistole_gen.R;
+import enruta.sistole_gen.entities.EmpleadoCplEntity;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -1485,11 +1486,17 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
         // RLR, 2022-08, Se agregan los datos del lecturista
         if (globales.usuarioEntity != null) {
-            resumen.add(new EstructuraResumen(globales.usuarioEntity.NombreCompleto, "Lect:"));
-            resumen.add(new EstructuraResumen(globales.usuarioEntity.Telefono,"Cel:"));
-            resumen.add(new EstructuraResumen(globales.usuarioEntity.Regional,"Reg.:"));
-            resumen.add(new EstructuraResumen(globales.usuarioEntity.Agencia,"Agencia:"));
-            resumen.add(new EstructuraResumen("", "")); //Agregamos una linea mas
+            EmpleadoCplEntity emp;
+
+            emp = globales.usuarioEntity.empleado;
+            if (emp != null) {
+                resumen.add(new EstructuraResumen(emp.NombreCompleto, "Lect:"));
+                resumen.add(new EstructuraResumen(emp.Telefono, "Cel:"));
+                resumen.add(new EstructuraResumen(emp.Regional, "Reg.:"));
+                resumen.add(new EstructuraResumen(emp.Agencia, "Agencia:"));
+                resumen.add(new EstructuraResumen(globales.usuarioEntity.VersionWeb, "Ver.Web:"));
+                resumen.add(new EstructuraResumen("", "")); //Agregamos una linea mas
+            }
         }
 
         return resumen;
