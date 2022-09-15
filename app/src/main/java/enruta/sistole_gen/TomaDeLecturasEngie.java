@@ -5,25 +5,17 @@ import java.text.DecimalFormatSymbols;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import enruta.sistole_gen.R;
+import enruta.sistole_gen.clases.Utils;
 import enruta.sistole_gen.entities.EmpleadoCplEntity;
 
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.text.InputFilter;
 import android.text.InputType;
-import android.util.TypedValue;
-import android.view.Gravity;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+import enruta.sistole_gen.clases.Utils;
 
 public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
@@ -1485,16 +1477,17 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         resumen.add(new EstructuraResumen("", "")); //Agregamos una linea mas
 
         // RLR, 2022-08, Se agregan los datos del lecturista
-        if (globales.usuarioEntity != null) {
+        if (globales.sesionEntity != null) {
             EmpleadoCplEntity emp;
 
-            emp = globales.usuarioEntity.empleado;
+            emp = globales.sesionEntity.empleado;
             if (emp != null) {
                 resumen.add(new EstructuraResumen(emp.NombreCompleto, "Lect:"));
+                resumen.add(new EstructuraResumen(Utils.convToDateTimeStr(emp.FechaIngreso), "F. Activo:"));
                 resumen.add(new EstructuraResumen(emp.Telefono, "Cel:"));
                 resumen.add(new EstructuraResumen(emp.Regional, "Reg.:"));
                 resumen.add(new EstructuraResumen(emp.Agencia, "Agencia:"));
-                resumen.add(new EstructuraResumen(globales.usuarioEntity.VersionWeb, "Ver.Web:"));
+                resumen.add(new EstructuraResumen(globales.sesionEntity.VersionWeb, "Ver.Web:"));
                 resumen.add(new EstructuraResumen("", "")); //Agregamos una linea mas
             }
         }

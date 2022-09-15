@@ -3,11 +3,10 @@ package enruta.sistole_gen;
 import java.util.Vector;
 
 import android.app.Application;
-import android.content.Context;
 import android.location.Location;
 import android.text.InputType;
 
-import enruta.sistole_gen.entities.UsuarioEntity;
+import enruta.sistole_gen.entities.SesionEntity;
 
 public class Globales extends Application {
     final static int NICARAGUA = 0;
@@ -389,13 +388,13 @@ public class Globales extends Application {
             false--> Solicita autenticar cada vez que se cambia de perfil de usuario (Administrador o Lecturista).
      */
 
-    public UsuarioEntity usuarioEntity = null;
+    public SesionEntity sesionEntity = null;
     public boolean conservarSesion = true;
 
     public String getUsuario() {
-        if (usuarioEntity == null)
+        if (sesionEntity == null)
             return "";
-        return usuarioEntity.NumCPL;
+        return sesionEntity.NumCPL;
     }
 
     public void setUsuario(String s) {

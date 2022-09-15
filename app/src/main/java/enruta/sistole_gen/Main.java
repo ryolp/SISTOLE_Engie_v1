@@ -33,7 +33,6 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -45,10 +44,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import enruta.sistole_gen.entities.LoginRequestEntity;
+import enruta.sistole_gen.entities.LoginResponseEntity;
 import enruta.sistole_gen.entities.OperacionRequest;
 import enruta.sistole_gen.entities.OperacionResponse;
+import enruta.sistole_gen.entities.ResumenEntity;
 import enruta.sistole_gen.services.DbConfigMgr;
+import enruta.sistole_gen.services.DbLecturasMgr;
 import enruta.sistole_gen.services.WebApiManager;
+import enruta.sistole_gen.clases.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -110,8 +114,12 @@ public class Main extends FragmentActivity implements TabListener {
     ThreadTransmitirWifi ttw;
     boolean cambiarDeUsuario = true;
 
+    // RL, 2022-09, Nuevas funcionalidades de Check-In, Check-Out, Check-Seguridad, Cerrar Archivo y verificación datos
+
     private Button btnOperacion;
     private Button btnCerrarArchivo;
+
+    private Date fechaHoraVerificacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -291,7 +299,8 @@ public class Main extends FragmentActivity implements TabListener {
         viewPager.setCurrentItem(li_tabSelected);
         //getActionBar().setSelectedNavigationItem(li_tabSelected);
 
-        inicializarControles();
+        inicializarActualizarControles();
+        verificarConexion();
     }
 
     @Override
@@ -1873,7 +1882,7 @@ public class Main extends FragmentActivity implements TabListener {
 
     }
 
-    private void inicializarControles() {
+    private void inicializarActualizarControles() {
         b_lecturas = (Button) this.findViewById(R.id.b_lecturas);
         btnOperacion = (Button) this.findViewById(R.id.btnOperacion);
         btnCerrarArchivo = (Button) this.findViewById(R.id.btnCerrarArchivo);
@@ -1882,10 +1891,10 @@ public class Main extends FragmentActivity implements TabListener {
             @Override
             public void onClick(View v) {
                 if (globales == null) return;
-                if (globales.usuarioEntity == null) return;
-                if (globales.usuarioEntity.empleado == null) return;
+                if (globales.sesionEntity == null) return;
+                if (globales.sesionEntity.empleado == null) return;
 
-                switch (globales.usuarioEntity.empleado.idOperacionTipo) {
+                switch (globales.sesionEntity.empleado.idOperacionTipo) {
                     case CHECK_SEGURIDAD:
                         hacerCheckSeguridad();
                         break;
@@ -1914,25 +1923,44 @@ public class Main extends FragmentActivity implements TabListener {
         });
 
         if (globales == null) return;
-        if (globales.usuarioEntity == null) return;
-        if (globales.usuarioEntity.empleado == null) return;
+        if (globales.sesionEntity == null) return;
+        if (globales.sesionEntity.empleado == null) return;
 
         CambiarBotonesOperEstatus();
     }
 
     private void CambiarBotonesOperEstatus() {
-        boolean archivoAbierto;
+        boolean habilitarLecturas = false;
+        ResumenEntity resumen;
 
-        archivoAbierto = (globales.usuarioEntity.empleado.ArchivoAbierto != 0) ? true : false;
+        if (globales.sesionEntity.empleado.ArchivoAbierto != 0) {
+            resumen = DbLecturasMgr.getInstance().getResumen(this);
+            habilitarLecturas = true;
 
-        switch (globales.usuarioEntity.empleado.idOperacionTipo) {
+            btnCerrarArchivo.setVisibility(View.VISIBLE);
+
+            if (resumen != null) {
+                if (resumen.TotalRegistros > 0) {
+                    if (resumen.Realizados < resumen.TotalRegistros)
+                        btnCerrarArchivo.setEnabled(false);
+                    else
+                        btnCerrarArchivo.setEnabled(true);
+                }
+            }
+        } else {
+            habilitarLecturas = false;
+            btnCerrarArchivo.setEnabled(false);
+            btnCerrarArchivo.setVisibility(View.GONE);
+        }
+
+        switch (globales.sesionEntity.empleado.idOperacionTipo) {
             case CHECK_SEGURIDAD:
                 btnOperacion.setText("Hacer Check Seguridad");
                 b_lecturas.setEnabled(false);
                 break;
             case CHECK_OUT:
                 btnOperacion.setText("Hacer Check Out");
-                b_lecturas.setEnabled((boolean) archivoAbierto);
+                b_lecturas.setEnabled(habilitarLecturas);
                 break;
             case INDEFINIDO:
             case CHECK_IN:
@@ -1941,8 +1969,6 @@ public class Main extends FragmentActivity implements TabListener {
                 b_lecturas.setEnabled(false);
                 break;
         }
-
-        btnCerrarArchivo.setEnabled(archivoAbierto);
     }
 
     protected WebApiManager getWebApiManager() throws Exception {
@@ -1973,43 +1999,29 @@ public class Main extends FragmentActivity implements TabListener {
         }
     }
 
-    protected Date getDateTime() {
-        Calendar calendar = Calendar.getInstance();
-
-        return calendar.getTime();
-    }
-
-    protected void showMessageLong(String sMessage) {
-        Toast.makeText(getApplicationContext(), sMessage, Toast.LENGTH_LONG).show();
-    }
-
-    protected void showMessageShort(String sMessage) {
-        Toast.makeText(getApplicationContext(), sMessage, Toast.LENGTH_SHORT).show();
-    }
-
     protected void hacerCheckIn() {
         OperacionRequest req;
         OperacionResponse resp;
 
         try {
             if (globales == null) {
-                showMessageLong("Error al hacer checkIn. Intente nuevamente");
+                Utils.showMessageLong(getApplicationContext(), "Error al hacer checkIn. Intente nuevamente");
                 return;
             }
 
-            if (globales.usuarioEntity == null) {
-                showMessageLong("No se ha autenticado en la aplicación");
+            if (globales.sesionEntity == null) {
+                Utils.showMessageLong(getApplicationContext(), "No se ha autenticado en la aplicación");
                 return;
             }
 
-            if (globales.usuarioEntity.empleado == null) {
-                showMessageLong("No se ha autenticado en la aplicación");
+            if (globales.sesionEntity.empleado == null) {
+                Utils.showMessageLong(getApplicationContext(), "No se ha autenticado en la aplicación");
                 return;
             }
 
             req = new OperacionRequest();
-            req.idEmpleado = globales.usuarioEntity.empleado.IdEmpleado;
-            req.FechaOperacion = getDateTime();
+            req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
+            req.FechaOperacion = Utils.getDateTime();
 
             getWebApiManager().checkIn(req, new Callback<OperacionResponse>() {
                         @Override
@@ -2020,25 +2032,22 @@ public class Main extends FragmentActivity implements TabListener {
                             if (response.isSuccessful()) {
                                 resp = response.body();
                                 if (resp.Exito) {
-                                    btnOperacion.setText("Hacer Check Seguridad");
-                                    b_lecturas.setEnabled(false);
-                                    globales.usuarioEntity.empleado.idOperacionTipo = CHECK_SEGURIDAD;
+                                    globales.sesionEntity.empleado.idOperacionTipo = CHECK_SEGURIDAD;
+                                    inicializarActualizarControles();
                                 } else
-                                    showMessageLong("Error al hacer checkIn (1). Intente nuevamente");
+                                    Utils.showMessageLong(getApplicationContext(), "Error al hacer checkIn (1). Intente nuevamente");
                             } else
-                                showMessageLong("Error al hacer checkIn (2). Intente nuevamente");
+                                Utils.showMessageLong(getApplicationContext(), "Error al hacer checkIn (2). Intente nuevamente");
                         }
 
                         @Override
                         public void onFailure(Call<OperacionResponse> call, Throwable t) {
-                            showMessageLong("Error al hacer checkIn (3). Intente nuevamente : " + t.getMessage());
-                            Log.d("CPL", "Error al hacer checkIn (3). Intente nuevamente : " + t.getMessage());
+                            Utils.logMessageLong(getApplicationContext(), "Error al hacer checkIn (3). Intente nuevamente", t);
                         }
                     }
             );
         } catch (Exception ex) {
-            showMessageLong("Error al hacer checkIn (4). Intente nuevamente : " + ex.getMessage());
-            Log.d("CPL", "Error al hacer checkIn (4). Intente nuevamente : " + ex.getMessage());
+            Utils.logMessageLong(getApplicationContext(), "Error al hacer checkIn (4). Intente nuevamente", ex);
         }
     }
 
@@ -2048,23 +2057,23 @@ public class Main extends FragmentActivity implements TabListener {
 
         try {
             if (globales == null) {
-                showMessageLong("Error al hacer checkIn. Intente nuevamente");
+                Utils.showMessageLong(getApplicationContext(), "Error al hacer checkIn. Intente nuevamente");
                 return;
             }
 
-            if (globales.usuarioEntity == null) {
-                showMessageLong("No se ha autenticado en la aplicación");
+            if (globales.sesionEntity == null) {
+                Utils.showMessageLong(getApplicationContext(), "No se ha autenticado en la aplicación");
                 return;
             }
 
-            if (globales.usuarioEntity.empleado == null) {
-                showMessageLong("No se ha autenticado en la aplicación");
+            if (globales.sesionEntity.empleado == null) {
+                Utils.showMessageLong(getApplicationContext(), "No se ha autenticado en la aplicación");
                 return;
             }
 
             req = new OperacionRequest();
-            req.idEmpleado = globales.usuarioEntity.empleado.IdEmpleado;
-            req.FechaOperacion = getDateTime();
+            req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
+            req.FechaOperacion = Utils.getDateTime();
 
             getWebApiManager().checkSeguridad(req, new Callback<OperacionResponse>() {
                         @Override
@@ -2075,26 +2084,23 @@ public class Main extends FragmentActivity implements TabListener {
                             if (response.isSuccessful()) {
                                 resp = response.body();
                                 if (resp.Exito) {
-                                    btnOperacion.setText("Hacer Check Out");
-                                    b_lecturas.setEnabled(true);
-                                    globales.usuarioEntity.empleado.idOperacionTipo = CHECK_OUT;
+                                    globales.sesionEntity.empleado.idOperacionTipo = CHECK_OUT;
+                                    inicializarActualizarControles();
                                 } else {
-                                    showMessageLong("Error al hacer check de seguridad  (1). Intente nuevamente");
+                                    Utils.showMessageLong(getApplicationContext(), "Error al hacer check de seguridad  (1). Intente nuevamente");
                                 }
                             } else
-                                showMessageLong("Error al hacer check de seguridad (2). Intente nuevamente");
+                                Utils.showMessageLong(getApplicationContext(), "Error al hacer check de seguridad (2). Intente nuevamente");
                         }
 
                         @Override
                         public void onFailure(Call<OperacionResponse> call, Throwable t) {
-                            showMessageLong("Error al hacer check de seguridad (3). Intente nuevamente : " + t.getMessage());
-                            Log.d("CPL", "Error al hacer check de seguridad (3). Intente nuevamente : " + t.getMessage());
+                            Utils.logMessageLong(getApplicationContext(), "Error al hacer check de seguridad (3). Intente nuevamente", t);
                         }
                     }
             );
         } catch (Exception ex) {
-            showMessageLong("Error al hacer check de seguridad (4). Intente nuevamente : " + ex.getMessage());
-            Log.d("CPL", "Error al hacer check de seguridad (4). Intente nuevamente : " + ex.getMessage());
+            Utils.logMessageLong(getApplicationContext(), "Error al hacer check de seguridad (4). Intente nuevamente", ex);
         }
     }
 
@@ -2104,23 +2110,23 @@ public class Main extends FragmentActivity implements TabListener {
 
         try {
             if (globales == null) {
-                showMessageLong("Error al hacer checkIn. Intente nuevamente");
+                Utils.showMessageLong(getApplicationContext(), "Error al hacer checkIn. Intente nuevamente");
                 return;
             }
 
-            if (globales.usuarioEntity == null) {
-                showMessageLong("No se ha autenticado en la aplicación");
+            if (globales.sesionEntity == null) {
+                Utils.showMessageLong(getApplicationContext(), "No se ha autenticado en la aplicación");
                 return;
             }
 
-            if (globales.usuarioEntity.empleado == null) {
-                showMessageLong("No se ha autenticado en la aplicación");
+            if (globales.sesionEntity.empleado == null) {
+                Utils.showMessageLong(getApplicationContext(), "No se ha autenticado en la aplicación");
                 return;
             }
 
             req = new OperacionRequest();
-            req.idEmpleado = globales.usuarioEntity.empleado.IdEmpleado;
-            req.FechaOperacion = getDateTime();
+            req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
+            req.FechaOperacion = Utils.getDateTime();
 
             getWebApiManager().checkOut(req, new Callback<OperacionResponse>() {
                         @Override
@@ -2131,26 +2137,23 @@ public class Main extends FragmentActivity implements TabListener {
                             if (response.isSuccessful()) {
                                 resp = response.body();
                                 if (resp.Exito) {
-                                    btnOperacion.setText("Hacer Check In");
-                                    b_lecturas.setEnabled(false);
-                                    globales.usuarioEntity.empleado.idOperacionTipo = CHECK_IN;
+                                    globales.sesionEntity.empleado.idOperacionTipo = CHECK_IN;
+                                    inicializarActualizarControles();
                                 } else {
-                                    showMessageLong("Error al hacer Check Out (1). Intente nuevamente");
+                                    Utils.showMessageLong(getApplicationContext(), "Error al hacer Check Out (1). Intente nuevamente");
                                 }
                             } else
-                                showMessageLong("Error al hacer Check Out (2). Intente nuevamente");
+                                Utils.showMessageLong(getApplicationContext(), "Error al hacer Check Out (2). Intente nuevamente");
                         }
 
                         @Override
                         public void onFailure(Call<OperacionResponse> call, Throwable t) {
-                            showMessageLong("Error al hacer Check Out (3). Intente nuevamente : " + t.getMessage());
-                            Log.d("CPL", "Error al hacer Check Out (3). Intente nuevamente : " + t.getMessage());
+                            Utils.logMessageLong(getApplicationContext(), "Error al hacer Check Out (3). Intente nuevamente", t);
                         }
                     }
             );
         } catch (Exception ex) {
-            showMessageLong("Error al hacer Check Out (4). Intente nuevamente : " + ex.getMessage());
-            Log.d("CPL", "Error al hacer Check Out (4). Intente nuevamente : " + ex.getMessage());
+            Utils.logMessageLong(getApplicationContext(), "Error al hacer Check Out (4). Intente nuevamente", ex);
         }
     }
 
@@ -2160,23 +2163,23 @@ public class Main extends FragmentActivity implements TabListener {
 
         try {
             if (globales == null) {
-                showMessageLong("Error al cerrar archivo. Intente nuevamente");
+                Utils.showMessageLong(getApplicationContext(), "Error al cerrar archivo. Intente nuevamente");
                 return;
             }
 
-            if (globales.usuarioEntity == null) {
-                showMessageLong("No se ha autenticado en la aplicación");
+            if (globales.sesionEntity == null) {
+                Utils.showMessageLong(getApplicationContext(), "No se ha autenticado en la aplicación");
                 return;
             }
 
-            if (globales.usuarioEntity.empleado == null) {
-                showMessageLong("No se ha autenticado en la aplicación");
+            if (globales.sesionEntity.empleado == null) {
+                Utils.showMessageLong(getApplicationContext(), "No se ha autenticado en la aplicación");
                 return;
             }
 
             req = new OperacionRequest();
-            req.idEmpleado = globales.usuarioEntity.empleado.IdEmpleado;
-            req.FechaOperacion = getDateTime();
+            req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
+            req.FechaOperacion = Utils.getDateTime();
 
             getWebApiManager().cerrarArchivo(req, new Callback<OperacionResponse>() {
                         @Override
@@ -2187,24 +2190,102 @@ public class Main extends FragmentActivity implements TabListener {
                             if (response.isSuccessful()) {
                                 resp = response.body();
                                 if (resp.Exito) {
-                                    showMessageLong("Archivo cerrado");
+                                    globales.sesionEntity.empleado.ArchivoAbierto = 0;
+                                    inicializarActualizarControles();
+                                    Utils.showMessageLong(getApplicationContext(), "Archivo cerrado");
                                 } else {
-                                    showMessageLong("Error al hacer cerrar archivo (1). Intente nuevamente");
+                                    Utils.showMessageLong(getApplicationContext(), "Error al hacer cerrar archivo (1). Intente nuevamente");
                                 }
                             } else
-                                showMessageLong("Error al hacer cerrar archivo (2). Intente nuevamente");
+                                Utils.showMessageLong(getApplicationContext(), "Error al hacer cerrar archivo (2). Intente nuevamente");
                         }
 
                         @Override
                         public void onFailure(Call<OperacionResponse> call, Throwable t) {
-                            showMessageLong("Error al hacer cerrar archivo (3). Intente nuevamente : " + t.getMessage());
-                            Log.d("CPL", "Error al hacer cerrar archivo (3). Intente nuevamente : " + t.getMessage());
+                            Utils.logMessageLong(getApplicationContext(), "Error al hacer cerrar archivo (3). Intente nuevamente", t);
                         }
                     }
             );
         } catch (Exception ex) {
-            showMessageLong("Error al hacer cerrar archivo (4). Intente nuevamente : " + ex.getMessage());
-            Log.d("CPL", "Error al hacer cerrar archivo (4). Intente nuevamente : " + ex.getMessage());
+            Utils.logMessageLong(getApplicationContext(), "Error al hacer cerrar archivo (4). Intente nuevamente", ex);
         }
     }
+
+    private void hacerVerificacionConexion() {
+        boolean verificar = false;
+        Date horaActual;
+
+        horaActual = Utils.getDateTime();
+
+        if (fechaHoraVerificacion == null) {
+            fechaHoraVerificacion = Utils.getFechaAgregarSegundos(10);
+            verificar = true;
+        } else if (fechaHoraVerificacion.after(horaActual)) {
+            fechaHoraVerificacion = Utils.getFechaAgregarSegundos(10);
+            verificarConexion();
+        }
+    }
+
+    protected void verificarConexion() {
+        LoginRequestEntity req;
+        LoginResponseEntity resp;
+
+        try {
+            Utils.showMessageLong(getApplicationContext(), "Verificar Conexión");
+
+            if (globales == null) {
+                actualizarControlesConexion(false, false);
+            }
+
+            if (globales.sesionEntity == null) {
+                actualizarControlesConexion(false, false);
+            }
+
+            if (globales.sesionEntity.empleado == null) {
+                actualizarControlesConexion(false, false);
+            }
+
+            req = new LoginRequestEntity();
+            req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
+            req.Usuario = globales.sesionEntity.Usuario;
+            req.Token =  globales.sesionEntity.empleado.Token;
+
+            getWebApiManager().verificarConexion(req, new Callback<LoginResponseEntity>() {
+                        @Override
+                        public void onResponse(Call<LoginResponseEntity> call, Response<LoginResponseEntity> response) {
+                            String valor;
+                            LoginResponseEntity resp;
+
+                            if (response.isSuccessful()) {
+                                resp = response.body();
+                                if (resp.Exito) {
+                                    actualizarControlesConexion(true, resp.SesionOk);
+                                } else {
+                                    actualizarControlesConexion(false, false);
+                                    Utils.showMessageLong(getApplicationContext(), "Error al verificar conexión (1)");
+                                }
+                            } else {
+                                actualizarControlesConexion(false, false);
+                                Utils.showMessageLong(getApplicationContext(), "Error al verificar conexión (2)");
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<LoginResponseEntity> call, Throwable t) {
+                            actualizarControlesConexion(false, false);
+                            //Utils.logMessageLong(getApplicationContext(), "Error al hacer Check Out (3). Intente nuevamente", t);
+                        }
+                    }
+            );
+        } catch (Exception ex) {
+            actualizarControlesConexion(false, false);
+            //Utils.logMessageLong(getApplicationContext(), "Error al hacer Check Out (4). Intente nuevamente", ex);
+        }
+    }
+
+    private void actualizarControlesConexion(boolean exito, boolean sesionOk) {
+
+    }
+
+
 }

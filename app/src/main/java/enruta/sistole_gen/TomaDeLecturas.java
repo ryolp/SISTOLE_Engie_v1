@@ -37,6 +37,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewTreeObserver;
 import android.view.View.OnTouchListener;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -596,6 +597,9 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.tomadelecturas);
+
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+				WindowManager.LayoutParams.FLAG_SECURE);
 
 		is_mensaje_direccion= getString(R.string.msj_lecturas_no_hay_mas);
 		setTitle("");

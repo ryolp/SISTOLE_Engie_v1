@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import java.util.Calendar;
 import java.util.Date;
 
-public class UsuarioEntity {
+public class SesionEntity {
     public String Usuario = "";
     public String Email = "";
     public boolean EsLecturista = false;
@@ -18,11 +18,11 @@ public class UsuarioEntity {
     public Bitmap fotoEmpleado=null;
     public EmpleadoCplEntity empleado;
 
-    public UsuarioEntity(){
+    public SesionEntity(){
 
     }
 
-    public UsuarioEntity(LoginResponseEntity loginResponseEntity) {
+    public SesionEntity(LoginResponseEntity loginResponseEntity) {
         this.Usuario = loginResponseEntity.Usuario;
         this.Email = loginResponseEntity.Email;
         this.EsLecturista = loginResponseEntity.EsLecturista;

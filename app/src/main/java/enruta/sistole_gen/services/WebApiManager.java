@@ -44,33 +44,33 @@ public class WebApiManager {
 
     // Se hace una llamada asíncrona al web api, y el resultado lo recibirá la función que se defina en callback
     public void echoPing(Callback<String> callback){
-        Call<String> echoPingCall = service.echoping();
+        Call<String> call = service.echoping();
 
-        echoPingCall.enqueue(callback);
+        call.enqueue(callback);
     }
 
     public void autenticarEmpleado(LoginRequestEntity loginRequestEntity, Callback<LoginResponseEntity> callBack){
-        Call<LoginResponseEntity> autenticarCall = service.autenticarEmpleado(loginRequestEntity);
+        Call<LoginResponseEntity> call = service.autenticarEmpleado(loginRequestEntity);
 
-        autenticarCall.enqueue(callBack);
+        call.enqueue(callBack);
     }
 
     public void validarEmpleadoSMS(LoginRequestEntity loginRequestEntity, Callback<LoginResponseEntity> callBack){
-        Call<LoginResponseEntity> autenticarCall = service.validarEmpleadoSMS(loginRequestEntity);
+        Call<LoginResponseEntity> call = service.validarEmpleadoSMS(loginRequestEntity);
 
-        autenticarCall.enqueue(callBack);
+        call.enqueue(callBack);
     }
 
     public void autenticarEmpleado2(LoginRequestEntity loginRequestEntity, Callback<LoginResponseEntity> callBack){
-        Call<LoginResponseEntity> autenticarCall = service.autenticarEmpleado2(loginRequestEntity.Usuario, loginRequestEntity.Password);
+        Call<LoginResponseEntity> call = service.autenticarEmpleado2(loginRequestEntity.Usuario, loginRequestEntity.Password);
 
-        autenticarCall.enqueue(callBack);
+        call.enqueue(callBack);
     }
 
     public void validarEmpleadoSMS2(LoginRequestEntity loginRequestEntity, Callback<LoginResponseEntity> callBack){
-        Call<LoginResponseEntity> autenticarCall = service.validarEmpleadoSMS2(loginRequestEntity.Usuario, loginRequestEntity.CodigoSMS);
+        Call<LoginResponseEntity> call = service.validarEmpleadoSMS2(loginRequestEntity.Usuario, loginRequestEntity.CodigoSMS);
 
-        autenticarCall.enqueue(callBack);
+        call.enqueue(callBack);
     }
 
     public void checkIn(OperacionRequest request, Callback<OperacionResponse> callBack){
@@ -105,6 +105,12 @@ public class WebApiManager {
 
     public void solicitarAyuda(OperacionRequest request, Callback<OperacionResponse> callBack){
         Call<OperacionResponse> call = service.solicitarAyuda(request);
+
+        call.enqueue(callBack);
+    }
+
+    public void verificarConexion(LoginRequestEntity request, Callback<LoginResponseEntity> callBack){
+        Call<LoginResponseEntity> call = service.verificarConexion(request);
 
         call.enqueue(callBack);
     }

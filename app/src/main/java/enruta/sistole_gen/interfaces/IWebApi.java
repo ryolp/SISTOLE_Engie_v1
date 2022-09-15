@@ -43,4 +43,7 @@ public interface IWebApi {
 
     @POST("api/operaciones/marcarArchivoDescargado")
     Call<OperacionResponse>marcarArchivoDescargado(@Body OperacionRequest request);
+
+    @POST("api/login/verificarConexion")
+    Call<LoginResponseEntity>verificarConexion(@Body LoginRequestEntity request);
 }

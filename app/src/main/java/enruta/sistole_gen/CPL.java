@@ -36,7 +36,7 @@ import enruta.sistole_gen.entities.OperacionRequest;
 import enruta.sistole_gen.entities.OperacionResponse;
 import enruta.sistole_gen.entities.LoginRequestEntity;
 import enruta.sistole_gen.entities.LoginResponseEntity;
-import enruta.sistole_gen.entities.UsuarioEntity;
+import enruta.sistole_gen.entities.SesionEntity;
 import enruta.sistole_gen.services.DbConfigMgr;
 import enruta.sistole_gen.services.WebApiManager;
 import retrofit2.Call;
@@ -228,16 +228,16 @@ public class CPL extends Activity {
     }
 
     protected boolean esSesionActiva(){
-        if (globales.usuarioEntity == null)
+        if (globales.sesionEntity == null)
             return false;
 
         if (!globales.conservarSesion)
             return false;
 
-        if (globales.usuarioEntity.esSesionVencida())
+        if (globales.sesionEntity.esSesionVencida())
             return false;
         else
-            globales.usuarioEntity.inicializarHoraVencimiento();
+            globales.sesionEntity.inicializarHoraVencimiento();
 
         return true;
     }
@@ -783,7 +783,11 @@ public class CPL extends Activity {
 
             boolean finalEsSuperUsuario = esSuperUsuario;
 
-            LoginRequestEntity loginRequestEntity = new LoginRequestEntity(usuario, "", password, "",getVersionName(), getVersionCode());
+            LoginRequestEntity loginRequestEntity = new LoginRequestEntity();
+            loginRequestEntity.Usuario = usuario;
+            loginRequestEntity.Password = password;
+            loginRequestEntity.VersionName = getVersionName();
+            loginRequestEntity.VersionCode = getVersionCode();
 
             showMessageLong("Autenticando y enviando SMS");
 
@@ -832,7 +836,7 @@ public class CPL extends Activity {
         }
 
         if (loginResponseEntity.Exito) {
-            globales.usuarioEntity = new UsuarioEntity(loginResponseEntity);
+            globales.sesionEntity = new SesionEntity(loginResponseEntity);
 
             if (loginResponseEntity.AutenticarConSMS) {
                 lblCodigoSMS.setVisibility(View.VISIBLE);
@@ -850,7 +854,7 @@ public class CPL extends Activity {
             if (esSuperUsuario)
                 entrarAdministrador2(null, true);
 
-            globales.usuarioEntity = null;
+            globales.sesionEntity = null;
             intentosAutenticacion++;
 
             if (intentosAutenticacion >= 5) {
@@ -869,7 +873,12 @@ public class CPL extends Activity {
             usuario = et_usuario.getText().toString().trim();
             codigoSMS = txtCodigoSMS.getText().toString().trim();
 
-            LoginRequestEntity loginRequestEntity = new LoginRequestEntity(usuario, "", "", codigoSMS, getVersionName(), getVersionCode());
+            LoginRequestEntity loginRequestEntity = new LoginRequestEntity();
+
+            loginRequestEntity.Usuario = usuario;
+            loginRequestEntity.CodigoSMS = codigoSMS;
+            loginRequestEntity.VersionName = getVersionName();
+            loginRequestEntity.VersionCode = getVersionCode();
 
             showMessageLong("Validando código SMS");
             getWebApiManager().validarEmpleadoSMS(loginRequestEntity, new Callback<LoginResponseEntity>() {
@@ -881,7 +890,7 @@ public class CPL extends Activity {
                             if (response.isSuccessful())
                                 procesarValidacionSMS(response.body());
                             else {
-                                globales.usuarioEntity = null;
+                                globales.sesionEntity = null;
                                 showMessageLong("Error al validar SMS (1)");
                                 Log.d("CPL", "Error al validar SMS (1)");
                             }
@@ -889,14 +898,14 @@ public class CPL extends Activity {
 
                         @Override
                         public void onFailure(Call<LoginResponseEntity> call, Throwable t) {
-                            globales.usuarioEntity = null;
+                            globales.sesionEntity = null;
                             showMessageLong("Error al validar SMS (2):" + t.getMessage());
                             Log.d("CPL", "Error al validar SMS (2):" + t.getMessage());
                         }
                     }
             );
         } catch (Exception ex) {
-            globales.usuarioEntity = null;
+            globales.sesionEntity = null;
             showMessageLong("Error al validar SMS (3):" + ex.getMessage());
             Log.d("CPL", "Error al validar SMS (3):" + ex.getMessage());
         }
@@ -910,7 +919,7 @@ public class CPL extends Activity {
         }
 
         if (loginResponseEntity.Exito) {
-            globales.usuarioEntity = new UsuarioEntity(loginResponseEntity);
+            globales.sesionEntity = new SesionEntity(loginResponseEntity);
             irActivityMain();
         }
         else {
@@ -919,7 +928,7 @@ public class CPL extends Activity {
             if (intentosCodigoSMS >= 5) {
                 showMessageLong("Se alcanzó el máximo de intentos");
                 deshabilitarAutenticacionSMS();
-                globales.usuarioEntity = null;
+                globales.sesionEntity = null;
             } else
                 showMessageLong("Código SMS incorrecto. Intento " + intentosCodigoSMS + " de 5");
         }
@@ -955,18 +964,18 @@ public class CPL extends Activity {
     private void irActivityMain() {
         deshabilitarAutenticacion();
 
-        esSuperUsuario = globales.usuarioEntity.EsSuperUsuario;
-        is_nombre_Lect = globales.usuarioEntity.Usuario;
+        esSuperUsuario = globales.sesionEntity.EsSuperUsuario;
+        is_nombre_Lect = globales.sesionEntity.Usuario;
 
         switch (ii_perfil) {
             case ADMINISTRADOR:
-                if (!globales.usuarioEntity.EsAdministrador && !globales.usuarioEntity.EsSuperUsuario) {
+                if (!globales.sesionEntity.EsAdministrador && !globales.sesionEntity.EsSuperUsuario) {
                     showMessageLong("No tiene permisos de administrador");
                     return;
                 }
                 break;
             case LECTURISTA:
-                if (!globales.usuarioEntity.EsAdministrador && !globales.usuarioEntity.EsSuperUsuario && !globales.usuarioEntity.EsLecturista) {
+                if (!globales.sesionEntity.EsAdministrador && !globales.sesionEntity.EsSuperUsuario && !globales.sesionEntity.EsLecturista) {
                     showMessageLong("No tiene permisos de administrador o lecturista");
                     return;
                 }
@@ -984,14 +993,14 @@ public class CPL extends Activity {
 
     public void salir() {
         if (globales != null ) {
-            globales.usuarioEntity = null;
+            globales.sesionEntity = null;
         }
         finish();
     }
 
     protected void limpiarVariables(){
         if (globales != null ) {
-            globales.usuarioEntity = null;
+            globales.sesionEntity = null;
         }
     }
 
@@ -1008,13 +1017,13 @@ public class CPL extends Activity {
         if (globales == null)
             return;
 
-        if (globales.usuarioEntity == null)
+        if (globales.sesionEntity == null)
             return;
 
-        if (globales.usuarioEntity.esSesionVencida())
-            globales.usuarioEntity = null;
+        if (globales.sesionEntity.esSesionVencida())
+            globales.sesionEntity = null;
         else
-            globales.usuarioEntity.inicializarHoraVencimiento();
+            globales.sesionEntity.inicializarHoraVencimiento();
     }
 
     public void onBackPressed() {
@@ -1156,18 +1165,18 @@ public class CPL extends Activity {
                 return;
             }
 
-            if (globales.usuarioEntity == null) {
+            if (globales.sesionEntity == null) {
                 showMessageLong("No se ha autenticado en la aplicación");
                 return;
             }
 
-            if (globales.usuarioEntity.empleado == null) {
+            if (globales.sesionEntity.empleado == null) {
                 showMessageLong("No se ha autenticado en la aplicación");
                 return;
             }
 
             req = new OperacionRequest();
-            req.idEmpleado = globales.usuarioEntity.empleado.IdEmpleado;
+            req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
             req.FechaOperacion = getDateTime();
 
             getWebApiManager().solicitarAyuda(req, new Callback<OperacionResponse>() {

@@ -7,4 +7,5 @@ public class OperacionRequest {
     public Date FechaOperacion;
     public long idArchivo;
     public String Archivo;
+    public String Token;
 }

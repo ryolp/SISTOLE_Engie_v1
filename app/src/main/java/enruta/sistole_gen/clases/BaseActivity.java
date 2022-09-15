@@ -11,7 +11,7 @@ import enruta.sistole_gen.Globales;
 import enruta.sistole_gen.TomaDeLecturasGenerica;
 import enruta.sistole_gen.TransmisionesPadre;
 import enruta.sistole_gen.TransmitionObject;
-import enruta.sistole_gen.entities.UsuarioEntity;
+import enruta.sistole_gen.entities.SesionEntity;
 import enruta.sistole_gen.services.DbConfigMgr;
 import enruta.sistole_gen.services.WebApiManager;
 import enruta.sistole_gen.trasmisionDatos;
@@ -69,11 +69,11 @@ public abstract class BaseActivity extends Activity {
         }
     }
 
-    protected UsuarioEntity getUsuario() {
+    protected SesionEntity getSesion() {
         if (globales == null)
             return null;
 
-        return globales.usuarioEntity;
+        return globales.sesionEntity;
     }
 
 }

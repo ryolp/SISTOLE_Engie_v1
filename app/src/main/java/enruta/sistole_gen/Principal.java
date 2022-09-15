@@ -1,6 +1,5 @@
 package enruta.sistole_gen;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Vector;
 
@@ -17,13 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
-
-import enruta.sistole_gen.entities.EmpleadoCplEntity;
 
 public class Principal extends Fragment {
 
@@ -171,30 +164,30 @@ public class Principal extends Fragment {
         if (globales == null)
             return;
 
-        if (globales.usuarioEntity == null) {
+        if (globales.sesionEntity == null) {
             return;
         }
 
-        if (globales.usuarioEntity.empleado == null) {
+        if (globales.sesionEntity.empleado == null) {
             return;
         }
 
-        if (globales.usuarioEntity.empleado.FotoURL == null)
+        if (globales.sesionEntity.empleado.FotoURL == null)
             return;
 
-        if (globales.usuarioEntity.empleado.FotoURL.trim().equals(""))
+        if (globales.sesionEntity.empleado.FotoURL.trim().equals(""))
             return;
 
         if (fotoEmpleado == null)
             fotoEmpleado = rootView.findViewById(R.id.fotoEmpleado);
 
-        if (globales.usuarioEntity.fotoEmpleado == null){
+        if (globales.sesionEntity.fotoEmpleado == null){
             AsyncTaskRunner runner = new AsyncTaskRunner();
 
-            runner.execute(globales.usuarioEntity.empleado.FotoURL);
+            runner.execute(globales.sesionEntity.empleado.FotoURL);
         }
         else
-            fotoEmpleado.setImageBitmap(globales.usuarioEntity.fotoEmpleado);
+            fotoEmpleado.setImageBitmap(globales.sesionEntity.fotoEmpleado);
     }
 
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
@@ -204,9 +197,9 @@ public class Principal extends Fragment {
         @Override
         protected String doInBackground(String... params) {
             try {
-                URL url = new URL(globales.usuarioEntity.empleado.FotoURL);
-                globales.usuarioEntity.fotoEmpleado = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                fotoEmpleado.setImageBitmap(globales.usuarioEntity.fotoEmpleado);
+                URL url = new URL(globales.sesionEntity.empleado.FotoURL);
+                globales.sesionEntity.fotoEmpleado = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                fotoEmpleado.setImageBitmap(globales.sesionEntity.fotoEmpleado);
             } catch (Exception e){
                 String msg;
 

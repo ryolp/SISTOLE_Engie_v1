@@ -1,12 +1,7 @@
 package enruta.sistole_gen;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
@@ -21,22 +16,15 @@ import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -44,7 +32,6 @@ import android.widget.Toast;
 
 import enruta.sistole_gen.entities.OperacionRequest;
 import enruta.sistole_gen.entities.OperacionResponse;
-import enruta.sistole_gen.services.DbConfigMgr;
 import enruta.sistole_gen.services.WebApiManager;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -1766,18 +1753,18 @@ public class trasmisionDatos extends TransmisionesPadre {
                 return;
             }
 
-            if (globales.usuarioEntity == null) {
+            if (globales.sesionEntity == null) {
                 showMessageLong("No se ha autenticado en la aplicación");
                 return;
             }
 
-            if (globales.usuarioEntity.empleado == null) {
+            if (globales.sesionEntity.empleado == null) {
                 showMessageLong("No se ha autenticado en la aplicación");
                 return;
             }
 
             req = new OperacionRequest();
-            req.idEmpleado = globales.usuarioEntity.empleado.IdEmpleado;
+            req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
             req.FechaOperacion = getDateTime();
             req.Archivo = archivo;
 
@@ -1790,7 +1777,7 @@ public class trasmisionDatos extends TransmisionesPadre {
                             if (response.isSuccessful()) {
                                 resp = response.body();
                                 if (resp.Exito) {
-                                    globales.usuarioEntity.empleado.ArchivoAbierto = 1;
+                                    globales.sesionEntity.empleado.ArchivoAbierto = 1;
                                 } else
                                     showMessageLong("Error al marcar archivo descargado (1). Intente nuevamente");
                             } else
