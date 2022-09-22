@@ -98,7 +98,6 @@ public class CPL extends Activity {
         }
 
         estableceVariablesDePaises();
-        validarPermisos();
     }
 
     private void inicializarControles() {
@@ -115,32 +114,36 @@ public class CPL extends Activity {
         boolean tienePermisos = true;
         String msg = "";
 
-        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
-            tienePermisos=false;
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            tienePermisos = false;
         }
 
-        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.INTERNET)!= PackageManager.PERMISSION_GRANTED){
-            tienePermisos=false;
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
+            tienePermisos = false;
         }
 
-        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
-            tienePermisos=false;
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            tienePermisos = false;
         }
 
-        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.BLUETOOTH)!= PackageManager.PERMISSION_GRANTED){
-            tienePermisos=false;
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+            tienePermisos = false;
         }
 
-        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.BLUETOOTH_ADMIN)!= PackageManager.PERMISSION_GRANTED){
-            tienePermisos=false;
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) {
+            tienePermisos = false;
         }
 
-        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
-            tienePermisos=false;
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            tienePermisos = false;
         }
 
-        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_NETWORK_STATE)!= PackageManager.PERMISSION_GRANTED){
-            tienePermisos=false;
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
+            tienePermisos = false;
+        }
+
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED) {
+            tienePermisos = false;
         }
 
         if (!tienePermisos) {
@@ -180,7 +183,7 @@ public class CPL extends Activity {
 
     }
 
-    protected boolean esSesionActiva(){
+    protected boolean esSesionActiva() {
         if (globales.usuarioEntity == null)
             return false;
 
@@ -231,8 +234,7 @@ public class CPL extends Activity {
             intentosAutenticacion = 0;
 
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-        }
-        else
+        } else
             irActivityMain();
     }
 
@@ -305,8 +307,7 @@ public class CPL extends Activity {
             intentosAutenticacion = 0;
 
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-        }
-        else
+        } else
             irActivityMain();
     }
 
@@ -621,7 +622,7 @@ public class CPL extends Activity {
 //	       });
     }
 
-    private void inicializarEventosControlesLogin(){
+    private void inicializarEventosControlesLogin() {
         btnAutenticar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -649,20 +650,19 @@ public class CPL extends Activity {
         }
     }
 
-    private String getVersionName(){
+    private String getVersionName() {
         String versionName;
 
         try {
             versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             versionName = "";
         }
 
         return versionName;
     }
 
-    private String getVersionCode(){
+    private String getVersionCode() {
         long versionCodeMajor;
 
         try {
@@ -670,8 +670,7 @@ public class CPL extends Activity {
                 versionCodeMajor = getPackageManager().getPackageInfo(getPackageName(), 0).getLongVersionCode();
             else
                 versionCodeMajor = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             versionCodeMajor = 0;
         }
 
@@ -694,13 +693,17 @@ public class CPL extends Activity {
 
                 entrarAdministrador2(null, true);
                 return;
+            } else if (usuario.equals("") || password.equals("")) {
+                showMessageLong("Falta capturar el usuario y/o contraseña");
+                return;
             }
+
 
             boolean finalEsSuperUsuario = esSuperUsuario;
 
-            LoginRequestEntity loginRequestEntity = new LoginRequestEntity(usuario, "", password, "",getVersionName(), getVersionCode());
+            LoginRequestEntity loginRequestEntity = new LoginRequestEntity(usuario, "", password, "", getVersionName(), getVersionCode());
 
-            showMessageLong("Autenticando y enviando SMS");
+            showMessageLong("Autenticando");
 
             getLoginApiManager().autenticarEmpleado(loginRequestEntity, new Callback<LoginResponseEntity>() {
                         @Override
@@ -750,6 +753,7 @@ public class CPL extends Activity {
             globales.usuarioEntity = new UsuarioEntity(loginResponseEntity);
 
             if (loginResponseEntity.AutenticarConSMS) {
+                globales.usuarioEntity.Autenticado = false;
                 lblCodigoSMS.setVisibility(View.VISIBLE);
                 txtCodigoSMS.setVisibility(View.VISIBLE);
                 btnValidarSMS.setVisibility(View.VISIBLE);
@@ -759,12 +763,15 @@ public class CPL extends Activity {
                 et_usuario.setEnabled(false);
                 et_contrasena.setFocusable(false);
                 et_contrasena.setEnabled(false);
-            } else
+            } else {
+                globales.usuarioEntity.Autenticado = true;
                 irActivityMain();
+            }
         } else {
             if (esSuperUsuario)
                 entrarAdministrador2(null, true);
 
+            globales.usuarioEntity = null;
             intentosAutenticacion++;
 
             if (intentosAutenticacion >= 5) {
@@ -783,6 +790,11 @@ public class CPL extends Activity {
             usuario = et_usuario.getText().toString().trim();
             codigoSMS = txtCodigoSMS.getText().toString().trim();
 
+            if (usuario.equals("") || codigoSMS.equals("")) {
+                showMessageLong("Falta capturar elcódigo SMS");
+                return;
+            }
+
             LoginRequestEntity loginRequestEntity = new LoginRequestEntity(usuario, "", "", codigoSMS, getVersionName(), getVersionCode());
 
             showMessageLong("Validando código SMS");
@@ -795,6 +807,7 @@ public class CPL extends Activity {
                             if (response.isSuccessful())
                                 procesarValidacionSMS(response.body());
                             else {
+                                globales.usuarioEntity = null;
                                 showMessageLong("Error al validar SMS (1)");
                                 Log.d("CPL", "Error al validar SMS (1)");
                             }
@@ -802,12 +815,14 @@ public class CPL extends Activity {
 
                         @Override
                         public void onFailure(Call<LoginResponseEntity> call, Throwable t) {
+                            globales.usuarioEntity = null;
                             showMessageLong("Error al validar SMS (2):" + t.getMessage());
                             Log.d("CPL", "Error al validar SMS (2):" + t.getMessage());
                         }
                     }
             );
         } catch (Exception ex) {
+            globales.usuarioEntity = null;
             showMessageLong("Error al validar SMS (3):" + ex.getMessage());
             Log.d("CPL", "Error al validar SMS (3):" + ex.getMessage());
         }
@@ -816,20 +831,22 @@ public class CPL extends Activity {
 
     private void procesarValidacionSMS(LoginResponseEntity loginResponseEntity) {
         if (loginResponseEntity.Error) {
+            globales.usuarioEntity = null;
             showMessageLong("Error al validar SMS (3):" + loginResponseEntity.Mensaje);
             return;
         }
 
         if (loginResponseEntity.Exito) {
             globales.usuarioEntity = new UsuarioEntity(loginResponseEntity);
+            globales.usuarioEntity.Autenticado = true;
             irActivityMain();
-        }
-        else {
+        } else {
             intentosCodigoSMS++;
 
             if (intentosCodigoSMS >= 5) {
                 showMessageLong("Se alcanzó el máximo de intentos");
                 deshabilitarAutenticacionSMS();
+                globales.usuarioEntity = null;
             } else
                 showMessageLong("Código SMS incorrecto. Intento " + intentosCodigoSMS + " de 5");
         }
@@ -901,14 +918,14 @@ public class CPL extends Activity {
     }
 
     public void salir() {
-        if (globales != null ) {
+        if (globales != null) {
             globales.usuarioEntity = null;
         }
         finish();
     }
 
-    protected void limpiarVariables(){
-        if (globales != null ) {
+    protected void limpiarVariables() {
+        if (globales != null) {
             globales.usuarioEntity = null;
         }
     }
@@ -920,8 +937,10 @@ public class CPL extends Activity {
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
+
+        validarPermisos();
 
         if (globales == null)
             return;

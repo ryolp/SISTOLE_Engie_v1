@@ -290,6 +290,7 @@ public class Configuracion extends Activity {
                         et_view.setEnabled(false);
                         break;
                 }
+                
                 /* RL - 2022-09-12
                 Deshabilitar el control Edit Text del modo */
 
@@ -313,6 +314,7 @@ public class Configuracion extends Activity {
                     spinner = new Spinner(this);
                     spinner.setTag(tmp.view_name);
                 }
+
                 /* RL / 2022-09-12
                 Deshabilitar el control Spinner del modo */
 

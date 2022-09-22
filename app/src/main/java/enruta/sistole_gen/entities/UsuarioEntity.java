@@ -25,6 +25,7 @@ public class UsuarioEntity {
     public String Telefono = "";
     public Date FechaAntiguedad;
     public Date FechaActivo;
+    public Boolean Autenticado = false;
 
     public UsuarioEntity(){
 
@@ -65,6 +66,9 @@ public class UsuarioEntity {
 
     public boolean esSesionVencida(){
         Date horaActual;
+
+        if (!this.Autenticado)
+            return true;
 
         horaActual = Calendar.getInstance().getTime();
 
