@@ -608,6 +608,10 @@ public class Configuracion extends Activity {
                         }
                         globales.calidadDeLaFoto = Integer.parseInt(texto);
                     }
+
+                    if (dbField.equals("cpl")) {
+                        texto = texto.trim();
+                    }
 //						else if (dbField.equals("cpl")){
 //							if (globales.bloquearCPLNoSuper && !globales.esSuperUsuario)
 //								continue;

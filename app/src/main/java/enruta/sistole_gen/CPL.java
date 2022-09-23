@@ -77,6 +77,7 @@ public class CPL extends Activity {
     Button btnValidarSMS;
     int intentosAutenticacion = 0;
     int intentosCodigoSMS = 0;
+    private boolean mTienePermisos = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,45 +112,48 @@ public class CPL extends Activity {
      */
 
     private void validarPermisos() {
-        boolean tienePermisos = true;
         String msg = "";
 
+        mTienePermisos = true;
+
         if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            tienePermisos = false;
+            mTienePermisos = false;
         }
 
         if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
-            tienePermisos = false;
+            mTienePermisos = false;
         }
 
         if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            tienePermisos = false;
+            mTienePermisos = false;
         }
 
         if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
-            tienePermisos = false;
+            mTienePermisos = false;
         }
 
         if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) {
-            tienePermisos = false;
+            mTienePermisos = false;
         }
 
         if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            tienePermisos = false;
+            mTienePermisos = false;
         }
 
         if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
-            tienePermisos = false;
+            mTienePermisos = false;
         }
 
         if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED) {
-            tienePermisos = false;
+            mTienePermisos = false;
         }
 
-        if (!tienePermisos) {
-            showMessageLong("Faltan permisos");
+        if (!mTienePermisos) {
             lblMensaje.setText("Faltan permisos");
+            lblMensaje.setVisibility(View.VISIBLE);
         }
+        else
+            lblMensaje.setVisibility(View.GONE);
     }
 
     /**
@@ -206,6 +210,12 @@ public class CPL extends Activity {
     public void entrarAdministrador2(View v, boolean bForzarAdministrador) {
         ii_perfil = ADMINISTRADOR;
 
+        if (!mTienePermisos)
+        {
+            showMessageLong("No ha proporcionado los permisos necesarios para que funcione la aplicación");
+            return;
+        }
+
         setContentView(R.layout.p_login);
         ii_pantallaActual = LOGIN;
         getObjetosLogin();
@@ -239,19 +249,28 @@ public class CPL extends Activity {
     }
 
     public void entrarLecturista(View v) {
+        if (!mTienePermisos)
+        {
+            showMessageLong("No ha proporcionado los permisos necesarios para que funcione la aplicación");
+            return;
+        }
+
         ii_perfil = LECTURISTA;
         ii_pantallaActual = LOGIN;
-        setContentView(R.layout.p_login);
-        getObjetosLogin();
-        globales.secuenciaSuperUsuario += "C";
-
-        et_usuario.setFilters(new InputFilter[]{new InputFilter.LengthFilter(globales.longCampoUsuario)});
-        et_contrasena.setFilters(new InputFilter[]{new InputFilter.LengthFilter(globales.longCampoContrasena)});
-        et_usuario.setInputType(globales.tipoDeEntradaUsuarioLogin);
 
         //Hay que adaptar según el tipo de validacion
 
         if (!esSesionActiva()) {
+            setContentView(R.layout.p_login);
+            getObjetosLogin();
+            globales.secuenciaSuperUsuario += "C";
+
+            deshabilitarTodosLosControles();
+
+            et_usuario.setFilters(new InputFilter[]{new InputFilter.LengthFilter(globales.longCampoUsuario)});
+            et_contrasena.setFilters(new InputFilter[]{new InputFilter.LengthFilter(globales.longCampoContrasena)});
+            et_usuario.setInputType(globales.tipoDeEntradaUsuarioLogin);
+
             deshabilitarControlesAutenticacionSMS();
             switch (globales.tipoDeValidacion) {
 
@@ -339,6 +358,21 @@ public class CPL extends Activity {
         et_usuario.setFocusableInTouchMode(true);
         et_usuario.setFocusable(true);
         et_usuario.requestFocus();
+    }
+
+    private void deshabilitarTodosLosControles() {
+        tv_usuario.setVisibility(View.GONE);
+        et_usuario.setVisibility(View.GONE);
+        btnAutenticar.setVisibility(View.GONE);
+
+        tv_contrasena.setVisibility(View.GONE);
+        et_contrasena.setVisibility(View.GONE);
+
+        lblCodigoSMS.setVisibility(View.GONE);
+        txtCodigoSMS.setVisibility(View.GONE);
+        btnValidarSMS.setVisibility(View.GONE);
+        btnEntrar.setVisibility(View.GONE);
+        btnEntrar.setEnabled(false);
     }
 
     public void entrar(View v) {
