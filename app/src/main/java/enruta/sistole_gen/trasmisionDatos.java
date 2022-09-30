@@ -720,7 +720,8 @@ public class trasmisionDatos extends TransmisionesPadre {
 
                         }
 
-                        if (ls_linea.length() != globales.tdlg.long_registro) {
+                        // RL, Solo se verifica un valor mínimo de longitud de línea
+                        if (ls_linea.length() < globales.tdlg.long_registro) {
                             // Error general
                             serial.close();
                             // db.setTransactionSuccessful();
@@ -737,10 +738,11 @@ public class trasmisionDatos extends TransmisionesPadre {
                         // vLecturas.add(ls_cadena);
                         // db.execSQL("Insert into lecturas(registro) values ('"+ls_linea+"')");
                         if (i != 0 && !ls_linea.startsWith("#")
-                                && !ls_linea.startsWith("!") && !globales.tdlg.esUnRegistroRaro(ls_linea)) {
+                                && !ls_linea.startsWith("!")
+                                && !globales.tdlg.esUnRegistroRaro(ls_linea)
+                                && ls_linea.startsWith("L")) {
                             secuenciaReal++;
-                            globales.tlc.byteToBD(db,
-                                    ls_linea.getBytes("ISO-8859-1"), secuenciaReal);// Esta
+                            globales.tlc.strToBD(db, ls_linea, secuenciaReal);// Esta
                             // clase
                             // ahora
                             // guarda
@@ -1721,13 +1723,13 @@ public class trasmisionDatos extends TransmisionesPadre {
 
     }
 
-    protected WebApiManager getWebApiManager() throws Exception {
-        try {
-            return WebApiManager.getInstance(globales.defaultServidorGPRS);
-        } catch (Exception ex) {
-            throw ex;
-        }
-    }
+//    protected WebApiManager getWebApiManager() throws Exception {
+//        try {
+//            return WebApiManager.getInstance(globales.defaultServidorGPRS);
+//        } catch (Exception ex) {
+//            throw ex;
+//        }
+//    }
 
     protected Date getDateTime() {
         Calendar calendar = Calendar.getInstance();
@@ -1768,7 +1770,7 @@ public class trasmisionDatos extends TransmisionesPadre {
             req.FechaOperacion = getDateTime();
             req.Archivo = archivo;
 
-            getWebApiManager().marcarArchivoDescargado(req, new Callback<OperacionResponse>() {
+            WebApiManager.getInstance(this).marcarArchivoDescargado(req, new Callback<OperacionResponse>() {
                         @Override
                         public void onResponse(Call<OperacionResponse> call, Response<OperacionResponse> response) {
                             String valor;

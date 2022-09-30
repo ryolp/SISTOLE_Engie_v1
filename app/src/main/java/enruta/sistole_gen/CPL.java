@@ -123,11 +123,11 @@ public class CPL extends Activity {
         validarPermisos();
     }
 
-    protected void onStart() {
-        super.onStart();
-
-        inicializarControles();
-    }
+//    protected void onStart() {
+//        super.onStart();
+//
+//        inicializarControles();
+//    }
 
     /*
         Inicializar las referencias a los controles del activity
@@ -187,6 +187,10 @@ public class CPL extends Activity {
         }
 
         if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_NETWORK_STATE)!= PackageManager.PERMISSION_GRANTED){
+            tienePermisos=false;
+        }
+
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_WIFI_STATE)!= PackageManager.PERMISSION_GRANTED){
             tienePermisos=false;
         }
 
@@ -732,36 +736,36 @@ public class CPL extends Activity {
         Toast.makeText(this, sMessage, Toast.LENGTH_SHORT).show();
     }
 
-    protected WebApiManager getWebApiManager() throws Exception {
-        try {
-            TransmitionObject to= new TransmitionObject();
-            TomaDeLecturasGenerica tdlg;
-            String servidor = "";
-
-            tdlg =globales.tdlg;
-
-            if (tdlg != null){
-                if(!tdlg.getEstructuras( to, trasmisionDatos.TRANSMISION, TransmisionesPadre.WIFI).equals("")){
-                    //throw new Exception("Error al leer configuración");
-                    servidor = to.ls_servidor.trim();
-                    globales.defaultServidorGPRS = servidor;
-                }
-            }
-
-            if (servidor.trim().equals(""))
-                servidor = DbConfigMgr.getInstance().getServidor(this);
-
-            if (servidor.trim().equals(""))
-                servidor = globales.defaultServidorGPRS;
-            else
-                globales.defaultServidorGPRS = servidor;
-
-
-            return WebApiManager.getInstance(servidor);
-        } catch (Exception ex) {
-            throw ex;
-        }
-    }
+//    protected WebApiManager getWebApiManager() throws Exception {
+//        try {
+//            TransmitionObject to= new TransmitionObject();
+//            TomaDeLecturasGenerica tdlg;
+//            String servidor = "";
+//
+//            tdlg =globales.tdlg;
+//
+//            if (tdlg != null){
+//                if(!tdlg.getEstructuras( to, trasmisionDatos.TRANSMISION, TransmisionesPadre.WIFI).equals("")){
+//                    //throw new Exception("Error al leer configuración");
+//                    servidor = to.ls_servidor.trim();
+//                    globales.defaultServidorGPRS = servidor;
+//                }
+//            }
+//
+//            if (servidor.trim().equals(""))
+//                servidor = DbConfigMgr.getInstance().getServidor(this);
+//
+//            if (servidor.trim().equals(""))
+//                servidor = globales.defaultServidorGPRS;
+//            else
+//                globales.defaultServidorGPRS = servidor;
+//
+//
+//            return WebApiManager.getInstance(servidor);
+//        } catch (Exception ex) {
+//            throw ex;
+//        }
+//    }
 
     private void autenticar(View view) {
         String usuario = "";
@@ -779,7 +783,11 @@ public class CPL extends Activity {
 
                 entrarAdministrador2(null, true);
                 return;
+            } else if (usuario.equals("") || password.equals("")) {
+                showMessageLong("Falta capturar el usuario y/o contraseña");
+                return;
             }
+
 
             boolean finalEsSuperUsuario = esSuperUsuario;
 
@@ -789,9 +797,9 @@ public class CPL extends Activity {
             loginRequestEntity.VersionName = getVersionName();
             loginRequestEntity.VersionCode = getVersionCode();
 
-            showMessageLong("Autenticando y enviando SMS");
+            showMessageLong("Autenticando");
 
-            getWebApiManager().autenticarEmpleado(loginRequestEntity, new Callback<LoginResponseEntity>() {
+            WebApiManager.getInstance(this).autenticarEmpleado(loginRequestEntity, new Callback<LoginResponseEntity>() {
                         @Override
                         public void onResponse(Call<LoginResponseEntity> call, Response<LoginResponseEntity> response) {
                             String valor;
@@ -848,8 +856,10 @@ public class CPL extends Activity {
                 et_usuario.setEnabled(false);
                 et_contrasena.setFocusable(false);
                 et_contrasena.setEnabled(false);
-            } else
+            } else {
+                globales.sesionEntity.Autenticado = true;
                 irActivityMain();
+            }
         } else {
             if (esSuperUsuario)
                 entrarAdministrador2(null, true);
@@ -872,6 +882,11 @@ public class CPL extends Activity {
         try {
             usuario = et_usuario.getText().toString().trim();
             codigoSMS = txtCodigoSMS.getText().toString().trim();
+            
+            if (usuario.equals("") || codigoSMS.equals("")) {
+                showMessageLong("Falta capturar elcódigo SMS");
+                return;
+            }            
 
             LoginRequestEntity loginRequestEntity = new LoginRequestEntity();
 
@@ -881,7 +896,7 @@ public class CPL extends Activity {
             loginRequestEntity.VersionCode = getVersionCode();
 
             showMessageLong("Validando código SMS");
-            getWebApiManager().validarEmpleadoSMS(loginRequestEntity, new Callback<LoginResponseEntity>() {
+            WebApiManager.getInstance(this).validarEmpleadoSMS(loginRequestEntity, new Callback<LoginResponseEntity>() {
                         @Override
                         public void onResponse(Call<LoginResponseEntity> call, Response<LoginResponseEntity> response) {
                             String valor;
@@ -914,12 +929,14 @@ public class CPL extends Activity {
 
     private void procesarValidacionSMS(LoginResponseEntity loginResponseEntity) {
         if (loginResponseEntity.Error) {
+            globales.sesionEntity = null;
             showMessageLong("Error al validar SMS (3):" + loginResponseEntity.Mensaje);
             return;
         }
 
         if (loginResponseEntity.Exito) {
             globales.sesionEntity = new SesionEntity(loginResponseEntity);
+            globales.sesionEntity.Autenticado = true;
             irActivityMain();
         }
         else {
@@ -1179,7 +1196,7 @@ public class CPL extends Activity {
             req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
             req.FechaOperacion = getDateTime();
 
-            getWebApiManager().solicitarAyuda(req, new Callback<OperacionResponse>() {
+            WebApiManager.getInstance(this).solicitarAyuda(req, new Callback<OperacionResponse>() {
                         @Override
                         public void onResponse(Call<OperacionResponse> call, Response<OperacionResponse> response) {
                             String valor;

@@ -65,6 +65,20 @@ public final class Utils {
         return calendar.getTime();
     }
 
+    public static int convToInt(String value, Integer...defaultValue) {
+        int defaultValueAux = 0;
+
+        try {
+            if (defaultValue.length>0)
+                defaultValueAux = defaultValue[0];
+
+            return Integer.parseInt(value.trim());
+        } catch (Exception e)
+        {
+            return defaultValueAux;
+        }
+    }
+
     public static boolean isNetworkAvailable(Context context) {
         if(context == null)  return false;
 

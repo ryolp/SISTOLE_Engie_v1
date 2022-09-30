@@ -40,4 +40,10 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">20sp</item>
     </style>
+
+    <style name="Estilo_Texto_Estatus_Conectividad" parent="android:Theme.Light">
+        <item name="android:textSize">18sp</item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:padding">1dp</item>
+    </style>
 </resources>

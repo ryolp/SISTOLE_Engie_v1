@@ -575,6 +575,7 @@ public class Serializacion {
 	private void closeWIFI() throws Throwable{
 		//HCG 20/07/2012 Manda los datos del wifi antes de cerrar la conexion
 		String ruta, cadenaAEnviar;
+		String msg;
 		cadenaAEnviar=new String(bytesAEnviar);
 		if (is_carpeta.equals(""))
 			ruta=is_archivo;
@@ -591,7 +592,8 @@ public class Serializacion {
 			//new String (response); Esta es la respuesta del servidor
 			
 			if (!new String(response).trim().equals("0")){
-				throw new Throwable(new String(response));
+				msg = new String(response);
+				throw new Throwable(msg);
 			} 
 			
 			//Enviamos las fotos que tenemos pendientes
@@ -770,6 +772,7 @@ public class Serializacion {
 	private int  enviaFotosWifi() throws Throwable{
 		Enumeration en_Nombres, en_Fotos;
 		Hashtable params ;
+		String msg;
 		
 		byte[] foto;
 		
@@ -812,10 +815,13 @@ public class Serializacion {
 					HttpMultipartRequest http = new HttpMultipartRequest(is_servidor + "/upload_imagebytes.php", params, "upload_field",nombre, "image/jpg", foto);
 					//Mandamos el archivo y esa variable response nos ayudara a obtener el estado de la carga del archivo
 					response=http.send();
+
+					msg = new String(response).trim();
 					
-					if (!new String(response).trim().equals("0")){
+					if (!msg.equals("0")){
 						throw new Throwable(new String(response));
 					}
+
 		        }
 			} catch (Exception e) {
 				throw e;

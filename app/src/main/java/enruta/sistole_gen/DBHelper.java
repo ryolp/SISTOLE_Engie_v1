@@ -7,10 +7,12 @@ import java.io.OutputStream;
 
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -190,7 +192,8 @@ public class DBHelper extends SQLiteOpenHelper {
 				"escalera default '',piso default '', puerta default '', secuenciaReal, anomaliaDeInstalacion default '', ism default '', saldoEnMetros default '', advertenciasTipoAdicionales default '' , fechaReintento1 default '', fechaReintento2 default '', fechaReintento3 default '', fechaReintento4 default '', fechaReintento5 default '', fechaReintento6 default '', fechaReintento7 default '', fix default '', " +
 				"indicadorGPS default '', satelites default '', unicom default '', ruta default '', itinerario default '', ciclo default '', tabulador default '', " +
 				"selloRetNumero default '', selloRetEstado default '', selloRetColor default '', selloRetModelo default '', " +
-				"selloInstNumero default '', selloInstColor default '', selloInstModelo default '', codigoObservacion default '', observacion default '', datosCampana default '', toma default '', giro default '', envio default 0)");
+				"selloInstNumero default '', selloInstColor default '', selloInstModelo default '', codigoObservacion default '', observacion default '', datosCampana default '', toma default '', giro default '', envio default 0, " +
+				"idArchivo default 0, codigoBarras default '', nota1 default '', nota2 default '')");
 		//Usuarios
 		db.execSQL("CREATE TABLE usuarios (usuario , contrasena , nombre, rol default 1, fotosControlCalidad default 1, baremo default 75)");
 		//fotos
@@ -411,8 +414,40 @@ public class DBHelper extends SQLiteOpenHelper {
 			db.execSQL("ALTER  TABLE ruta add column envio default 0 " );	
 			db.execSQL("ALTER  TABLE NoRegistrados add column envio default 0" );	
 		}
-		
+
+		if (!existsColumnInTable(db, "ruta", "idArchivo"))
+			db.execSQL("ALTER TABLE ruta add column idArchivo default 0 " );
+
+		if (!existsColumnInTable(db, "ruta", "CodigoBarras"))
+			db.execSQL("ALTER TABLE ruta add column CodigoBarras default '' " );
+
+		if (!existsColumnInTable(db, "ruta", "Nota1"))
+			db.execSQL("ALTER TABLE ruta add column Nota1 default '' " );
+
+		if (!existsColumnInTable(db, "ruta", "Nota2"))
+			db.execSQL("ALTER TABLE ruta add column Nota2 default '' " );
+
+
 	}
-	
-	
+
+	private boolean existsColumnInTable(SQLiteDatabase inDatabase, String inTable, String columnToCheck) {
+		Cursor mCursor = null;
+		try {
+			// Query 1 row
+			mCursor = inDatabase.rawQuery("SELECT * FROM " + inTable + " LIMIT 0", null);
+
+			// getColumnIndex() gives us the index (0 to ...) of the column - otherwise we get a -1
+			if (mCursor.getColumnIndex(columnToCheck) != -1)
+				return true;
+			else
+				return false;
+
+		} catch (Exception Exp) {
+			// Something went wrong. Missing the database? The table?
+			Log.d("... - existsColumnInTable", "When checking whether a column exists in the table, an error occurred: " + Exp.getMessage());
+			return false;
+		} finally {
+			if (mCursor != null) mCursor.close();
+		}
+	}
 }

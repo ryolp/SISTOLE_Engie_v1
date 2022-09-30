@@ -1,10 +1,17 @@
 package enruta.sistole_gen.services;
 
+import android.content.Context;
+
+import enruta.sistole_gen.Globales;
+import enruta.sistole_gen.TomaDeLecturasGenerica;
+import enruta.sistole_gen.TransmisionesPadre;
+import enruta.sistole_gen.TransmitionObject;
 import enruta.sistole_gen.entities.OperacionRequest;
 import enruta.sistole_gen.entities.OperacionResponse;
 import enruta.sistole_gen.entities.LoginRequestEntity;
 import enruta.sistole_gen.entities.LoginResponseEntity;
 import enruta.sistole_gen.interfaces.IWebApi;
+import enruta.sistole_gen.trasmisionDatos;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -12,6 +19,7 @@ public class WebApiManager {
     private IWebApi service = null;
     private static WebApiManager apiManager;
     private static String _servidorUrl="";
+    private static Globales globales;
 
     private WebApiManager(String servidor) throws Exception {
         createConection(servidor);
@@ -34,6 +42,45 @@ public class WebApiManager {
 
     // Para crear una sola instancia de esta clase que será de gestión para solicitar la autenticación
     public static WebApiManager getInstance(String servidor) throws Exception {
+        if (apiManager == null)
+            apiManager = new WebApiManager(servidor);
+        else
+            apiManager.createConection(servidor);
+
+        return apiManager;
+    }
+
+    // Para crear una sola instancia de esta clase que será de gestión para solicitar la autenticación
+    public static WebApiManager getInstance(Context context) throws Exception {
+        TransmitionObject to = new TransmitionObject();
+        TomaDeLecturasGenerica tdlg;
+        String servidor = "";
+
+        if (context == null)
+            throw new Exception("No se ha definido un contexto");
+
+        if (globales == null)
+            globales = (Globales) context.getApplicationContext();
+
+        tdlg = globales.tdlg;
+
+        if (tdlg != null) {
+            if (!tdlg.getEstructuras(to, trasmisionDatos.TRANSMISION, TransmisionesPadre.WIFI).equals("")) {
+                //throw new Exception("Error al leer configuración");
+                servidor = to.ls_servidor.trim();
+            }
+        }
+
+        if (servidor.trim().equals(""))
+            servidor = DbConfigMgr.getInstance().getServidor(context);
+        else
+            globales.defaultServidorGPRS = servidor;
+
+        if (servidor.trim().equals(""))
+            servidor = globales.defaultServidorGPRS;
+        else
+            globales.defaultServidorGPRS = servidor;
+
         if (apiManager == null)
             apiManager = new WebApiManager(servidor);
         else

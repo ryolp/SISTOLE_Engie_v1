@@ -8,6 +8,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+import enruta.sistole_gen.clases.Utils;
+
 public class TodosLosCampos {
 	//Vector <Campo> campos = new Vector<Campo>();
 	
@@ -54,6 +56,49 @@ public class TodosLosCampos {
 		}
 		cv_params.put("secuenciaReal", secuenciaReal );
 		db.insert(is_tabla, null, cv_params);
+	}
+
+	public boolean strToBD(SQLiteDatabase db, String datos, int secuenciaReal){
+		ContentValues cv_params = new ContentValues(this.cv_params);
+		Enumeration <Campo> e;
+		String[] camposStr=datos.split("\\|");
+		String valor;
+
+		int numCampos;
+		int i = 2;
+
+		if (camposStr == null) // Si al separar los campos es un valor nulo, la estructura del dato no es correcta
+			return false;
+
+		if (camposStr.length < 2)  // Si al separar los campos no hay al menos 2 columnas, la estructura del dato no es correcta
+			return false;
+
+		if (!camposStr[0].equals("L"))  // Si la 1er columna no empieza con L, la estructura del dato no es correcta.
+			return false;
+
+		numCampos = Utils.convToInt(camposStr[1]);
+
+		if (numCampos != 24)  // Si la 2a columna viene una cantidad de campos distinta a la esperada, entonces la estructura del dato no es correcta.
+			return false;
+
+		e=campos.elements();
+
+		while (e.hasMoreElements())	{
+			//for (int i=0; i<campos.size() ;i++){
+			Campo campo=e.nextElement();
+
+			if(!campo.esDeEntrada){
+				continue;
+			}
+			valor = camposStr[campo.getNumColumna() + 2];
+
+			cv_params.put(campo.getNombre(), valor);
+			i++;
+		}
+		cv_params.put("secuenciaReal", secuenciaReal );
+		db.insert(is_tabla, null, cv_params);
+
+		return true;
 	}
 	
 	public void byteToBD(SQLiteDatabase db, String bytes, int secuenciaReal){

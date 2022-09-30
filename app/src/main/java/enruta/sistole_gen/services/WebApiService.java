@@ -1,5 +1,6 @@
 package enruta.sistole_gen.services;
 
+import enruta.sistole_gen.Globales;
 import enruta.sistole_gen.interfaces.IWebApi;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;

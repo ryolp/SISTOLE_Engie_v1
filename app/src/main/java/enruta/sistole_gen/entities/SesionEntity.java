@@ -17,6 +17,11 @@ public class SesionEntity {
     public String VersionWeb;
     public Bitmap fotoEmpleado=null;
     public EmpleadoCplEntity empleado;
+    public int ConectividadOk = 0;
+    public int SistoleDisponibleOk = 0;
+    public int SesionOk = 0;
+    public Date fechaHoraVerificacion;
+    public Boolean Autenticado = false;    
 
     public SesionEntity(){
 
@@ -45,6 +50,9 @@ public class SesionEntity {
 
     public boolean esSesionVencida(){
         Date horaActual;
+        
+        if (!this.Autenticado)
+            return true;        
 
         horaActual = Calendar.getInstance().getTime();
 

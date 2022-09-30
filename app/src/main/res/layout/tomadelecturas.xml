@@ -391,132 +391,129 @@
 	    
 
     </LinearLayout>
-    
-    <ScrollView
-        android:id="@+id/scrollView1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/linearLayout1"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:fillViewport="true" >
 
-        <LinearLayout
-            android:id="@+id/RelativeLay"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" >
-	        
-            <LinearLayout
-                android:id="@+id/ll_limites"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:visibility="gone" >
-                
-                 <TextView
-                       android:id="@+id/textView9"
-		                android:layout_width="wrap_content"
-		                android:layout_height="wrap_content"
-		                android:layout_alignBaseline="@+id/tv_min"
-		                android:layout_alignBottom="@+id/tv_min"
-		                android:layout_toRightOf="@+id/tv_min"
-		                
-		                android:text="@string/str_lecturaAnterior" />
-                   
-                   <TextView
-		                android:id="@+id/tv_lecturaAnterior"
-		                android:layout_width="wrap_content"
-		                android:layout_height="wrap_content"
-		                android:layout_alignBottom="@+id/textView9"
-		                android:layout_alignParentRight="true"
-		                android:layout_toRightOf="@+id/textView9"
-		                android:paddingLeft="5dp"
-		                android:text="Large Text"
-		                android:textAppearance="?android:attr/textAppearanceLarge" />
-		        
-                   <TextView
-		                android:id="@+id/textView6"
-		                android:layout_width="wrap_content"
-		                android:layout_height="wrap_content"
-		                 android:paddingLeft="20dp"
-		                android:text="@string/str_min" />
-                   
-                   <TextView
-		                android:id="@+id/tv_min"
-		                android:layout_width="wrap_content"
-		                android:layout_height="wrap_content"
-		                android:layout_toRightOf="@+id/textView6"
-		                android:paddingLeft="20dp"
-		                android:text="Large Text"
-		                android:textAppearance="?android:attr/textAppearanceLarge" />
-                   
-                   <TextView
-		                android:id="@+id/textView8"
-		                android:layout_width="wrap_content"
-		                android:layout_height="wrap_content"
-		                android:layout_alignBaseline="@+id/tv_min"
-		                android:layout_alignBottom="@+id/tv_min"
-		                android:layout_toRightOf="@+id/tv_min"
-		                android:paddingLeft="20dp"
-		                android:text="@string/str_max" />
-                   
-                   <TextView
-		                android:id="@+id/tv_max"
-		                android:layout_width="wrap_content"
-		                android:layout_height="wrap_content"
-		                android:layout_alignBottom="@+id/textView8"
-		                android:layout_alignParentRight="true"
-		                android:layout_toRightOf="@+id/textView8"
-		                android:paddingLeft="5dp"
-		                android:text="Large Text"
-		                android:textAppearance="?android:attr/textAppearanceLarge" />
-                   
-                  
-            </LinearLayout>
+	<ScrollView
+		android:id="@+id/scrollView1"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_above="@+id/linearLayout1"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentTop="true"
+		android:fillViewport="true">
 
-            <TextView
-                android:id="@+id/tv_advertencia"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@color/Yellow"
-                android:gravity="center"
-                android:text="Large Text"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/Black"
-                android:visibility="gone" />
+		<LinearLayout
+			android:id="@+id/RelativeLay"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/ll_generica"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" >
-            </LinearLayout>
+			<LinearLayout
+				android:id="@+id/ll_limites"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:visibility="gone">
 
-            
+				<TextView
+					android:id="@+id/textView9"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_alignBaseline="@+id/tv_min"
+					android:layout_alignBottom="@+id/tv_min"
+					android:layout_toRightOf="@+id/tv_min"
 
-            <TextView
-                android:id="@+id/tv_comentarios"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="Large Text"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-            
-            <TextView
-                android:id="@+id/tv_contadorOpcional"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="Large Text"
-                android:gravity="center"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+					android:text="@string/str_lecturaAnterior" />
 
-            
+				<TextView
+					android:id="@+id/tv_lecturaAnterior"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_alignBottom="@+id/textView9"
+					android:layout_alignParentRight="true"
+					android:layout_toRightOf="@+id/textView9"
+					android:paddingLeft="5dp"
+					android:text="Large Text"
+					android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        </LinearLayout>
-    </ScrollView>
+				<TextView
+					android:id="@+id/textView6"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingLeft="20dp"
+					android:text="@string/str_min" />
+
+				<TextView
+					android:id="@+id/tv_min"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_toRightOf="@+id/textView6"
+					android:paddingLeft="20dp"
+					android:text="Large Text"
+					android:textAppearance="?android:attr/textAppearanceLarge" />
+
+				<TextView
+					android:id="@+id/textView8"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_alignBaseline="@+id/tv_min"
+					android:layout_alignBottom="@+id/tv_min"
+					android:layout_toRightOf="@+id/tv_min"
+					android:paddingLeft="20dp"
+					android:text="@string/str_max" />
+
+				<TextView
+					android:id="@+id/tv_max"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_alignBottom="@+id/textView8"
+					android:layout_alignParentRight="true"
+					android:layout_toRightOf="@+id/textView8"
+					android:paddingLeft="5dp"
+					android:text="Large Text"
+					android:textAppearance="?android:attr/textAppearanceLarge" />
+
+
+			</LinearLayout>
+
+			<TextView
+				android:id="@+id/tv_advertencia"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:background="@color/Yellow"
+				android:gravity="center"
+				android:text="Large Text"
+				android:textAppearance="?android:attr/textAppearanceLarge"
+				android:textColor="@color/Black"
+				android:visibility="gone" />
+
+			<LinearLayout
+				android:id="@+id/ll_generica"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"></LinearLayout>
+
+
+			<TextView
+				android:id="@+id/tv_comentarios"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="14dp"
+				android:text="Large Text"
+				android:textAppearance="?android:attr/textAppearanceLarge" />
+
+			<TextView
+				android:id="@+id/tv_contadorOpcional"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="14dp"
+				android:gravity="center"
+				android:text="Large Text"
+				android:textAppearance="?android:attr/textAppearanceLarge" />
+
+
+		</LinearLayout>
+	</ScrollView>
 
     <Button
         android:id="@+id/b_repetir_anom"

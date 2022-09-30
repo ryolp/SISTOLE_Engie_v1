@@ -1,6 +1,7 @@
 package enruta.sistole_gen;
 
 import java.net.URL;
+import java.util.Date;
 import java.util.Vector;
 
 
@@ -18,6 +19,14 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import enruta.sistole_gen.clases.Utils;
+import enruta.sistole_gen.entities.LoginRequestEntity;
+import enruta.sistole_gen.entities.LoginResponseEntity;
+import enruta.sistole_gen.services.WebApiManager;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class Principal extends Fragment {
 
     private DBHelper dbHelper;
@@ -26,7 +35,14 @@ public class Principal extends Fragment {
     private TextView tv_resumen;
     private Main ma_papa;
     private Globales globales;
+
+    // RL, 2022-09, Nuevas funcionalidades Engie
+
     private ImageView fotoEmpleado = null;
+    private TextView txtConectividad;
+    private TextView txtSistoleDisponible;
+    private TextView txtSesion;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -157,8 +173,19 @@ public class Principal extends Fragment {
         gv_resumen.setVisibility(View.VISIBLE);
         closeDatabase();
 
-        mostrarFoto();
+
     }
+
+//    @Override
+//    public void setUserVisibleHint(boolean isVisibleToUser) {
+//        super.setUserVisibleHint(isVisibleToUser);
+//
+//        if (isVisibleToUser) {
+//            mostrarFoto();
+//        } else {
+//            stopTimer();
+//        }
+//    }
 
     protected void mostrarFoto() {
         if (globales == null)
@@ -181,13 +208,13 @@ public class Principal extends Fragment {
         if (fotoEmpleado == null)
             fotoEmpleado = rootView.findViewById(R.id.fotoEmpleado);
 
-        if (globales.sesionEntity.fotoEmpleado == null){
+        if (globales.sesionEntity.fotoEmpleado == null) {
             AsyncTaskRunner runner = new AsyncTaskRunner();
 
             runner.execute(globales.sesionEntity.empleado.FotoURL);
-        }
-        else
+        } else if (globales.sesionEntity.fotoEmpleado != null) {
             fotoEmpleado.setImageBitmap(globales.sesionEntity.fotoEmpleado);
+        }
     }
 
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
@@ -197,15 +224,156 @@ public class Principal extends Fragment {
         @Override
         protected String doInBackground(String... params) {
             try {
+                if (globales == null)
+                    return "";
+
+                if (globales.sesionEntity == null)
+                    return "";
+
+                if (globales.sesionEntity.empleado == null)
+                    return "";
+
+                if (globales.sesionEntity.empleado.FotoURL == null)
+                    return "";
+
+                if (globales.sesionEntity.empleado.FotoURL.trim().equals(""))
+                    return "";
+
+
                 URL url = new URL(globales.sesionEntity.empleado.FotoURL);
                 globales.sesionEntity.fotoEmpleado = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                fotoEmpleado.setImageBitmap(globales.sesionEntity.fotoEmpleado);
-            } catch (Exception e){
+
+                if (globales.sesionEntity.fotoEmpleado != null)
+                    fotoEmpleado.setImageBitmap(globales.sesionEntity.fotoEmpleado);
+            } catch (Exception e) {
                 String msg;
 
                 msg = e.getMessage();
             }
             return "";
         }
+    }
+
+    private void mostrarEstatusConectividad() {
+        boolean sesionIniciada = false;
+
+        txtConectividad = (TextView) rootView.findViewById(R.id.txtConectividad);
+        txtSistoleDisponible = (TextView) rootView.findViewById(R.id.txtSistoleDisponible);
+        txtSesion = (TextView) rootView.findViewById(R.id.txtSesion);
+
+        if (globales != null) {
+            if (globales.sesionEntity != null)
+                sesionIniciada = true;
+        }
+
+        if (sesionIniciada) {
+            cambiarEstatusControl(txtConectividad, globales.sesionEntity.ConectividadOk);
+            cambiarEstatusControl(txtSistoleDisponible, globales.sesionEntity.SistoleDisponibleOk);
+            cambiarEstatusControl(txtSesion, globales.sesionEntity.SesionOk);
+        } else {
+            cambiarEstatusControl(txtConectividad, 0);
+            cambiarEstatusControl(txtSistoleDisponible, 0);
+            cambiarEstatusControl(txtSesion, 0);
+        }
+    }
+
+    private void cambiarEstatusControl(TextView txt, int estatus) {
+        switch (estatus) {
+            case 1:     // Estatus OK
+                txt.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_checkmark_green, 0, 0, 0);
+                break;
+            case 2:     // Estatus No OK
+                txt.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_cancel_24, 0, 0, 0);
+                break;
+            default:     // Estatus Indefinido
+                txt.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_outline_update_disabled_24, 0, 0, 0);
+                break;
+        }
+    }
+
+    private void hacerVerificacionConexion() {
+        boolean verificar = false;
+        Date horaActual;
+
+        horaActual = Utils.getDateTime();
+
+        if (globales == null)
+            return;
+
+        if (globales.sesionEntity == null)
+            return;
+
+        if (globales.sesionEntity.fechaHoraVerificacion == null) {
+            globales.sesionEntity.fechaHoraVerificacion = Utils.getFechaAgregarSegundos(10);
+            verificar = true;
+        } else if (globales.sesionEntity.fechaHoraVerificacion.after(horaActual)) {
+            globales.sesionEntity.fechaHoraVerificacion = Utils.getFechaAgregarSegundos(10);
+            verificarConexion();
+        }
+    }
+
+    protected void verificarConexion() {
+        LoginRequestEntity req;
+        LoginResponseEntity resp;
+
+        try {
+            Utils.showMessageLong(getActivity(), "Verificar Conexión");
+
+            if (globales == null) {
+                actualizarEstatusConectividad(false, false);
+            }
+
+            if (globales.sesionEntity == null) {
+                actualizarEstatusConectividad(false, false);
+            }
+
+            if (globales.sesionEntity.empleado == null) {
+                actualizarEstatusConectividad(false, false);
+            }
+
+            req = new LoginRequestEntity();
+            req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
+            req.Usuario = globales.sesionEntity.Usuario;
+            req.Token = globales.sesionEntity.empleado.Token;
+
+            WebApiManager.getInstance(getActivity()).verificarConexion(req, new Callback<LoginResponseEntity>() {
+                        @Override
+                        public void onResponse(Call<LoginResponseEntity> call, Response<LoginResponseEntity> response) {
+                            String valor;
+                            LoginResponseEntity resp;
+
+                            if (response.isSuccessful()) {
+                                resp = response.body();
+                                if (resp.Exito) {
+                                    actualizarEstatusConectividad(true, resp.SesionOk);
+                                } else {
+                                    actualizarEstatusConectividad(false, false);
+                                    Utils.showMessageLong(getActivity(), "Error al verificar conexión (1)");
+                                }
+                            } else {
+                                actualizarEstatusConectividad(false, false);
+                                Utils.showMessageLong(getActivity(), "Error al verificar conexión (2)");
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<LoginResponseEntity> call, Throwable t) {
+                            actualizarEstatusConectividad(false, false);
+                            //Utils.logMessageLong(getApplicationContext(), "Error al hacer Check Out (3). Intente nuevamente", t);
+                        }
+                    }
+            );
+        } catch (Exception ex) {
+            actualizarEstatusConectividad(false, false);
+            //Utils.logMessageLong(getApplicationContext(), "Error al hacer Check Out (4). Intente nuevamente", ex);
+        }
+    }
+
+    private void actualizarEstatusConectividad(boolean exito, boolean sesionOk) {
+        globales.sesionEntity.ConectividadOk = (Utils.isNetworkAvailable(getActivity())) ? 1 : 2;
+        globales.sesionEntity.SesionOk = (sesionOk && exito) ? 1 : 2;
+        globales.sesionEntity.SistoleDisponibleOk = exito ? 1: 2;
+
+        mostrarEstatusConectividad();
     }
 }

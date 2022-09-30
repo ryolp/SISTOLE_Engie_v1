@@ -55,6 +55,10 @@ public class Campo {
 	public int getPos(){
 		return ii_posicion;
 	}
+
+	public int getNumColumna(){
+		return ii_numColumna;
+	}
 	
 	public String recortarByte(byte[] bytes){
 		return new String(bytes,ii_posicion,ii_longitud);

@@ -715,14 +715,24 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         globales.tlc.add(new Campo(10, "numEsferas", 285, 2, Campo.D, " "));
 
 
-        globales.tlc.add(new Campo(26, "consBimAnt", 287, 8, Campo.D, "0"));
-        globales.tlc.add(new Campo(27, "consAnoAnt", 295, 8, Campo.D, "0"));
-        globales.tlc.add(new Campo(51, "sinUso1", 303, 10, Campo.I, " "));
+        globales.tlc.add(new Campo(11, "consBimAnt", 287, 8, Campo.D, "0"));
+        globales.tlc.add(new Campo(12, "consAnoAnt", 295, 8, Campo.D, "0"));
+        globales.tlc.add(new Campo(13, "sinUso1", 303, 10, Campo.I, " "));
 
-        globales.tlc.add(new Campo(51, "lecturaanterior", 313, 8, Campo.I, " "));
-        globales.tlc.add(new Campo(51, "sinUso2", 321, 10, Campo.I, " "));
-        globales.tlc.add(new Campo(51, "sinUso3", 331, 10, Campo.I, " "));
-        globales.tlc.add(new Campo(51, "sinUso4", 341, 3, Campo.I, " "));
+        globales.tlc.add(new Campo(14, "lecturaanterior", 313, 8, Campo.I, " "));
+        globales.tlc.add(new Campo(15, "sinUso2", 321, 10, Campo.I, " "));
+        globales.tlc.add(new Campo(16, "sinUso3", 331, 10, Campo.I, " "));
+        globales.tlc.add(new Campo(17, "sinUso4", 341, 3, Campo.I, " "));
+
+        // 2022-09-26 / RL / Se agregan nuevas columnas
+
+        globales.tlc.add(new Campo(18, "idArchivo", 344, 10, Campo.I, " "));
+        globales.tlc.add(new Campo(19, "codigoBarras", 354, 50, Campo.I, " "));
+        globales.tlc.add(new Campo(20, "nota1", 404, 10, Campo.I, " "));
+        globales.tlc.add(new Campo(21, "nota2", 414, 10, Campo.I, " "));
+
+
+        // Columnas que ya existían estaban en este código de la versión 1.0.11 y anteriores
 
         globales.tlc.add(new Campo(11, "tipoLectura", 405, 1, Campo.I, " ", false));
         globales.tlc.add(new Campo(12, "lectura", 406, 8, Campo.I, " ", false));

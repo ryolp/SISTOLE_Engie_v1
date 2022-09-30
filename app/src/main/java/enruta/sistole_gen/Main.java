@@ -33,6 +33,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -53,12 +54,14 @@ import enruta.sistole_gen.services.DbConfigMgr;
 import enruta.sistole_gen.services.DbLecturasMgr;
 import enruta.sistole_gen.services.WebApiManager;
 import enruta.sistole_gen.clases.Utils;
+import okhttp3.internal.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 @SuppressLint("NewApi")
 public class Main extends FragmentActivity implements TabListener {
+    private static final String TAG = "Main";
 
     final static int IMPORTAR = 0;
     final static int EXPORTAR = 1;
@@ -68,6 +71,7 @@ public class Main extends FragmentActivity implements TabListener {
     final static int REQUEST_ENABLE_BT_EXP = 4;
 
     final static int CONFIG = 5;
+    final static int MENU_ENTRAR_SUPERVISOR = 9;
 
     public static final int INDEFINIDO = 1;
     public static final int CHECK_IN = 2;
@@ -300,7 +304,7 @@ public class Main extends FragmentActivity implements TabListener {
         //getActionBar().setSelectedNavigationItem(li_tabSelected);
 
         inicializarActualizarControles();
-        verificarConexion();
+//        verificarConexion();
     }
 
     @Override
@@ -328,8 +332,8 @@ public class Main extends FragmentActivity implements TabListener {
 //			}
                 mi_borrarRuta.setVisible(globales.mostrarBorrarRuta);
                 mi_grabarEnSD.setVisible(globales.mostrarGrabarEnSD);
-
                 break;
+
             case CPL.LECTURISTA:
                 mi_exportar.setVisible(false);
                 mi_importar.setVisible(false);
@@ -338,10 +342,7 @@ public class Main extends FragmentActivity implements TabListener {
 //                b_lecturas.setVisibility(View.VISIBLE);
 
                 mi_grabarEnSD.setVisible(globales.mostrarGrabarEnSD);
-
-
                 break;
-
         }
 
         if (!esSuperUsuario) {
@@ -707,6 +708,9 @@ public class Main extends FragmentActivity implements TabListener {
                     e.printStackTrace();
                 }
                 break;
+            case R.id.m_EntrarSupervisor:
+                entrarSupervisor();
+                break;
         }
 
 
@@ -793,7 +797,7 @@ public class Main extends FragmentActivity implements TabListener {
                 actualizaTabs();
                 break;
 
-            case IntentIntegrator.REQUEST_CODE: {
+            case IntentIntegrator.REQUEST_CODE:
                 if (resultCode != RESULT_CANCELED) {
                     IntentResult scanResult = IntentIntegrator.parseActivityResult(
                             requestCode, resultCode, data);
@@ -805,7 +809,9 @@ public class Main extends FragmentActivity implements TabListener {
                     }
                 }
                 break;
-            }
+            case MENU_ENTRAR_SUPERVISOR:
+                entrarSupervisorFinalizado(resultCode, data);
+                break;
         }
     }
 
@@ -2211,80 +2217,101 @@ public class Main extends FragmentActivity implements TabListener {
         }
     }
 
-    private void hacerVerificacionConexion() {
-        boolean verificar = false;
-        Date horaActual;
+//    private void hacerVerificacionConexion() {
+//        boolean verificar = false;
+//        Date horaActual;
+//
+//        horaActual = Utils.getDateTime();
+//
+//        if (fechaHoraVerificacion == null) {
+//            fechaHoraVerificacion = Utils.getFechaAgregarSegundos(10);
+//            verificar = true;
+//        } else if (fechaHoraVerificacion.after(horaActual)) {
+//            fechaHoraVerificacion = Utils.getFechaAgregarSegundos(10);
+//            verificarConexion();
+//        }
+//    }
+//
+//    protected void verificarConexion() {
+//        LoginRequestEntity req;
+//        LoginResponseEntity resp;
+//
+//        try {
+//            Utils.showMessageLong(getApplicationContext(), "Verificar Conexión");
+//
+//            if (globales == null) {
+//                actualizarEstatusConectividad(false, false);
+//            }
+//
+//            if (globales.sesionEntity == null) {
+//                actualizarEstatusConectividad(false, false);
+//            }
+//
+//            if (globales.sesionEntity.empleado == null) {
+//                actualizarEstatusConectividad(false, false);
+//            }
+//
+//            req = new LoginRequestEntity();
+//            req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
+//            req.Usuario = globales.sesionEntity.Usuario;
+//            req.Token = globales.sesionEntity.empleado.Token;
+//
+//            getWebApiManager().verificarConexion(req, new Callback<LoginResponseEntity>() {
+//                        @Override
+//                        public void onResponse(Call<LoginResponseEntity> call, Response<LoginResponseEntity> response) {
+//                            String valor;
+//                            LoginResponseEntity resp;
+//
+//                            if (response.isSuccessful()) {
+//                                resp = response.body();
+//                                if (resp.Exito) {
+//                                    actualizarEstatusConectividad(true, resp.SesionOk);
+//                                } else {
+//                                    actualizarEstatusConectividad(false, false);
+//                                    Utils.showMessageLong(getApplicationContext(), "Error al verificar conexión (1)");
+//                                }
+//                            } else {
+//                                actualizarEstatusConectividad(false, false);
+//                                Utils.showMessageLong(getApplicationContext(), "Error al verificar conexión (2)");
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onFailure(Call<LoginResponseEntity> call, Throwable t) {
+//                            actualizarEstatusConectividad(false, false);
+//                            //Utils.logMessageLong(getApplicationContext(), "Error al hacer Check Out (3). Intente nuevamente", t);
+//                        }
+//                    }
+//            );
+//        } catch (Exception ex) {
+//            actualizarEstatusConectividad(false, false);
+//            //Utils.logMessageLong(getApplicationContext(), "Error al hacer Check Out (4). Intente nuevamente", ex);
+//        }
+//    }
+//
+//    private void actualizarEstatusConectividad(boolean exito, boolean sesionOk) {
+//        globales.sesionEntity.ConectividadOk = (Utils.isNetworkAvailable(this)) ? 1 : 2;
+//        globales.sesionEntity.SesionOk = (sesionOk && exito) ? 1 : 2;
+//        globales.sesionEntity.SistoleDisponibleOk = exito ? 1: 2;
+//    }
 
-        horaActual = Utils.getDateTime();
-
-        if (fechaHoraVerificacion == null) {
-            fechaHoraVerificacion = Utils.getFechaAgregarSegundos(10);
-            verificar = true;
-        } else if (fechaHoraVerificacion.after(horaActual)) {
-            fechaHoraVerificacion = Utils.getFechaAgregarSegundos(10);
-            verificarConexion();
-        }
-    }
-
-    protected void verificarConexion() {
-        LoginRequestEntity req;
-        LoginResponseEntity resp;
-
+    protected void entrarSupervisor() {
         try {
-            Utils.showMessageLong(getApplicationContext(), "Verificar Conexión");
+            Intent entrarSupervisor = new Intent(Main.this, SupervisorLoginActivity.class);
 
-            if (globales == null) {
-                actualizarControlesConexion(false, false);
-            }
-
-            if (globales.sesionEntity == null) {
-                actualizarControlesConexion(false, false);
-            }
-
-            if (globales.sesionEntity.empleado == null) {
-                actualizarControlesConexion(false, false);
-            }
-
-            req = new LoginRequestEntity();
-            req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
-            req.Usuario = globales.sesionEntity.Usuario;
-            req.Token =  globales.sesionEntity.empleado.Token;
-
-            getWebApiManager().verificarConexion(req, new Callback<LoginResponseEntity>() {
-                        @Override
-                        public void onResponse(Call<LoginResponseEntity> call, Response<LoginResponseEntity> response) {
-                            String valor;
-                            LoginResponseEntity resp;
-
-                            if (response.isSuccessful()) {
-                                resp = response.body();
-                                if (resp.Exito) {
-                                    actualizarControlesConexion(true, resp.SesionOk);
-                                } else {
-                                    actualizarControlesConexion(false, false);
-                                    Utils.showMessageLong(getApplicationContext(), "Error al verificar conexión (1)");
-                                }
-                            } else {
-                                actualizarControlesConexion(false, false);
-                                Utils.showMessageLong(getApplicationContext(), "Error al verificar conexión (2)");
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<LoginResponseEntity> call, Throwable t) {
-                            actualizarControlesConexion(false, false);
-                            //Utils.logMessageLong(getApplicationContext(), "Error al hacer Check Out (3). Intente nuevamente", t);
-                        }
-                    }
-            );
-        } catch (Exception ex) {
-            actualizarControlesConexion(false, false);
-            //Utils.logMessageLong(getApplicationContext(), "Error al hacer Check Out (4). Intente nuevamente", ex);
+            startActivityForResult(entrarSupervisor, MENU_ENTRAR_SUPERVISOR);
+        } catch (Exception e)
+        {
+            Log.e(TAG, "entrarSupervisor: ", e);
+            Utils.showMessageLong(this, "Hubo un error al iniciar la pantalla :" + e.getMessage());
         }
     }
 
-    private void actualizarControlesConexion(boolean exito, boolean sesionOk) {
+    protected void entrarSupervisorFinalizado(final int resultCode, final Intent data) {
+        if (resultCode != Activity.RESULT_OK)
+            return;
 
+        Utils.showMessageLong(this, "Finalizado OK");
     }
 
 

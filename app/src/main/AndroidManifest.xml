@@ -3,105 +3,92 @@
     package="enruta.sistole_gen"
     android:installLocation="preferExternal"
     android:versionCode="39"
-    android:versionName="ENGIE CPL (1.1.0)"
-    android:versionCodeMajor="10100">
+    android:versionCodeMajor="10100"
+    android:versionName="ENGIE CPL (1.1.0)">
 
     <uses-sdk
-        android:minSdkVersion="21"
-        android:targetSdkVersion="21" />
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" />
+        android:minSdkVersion="25"
+        android:targetSdkVersion="25" />
 
     <uses-feature
         android:name="android.hardware.camera.autofocus"
         android:required="false" />
 
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name="enruta.sistole_gen.Globales"
+        android:name=".Globales"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+
         <activity
-            android:name="enruta.sistole_gen.Main"
+            android:name=".Main"
             android:label="@string/app_name"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"/>
         <activity
-            android:name="enruta.sistole_gen.TomaDeLecturas"
+            android:name=".TomaDeLecturas"
             android:configChanges="keyboardHidden|navigation|orientation|screenSize"
             android:label="@string/title_activity_toma_de_lecturas"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden" >
-        </activity>
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
-            android:name="enruta.sistole_gen.CamaraActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:name=".CamaraActivity"
+            android:screenOrientation="portrait"/>
         <activity
-            android:name="enruta.sistole_gen.trasmisionDatos"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:name=".trasmisionDatos"
+            android:screenOrientation="portrait"/>
         <activity
-            android:name="enruta.sistole_gen.VerFotos"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:name=".VerFotos"
+            android:screenOrientation="portrait"/>
         <activity
-            android:name="enruta.sistole_gen.Filtrado"
+            android:name=".Filtrado"
             android:label="@string/title_activity_filtrado"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" >
-        </activity>
+            android:windowSoftInputMode="stateHidden"/>
         <activity
-            android:name="enruta.sistole_gen.Input"
+            android:name=".Input"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible" >
-        </activity>
+            android:windowSoftInputMode="stateVisible"/>
         <activity
-            android:name="enruta.sistole_gen.PantallaAnomalias"
+            android:name=".PantallaAnomalias"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" >
-        </activity>
+            android:windowSoftInputMode="stateHidden"/>
         <activity
-            android:name="enruta.sistole_gen.BuscarMedidor"
+            android:name=".BuscarMedidor"
             android:label="@string/title_activity_buscar_medidor"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible|adjustResize" >
-        </activity>
+            android:windowSoftInputMode="stateVisible|adjustResize"/>
         <activity
-            android:name="enruta.sistole_gen.Configuracion"
+            android:name=".Configuracion"
             android:label="@string/title_activity_configuracion"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustPan" >
-        </activity>
+            android:windowSoftInputMode="stateHidden|adjustPan"/>
         <activity
-            android:name="enruta.sistole_gen.Informacion"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:name=".Informacion"
+            android:screenOrientation="portrait"/>
         <activity
-            android:name="enruta.sistole_gen.NoRegistrados"
+            android:name=".NoRegistrados"
             android:label="@string/title_activity_no_registrados"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"/>
         <activity
-            android:name="enruta.sistole_gen.trasmisionDatosBt"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:name=".trasmisionDatosBt"
+            android:screenOrientation="portrait"/>
         <activity
-            android:name="enruta.sistole_gen.CPL"
+            android:name=".CPL"
             android:configChanges="keyboardHidden|orientation|screenLayout|screenSize"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan" >
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -109,14 +96,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="enruta.sistole_gen.InputCamposGenerico"
+            android:name=".InputCamposGenerico"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" >
-        </activity>
+            android:windowSoftInputMode="stateHidden"/>
         <activity
-            android:name="enruta.sistole_gen.PantallaCodigos"
-            android:label="@string/title_activity_pantalla_codigos" >
-        </activity>
+            android:name=".PantallaCodigos"
+            android:label="@string/title_activity_pantalla_codigos"/>
+
+        <activity
+            android:name=".SupervisorLoginActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

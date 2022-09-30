@@ -20,6 +20,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,6 +54,7 @@ public abstract class TomaDeLecturasPadre extends Activity {
 	final static int REQUEST_ENABLE_BT = 6;
 	final static int INPUT_CAMPOS_GENERICO_ME=7;
 	final static int CAMBIAR_MEDIDOR = 8;
+
 
 	final static int LECTURA = 0;
 	final static int PRESION = 1;
@@ -1288,17 +1290,17 @@ public void preguntaInput(final MensajeEspecial me){
 		if (regreseDe==ANOMALIA && globales.legacyCaptura){
 			if (globales.tll.getLecturaActual().requiereLectura()==Anomalia.LECTURA_AUSENTE && !globales.tdlg.avanzarDespuesDeAnomalia(ultimaAnomaliaSeleccionada, ultimaSubAnomaliaSeleccionada, false)){
 				voyATomarFoto=true;
-				
+
 				capturar();
-				
+
 			}
 			else if (globales.tdlg.avanzarDespuesDeAnomalia(ultimaAnomaliaSeleccionada, ultimaSubAnomaliaSeleccionada, false)){
 				voyATomarFoto=true;
 				avanzarDespuesDeAnomalia();
-				
+
 			}
 	 }
-		
+
 		else if (globales.legacyCaptura && regreseDe==LECTURA){
 			voyATomarFoto=true;
 			capturar();
