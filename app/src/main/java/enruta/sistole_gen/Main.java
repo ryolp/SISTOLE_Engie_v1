@@ -1423,6 +1423,7 @@ public class Main extends FragmentActivity implements TabListener {
 
     private void GrabarFotosEnSD() {
         Cursor cFoto = null;
+        Cursor cFotoPadre = null;
         Cursor cLectura = null;
         FileOutputStream foFoto = null;
         File imagenesDir = null;
@@ -1430,6 +1431,7 @@ public class Main extends FragmentActivity implements TabListener {
         File archivoFoto = null;
         String path;
         String nombreFoto;
+        String nombreFotoPadre;
         String sectorCorto;
         byte[] imagen = null;
         int numErrores = 0;
@@ -1470,7 +1472,12 @@ public class Main extends FragmentActivity implements TabListener {
                     repositorioFotos.mkdir();
                 }
 
-                cFoto = db.rawQuery("Select nombre, foto from fotos", null);
+                cFotoPadre = db.rawQuery("Select nombre from fotos", null);
+
+                while (cFotoPadre.moveToNext()) {
+
+                nombreFotoPadre = "Select nombre, foto from fotos where nombre = '" + cFotoPadre.getString(cFotoPadre.getColumnIndex("nombre")) + "'";
+                cFoto = db.rawQuery(nombreFotoPadre, null);
 
                 while (cFoto.moveToNext()) {
                     try {
@@ -1502,6 +1509,7 @@ public class Main extends FragmentActivity implements TabListener {
                         }
                         foFoto = null;
                     }
+                }
                 }
             }
 
