@@ -1,5 +1,6 @@
 package enruta.sistole_gen;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -38,6 +39,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -104,6 +106,8 @@ public class Main extends FragmentActivity implements TabListener {
 
     ThreadTransmitirWifi ttw;
     boolean cambiarDeUsuario = true;
+
+    protected int mNumErrores = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -1425,16 +1429,15 @@ public class Main extends FragmentActivity implements TabListener {
         Cursor cFoto = null;
         Cursor cFotoPadre = null;
         Cursor cLectura = null;
-        FileOutputStream foFoto = null;
         File imagenesDir = null;
         File repositorioFotos = null;
-        File archivoFoto = null;
         String path;
-        String nombreFoto;
         String nombreFotoPadre;
+        String nombreFotoPadreQuery;
         String sectorCorto;
-        byte[] imagen = null;
-        int numErrores = 0;
+        long imageSize;
+        final long MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB
+        int i = 0;
 
         try {
             // String path = Environment.getExternalStorageDirectory().toString();
@@ -1472,61 +1475,177 @@ public class Main extends FragmentActivity implements TabListener {
                     repositorioFotos.mkdir();
                 }
 
-                cFotoPadre = db.rawQuery("Select nombre from fotos", null);
+                cFotoPadre = db.rawQuery("Select nombre, length(foto) imageSize from fotos", null);
+
+//                for (i = 1; i < mNumErrores; i++)
+ //                   cFotoPadre.moveToNext();
 
                 while (cFotoPadre.moveToNext()) {
 
-                nombreFotoPadre = "Select nombre, foto from fotos where nombre = '" + cFotoPadre.getString(cFotoPadre.getColumnIndex("nombre")) + "'";
-                cFoto = db.rawQuery(nombreFotoPadre, null);
+                    nombreFotoPadre = cFotoPadre.getString(cFotoPadre.getColumnIndex("nombre"));
+                    imageSize = cFotoPadre.getLong(cFotoPadre.getColumnIndex("imageSize"));
 
-                while (cFoto.moveToNext()) {
-                    try {
-                        nombreFoto = cFoto.getString(cFoto.getColumnIndex("nombre"));
-
-                        nombreFoto = path + "/" + nombreFoto;
-                        archivoFoto = new File(nombreFoto);
-
-                        archivoFoto.createNewFile();
-
-                        if (!archivoFoto.exists()) {
-                            //	throw new Exception("Hubo un problema al crear la foto. Verifique que su dispositivo tenga espacio.");
-                            numErrores++;
-                        }
-
-                        imagen = cFoto.getBlob(cFoto.getColumnIndex("foto"));
-
-                        foFoto = new FileOutputStream(archivoFoto);
-                        foFoto.write(imagen);
-                    } catch (Exception e) {
-                        numErrores++;
-                    } finally {
-                        if (foFoto != null) {
-                            try {
-                                foFoto.close();
-                            } catch (Exception e) {
-                                numErrores++;
-                            }
-                        }
-                        foFoto = null;
-                    }
-                }
+                    if (imageSize <= MAX_IMAGE_SIZE )
+                        guardarFoto1(nombreFotoPadre, path);        // Para guardar fotos menores a 2MB
+                    else
+                        guardarFoto2(nombreFotoPadre, path, imageSize);        // Para guardar fotos mayores a 2MB, hacerlo por bloques
                 }
             }
 
-            if (numErrores == 0)
+            if (mNumErrores == 0)
                 Utils.showMessageLong(this, "Operacion terminada");
             else
-                Utils.showMessageLong(this, "Operacion terminada con "+ String.valueOf(numErrores) +" errores");
+                Utils.showMessageLong(this, "Operacion terminada con " + String.valueOf(mNumErrores) + " errores");
         } catch (Exception e) {
+            mNumErrores++;
             e.printStackTrace();
             Utils.logMessageLong(this, "Error al grabar fotos", e);
         } finally {
-            foFoto = null;
-            if (cFoto != null)
-                cFoto.close();
+            if (cFotoPadre != null)
+                cFotoPadre.close();
             if (cLectura != null)
                 cLectura.close();
             closeDatabase();
+        }
+    }
+
+    private void guardarFoto1(String nombreFotoPadre, String path)
+    {
+        String query;
+        Cursor cFoto = null;
+        String nombreFoto;
+        File archivoFoto = null;
+        byte[] imagen = null;
+        FileOutputStream fsFoto = null;
+
+        try {
+            query = "Select nombre, foto from fotos where nombre = '" + nombreFotoPadre + "'";
+            cFoto = db.rawQuery(query, null);
+
+            while (cFoto.moveToNext()) {
+
+                nombreFoto = cFoto.getString(cFoto.getColumnIndex("nombre"));
+
+                nombreFoto = path + "/" + nombreFoto;
+                archivoFoto = new File(nombreFoto);
+
+                archivoFoto.createNewFile();
+
+                if (!archivoFoto.exists()) {
+                    //	throw new Exception("Hubo un problema al crear la foto. Verifique que su dispositivo tenga espacio.");
+                    mNumErrores++;
+                }
+
+                imagen = cFoto.getBlob(cFoto.getColumnIndex("foto"));
+
+                fsFoto = new FileOutputStream(archivoFoto);
+                fsFoto.write(imagen);
+            }
+        } catch (Exception e) {
+            mNumErrores++;
+        } finally {
+            if (cFoto != null) {
+                try {
+                    cFoto.close();
+                } catch (Exception e) {
+                    mNumErrores++;
+                }
+            }
+            if (fsFoto != null) {
+                try {
+                    fsFoto.close();
+                } catch (Exception e) {
+                    mNumErrores++;
+                }
+            }
+            fsFoto = null;
+        }
+    }
+
+    private void guardarFoto2(String nombreFoto, String path, long imageSize)
+    {
+        String query;
+        Cursor cFoto = null;
+        File archivoFoto = null;
+        byte[] image = null;
+        ByteArrayOutputStream outputStream;
+        FileOutputStream fsFoto = null;
+        long idx = 0;
+        long actualImageSize;
+        long sizeToCopy;
+        final long IMAGE_BLOCK_SIZE = 1 * 1024 * 1024; // 1MB
+
+        try {
+            actualImageSize = imageSize;
+
+            outputStream = new ByteArrayOutputStream( );
+
+            // Obtener la imagen del campo blob en bloques de 1MB
+
+            while (actualImageSize > 0) {
+                if (actualImageSize > IMAGE_BLOCK_SIZE)
+                    sizeToCopy = IMAGE_BLOCK_SIZE;
+                else
+                    sizeToCopy = actualImageSize;
+
+                query = "Select nombre, substr(foto," + String.valueOf(idx) + ","+ String.valueOf(sizeToCopy)+"  ) fotoParcial from fotos where nombre = '" + nombreFoto + "'";
+                cFoto = db.rawQuery(query, null);
+
+                while (cFoto.moveToNext()) {
+
+                    nombreFoto = cFoto.getString(cFoto.getColumnIndex("nombre"));
+
+                    outputStream.write(cFoto.getBlob(cFoto.getColumnIndex("fotoParcial")));
+                }
+
+                cFoto.close();
+                cFoto = null;
+
+                idx += sizeToCopy;
+                actualImageSize -= sizeToCopy;
+            }
+
+            // Si se pudo obtener todos los bytes de la foto, se escribe en el almacenamiento SD
+
+            if (idx == imageSize) {
+                image = outputStream.toByteArray();
+
+                try {
+                    outputStream.flush();
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                nombreFoto = path + "/" + nombreFoto;
+                archivoFoto = new File(nombreFoto);
+                archivoFoto.createNewFile();
+
+                if (!archivoFoto.exists()) {
+                    //	throw new Exception("Hubo un problema al crear la foto. Verifique que su dispositivo tenga espacio.");
+                    mNumErrores++;
+                }
+                fsFoto = new FileOutputStream(archivoFoto);
+                fsFoto.write(image);
+            }
+        } catch (Exception e) {
+            mNumErrores++;
+        } finally {
+            if (cFoto != null) {
+                try {
+                    cFoto.close();
+                } catch (Exception e) {
+                    mNumErrores++;
+                }
+            }
+            if (fsFoto != null) {
+                try {
+                    fsFoto.close();
+                } catch (Exception e) {
+                    mNumErrores++;
+                }
+            }
+            fsFoto = null;
         }
     }
 

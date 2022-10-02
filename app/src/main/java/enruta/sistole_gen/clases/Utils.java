@@ -74,4 +74,18 @@ public class Utils {
             return defaultValueAux;
         }
     }
+
+    public static long convToLong(String value, Long...defaultValue) {
+        long defaultValueAux = 0;
+
+        try {
+            if (defaultValue.length>0)
+                defaultValueAux = defaultValue[0];
+
+            return Long.parseLong(value.trim());
+        } catch (Exception e)
+        {
+            return defaultValueAux;
+        }
+    }
 }
