@@ -41,6 +41,8 @@ public class TodosLosCampos {
 	public void byteToBD(SQLiteDatabase db, byte[] bytes, int secuenciaReal){
 		ContentValues cv_params = new ContentValues(this.cv_params);
 		Enumeration <Campo> e;
+		String valor;
+
 		e=campos.elements();
 		
 		while (e.hasMoreElements())	{
@@ -50,7 +52,8 @@ public class TodosLosCampos {
 			if(!campo.esDeEntrada){
 				continue;
 			}
-			cv_params.put(campo.getNombre(), campo.recortarByte(bytes));
+			valor = campo.recortarByte(bytes);
+			cv_params.put(campo.getNombre(), valor);
 		}
 		cv_params.put("secuenciaReal", secuenciaReal );
 		db.insert(is_tabla, null, cv_params);

@@ -198,7 +198,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
         globales.modoDeCierreDeLecturas = Globales.SOLO_TRANSMITIR_PENDIENTES;
 
-        globales.mostrarGrabarEnSD = false;
+        globales.mostrarGrabarEnSD = true;
 
         globales.mostrarCalidadFoto = true;
 

@@ -10,6 +10,7 @@
 
 <item android:id="@+id/m_Impresion" android:title="@string/m_str_habilita_Impresion" android:showAsAction="never" android:icon="@drawable/ic_deshabilita_impr"></item>
 <item android:id="@+id/m_cambio_medidor" android:title="Cambio de Medidor" android:visible="false" android:icon="@drawable/ic_cambio_medidor" android:showAsAction="always" android:orderInCategory="2"></item>
+<item android:id="@+id/m_grabar" android:title="@string/m_str_habilita_Impresion" android:showAsAction="never" android:icon="@drawable/ic_deshabilita_impr"></item>
 
 
 

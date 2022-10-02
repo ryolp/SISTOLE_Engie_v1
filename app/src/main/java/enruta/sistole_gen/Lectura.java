@@ -353,6 +353,10 @@ public class Lectura {
 		guardar(true, ordenDeLectura);
 	}
 
+	/* ========================================================================================================================
+		Método para guardar la lectura capturada
+	 ======================================================================================================================== */
+
 	public void guardar(boolean agregarOrdenDeLectura, int ordenDeLectura) {
 		
 		ContentValues cv_params = new ContentValues();

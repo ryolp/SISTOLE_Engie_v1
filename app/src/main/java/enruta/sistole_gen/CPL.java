@@ -128,6 +128,10 @@ public class CPL extends Activity {
             mTienePermisos = false;
         }
 
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            mTienePermisos = false;
+        }
+
         if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
             mTienePermisos = false;
         }
