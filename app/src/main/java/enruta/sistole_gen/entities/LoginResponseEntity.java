@@ -7,6 +7,7 @@ public class LoginResponseEntity {
     public String Mensaje;
     public String MensajeError;
     public String MensajeLecturista;
+    public int CodigoResultado;
     public boolean Exito;
     public boolean Error;
     public boolean SesionOk;

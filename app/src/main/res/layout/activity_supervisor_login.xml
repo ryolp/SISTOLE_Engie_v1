@@ -95,12 +95,13 @@
     <TextView
         android:id="@+id/lblMensajeSupervisor2"
         android:layout_width="match_parent"
-        android:layout_height="35dp"
+        android:layout_height="50dp"
         android:layout_gravity="center"
         android:background="@color/Moccasin"
         android:gravity="center"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/str_lbl_mensaje_supervisor2"
         android:textColor="#5E35B1" />
 
@@ -117,12 +118,11 @@
         <GridView
             android:id="@+id/gv_resumen"
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:horizontalSpacing="10dp"
-            android:numColumns="2"
+            android:numColumns="1"
             android:verticalSpacing="10dp"
             android:visibility="visible"></GridView>
-
     </LinearLayout>
 
     <LinearLayout
@@ -134,21 +134,28 @@
             android:id="@+id/btnAutenticar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight=".3"
+            android:layout_weight=".25"
             android:text="@string/str_lbl_autenticar" />
 
         <Button
             android:id="@+id/btnValidarSMS"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight=".3"
+            android:layout_weight=".25"
             android:text="@string/str_lbl_validar_sms" />
 
         <Button
             android:id="@+id/btnEnviarInforme"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight=".3"
+            android:layout_weight=".25"
             android:text="@string/str_lbl_enviar_informe" />
+
+        <Button
+            android:id="@+id/btnCancelar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:text="@string/cancelar" />
     </LinearLayout>
 </LinearLayout>

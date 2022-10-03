@@ -5,6 +5,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import enruta.sistole_gen.clases.ResumenEntity;
 import enruta.sistole_gen.clases.Utils;
 import enruta.sistole_gen.entities.EmpleadoCplEntity;
 
@@ -15,7 +16,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.InputType;
 import android.widget.TextView;
-import enruta.sistole_gen.clases.Utils;
 
 public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
@@ -1100,120 +1100,114 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         return 0;
     }
 
-    public Vector<EstructuraResumen> getResumen(SQLiteDatabase db) {
+    /*
+        Regresa una clase con la información del resumen, de manera que pueda usarse en donde se ocupan sin los datos formateados.
+     */
 
+    public ResumenEntity getResumenEntity(SQLiteDatabase db){
         Cursor c;
-        long ll_total;
-        long ll_tomadas;
-        long ll_fotos;
-        long ll_restantes;
-        long ll_conAnom;
-        long ll_sinLect;
-        long ll_noRegistrados;
-        long ll_conDir;
-        long ll_ordenesSinEnviar;
-        long ll_fotosSinEnviar;
-
-        long ll_mensajes;
-        String ls_archivo;
-
-        Vector<EstructuraResumen> resumen = new Vector<EstructuraResumen>();
+        ResumenEntity resumen = new ResumenEntity();
 
         c = db.rawQuery("Select count(*) canti from Ruta", null);
         c.moveToFirst();
-        ll_total = c.getLong(c.getColumnIndex("canti"));
+        resumen.totalRegistros = c.getLong(c.getColumnIndex("canti"));
 
         try {
             c = db.rawQuery("Select value from config where key='cpl'", null);
             c.moveToFirst();
-            ls_archivo = c.getString(c.getColumnIndex("value"));
+            resumen.archivo = c.getString(c.getColumnIndex("value"));
         } catch (Throwable e) {
-            ls_archivo = "";
+            resumen.archivo = "";
         }
 
         c = db.rawQuery("Select count(*) canti from ruta where tipoLectura='0'", null);
         c.moveToFirst();
+        resumen.cantLecturasRealizadas = c.getLong(c.getColumnIndex("canti"));
 
-        ll_tomadas = c.getLong(c.getColumnIndex("canti"));
         c = db.rawQuery("Select count(*) canti from fotos", null);
         c.moveToFirst();
-        ll_fotos = c.getLong(c.getColumnIndex("canti"));
+        resumen.cantFotos = c.getLong(c.getColumnIndex("canti"));
         c.close();
 
         c = db.rawQuery("Select count(*) canti from ruta where tipoLectura='4'", null);
         c.moveToFirst();
-        ll_sinLect = c.getLong(c.getColumnIndex("canti"));
+        resumen.cantSinLectura = c.getLong(c.getColumnIndex("canti"));
         c.close();
 
         c = db.rawQuery("Select count(*) canti from ruta where trim(anomalia)<>''", null);
         c.moveToFirst();
-        ll_conAnom = c.getLong(c.getColumnIndex("canti"));
+        resumen.cantConAnomalia = c.getLong(c.getColumnIndex("canti"));
         c.close();
 
         c = db.rawQuery("Select count(*) canti from ruta where trim(tipoLectura)=''", null);
         c.moveToFirst();
-        ll_restantes = c.getLong(c.getColumnIndex("canti"));
+        resumen.cantLecturasPendientes = c.getLong(c.getColumnIndex("canti"));
         c.close();
 
         c = db.rawQuery("Select count(*) canti from NoRegistrados", null);
         c.moveToFirst();
-        ll_noRegistrados = c.getLong(c.getColumnIndex("canti"));
+        resumen.cantNoRegistrados = c.getLong(c.getColumnIndex("canti"));
         c.close();
 
         c = db.rawQuery("Select count(*) canti from ruta where envio=1", null);
         c.moveToFirst();
-        ll_ordenesSinEnviar = c.getLong(c.getColumnIndex("canti"));
+        resumen.ordenesSinEnviar = c.getLong(c.getColumnIndex("canti"));
         c.close();
 
         c = db.rawQuery("Select count(*) canti from fotos where envio=1", null);
         c.moveToFirst();
-        ll_fotosSinEnviar = c.getLong(c.getColumnIndex("canti"));
+        resumen.fotosSinEnviar = c.getLong(c.getColumnIndex("canti"));
         c.close();
+        
+        return resumen;
+    }
 
-
-        //ll_restantes = ll_total-ll_tomadas ;
-
-//    	ls_resumen="Total de Lecturas " + ll_total +"\n" +
-//    			"Medidores con Lectura " +  + ll_tomadas +"\n" +
-//    			"Medidores con Anomalias "+  ll_conAnom +"\n" +
-//    			"Lecturas Restantes "+  ll_restantes +"\n\n" +
-//
-//    			"Fotos Tomadas "+ ll_fotos +"\n\n" +
-//
-//    			"No Registrados "+ ll_noRegistrados;
-//
-//    	tv_resumen.setText(ls_resumen);
-
+    public Vector<EstructuraResumen> getResumen(ResumenEntity resumenIn) {
         float porcentaje = 0;
+        Vector<EstructuraResumen> resumenOut = new Vector<EstructuraResumen>();
+        
         DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols();
         otherSymbols.setDecimalSeparator('.');
         otherSymbols.setGroupingSeparator(',');
         DecimalFormat formatter = new DecimalFormat("##0.00", otherSymbols);
 
-        resumen.add(new EstructuraResumen("Lecturas en la Ruta", String.valueOf(ll_total)));
-        resumen.add(new EstructuraResumen(context.getString(R.string.msj_main_fotos_tomadas), String.valueOf(ll_fotos)));
-        resumen.add(new EstructuraResumen("", ""));
-        porcentaje = (((float) ll_restantes * 100) / (float) ll_total);
-        resumen.add(new EstructuraResumen("Lecturas Pendientes", String.valueOf(ll_restantes), formatter.format(porcentaje) + "%"));
-        porcentaje = (((float) ll_tomadas * 100) / (float) ll_total);
-        resumen.add(new EstructuraResumen("Registros con Lectura", String.valueOf(ll_tomadas), formatter.format(porcentaje) + "%"));
-        porcentaje = (((float) ll_sinLect * 100) / (float) ll_total);
-        resumen.add(new EstructuraResumen("Registros sin Lectura", String.valueOf(ll_sinLect), formatter.format(porcentaje) + "%"));
+        resumenOut.add(new EstructuraResumen("Lecturas en la Ruta", String.valueOf(resumenIn.totalRegistros)));
+        resumenOut.add(new EstructuraResumen(context.getString(R.string.msj_main_fotos_tomadas), String.valueOf(resumenIn.cantFotos)));
+        resumenOut.add(new EstructuraResumen("", ""));
+        
+        porcentaje = (((float) resumenIn.cantLecturasPendientes * 100) / (float) resumenIn.totalRegistros);
+        resumenOut.add(new EstructuraResumen("Lecturas Pendientes", String.valueOf(resumenIn.cantLecturasPendientes), formatter.format(porcentaje) + "%"));
+        porcentaje = (((float) resumenIn.cantLecturasRealizadas * 100) / (float) resumenIn.totalRegistros);
+        resumenOut.add(new EstructuraResumen("Registros con Lectura", String.valueOf(resumenIn.cantLecturasRealizadas), formatter.format(porcentaje) + "%"));
+        porcentaje = (((float) resumenIn.cantSinLectura * 100) / (float) resumenIn.totalRegistros);
+        resumenOut.add(new EstructuraResumen("Registros sin Lectura", String.valueOf(resumenIn.cantSinLectura), formatter.format(porcentaje) + "%"));
 
 
-        resumen.add(new EstructuraResumen("", "")); //Agregamos una linea mas
+        resumenOut.add(new EstructuraResumen("", "")); //Agregamos una linea mas
 
-        resumen.add(new EstructuraResumen("Lecturas por Enviar", String.valueOf(ll_ordenesSinEnviar)));
-        resumen.add(new EstructuraResumen("Fotos por Enviar", String.valueOf(ll_fotosSinEnviar)));
+        resumenOut.add(new EstructuraResumen("Lecturas por Enviar", String.valueOf(resumenIn.ordenesSinEnviar)));
+        resumenOut.add(new EstructuraResumen("Fotos por Enviar", String.valueOf(resumenIn.fotosSinEnviar)));
 
-        resumen.add(new EstructuraResumen("", "")); //Agregamos una linea mas
+        resumenOut.add(new EstructuraResumen("", "")); //Agregamos una linea mas
 
-//    	 resumen.add(new EstructuraResumen("Mensajes", String.valueOf(ll_mensajes)));
+//    	 resumenOut.add(new EstructuraResumen("Mensajes", String.valueOf(resumenIn.mensajes)));
         if (globales.mostrarNoRegistrados)
-            resumen.add(new EstructuraResumen("No Registrados", String.valueOf(ll_noRegistrados)));
+            resumenOut.add(new EstructuraResumen("No Registrados", String.valueOf(resumenIn.cantNoRegistrados)));
 
-        resumen.add(new EstructuraResumen("", "")); //Agregamos una linea mas
-        return resumen;
+        resumenOut.add(new EstructuraResumen("", "")); //Agregamos una linea mas
+
+        return resumenOut;
+    }
+
+    public Vector<EstructuraResumen> getResumen(SQLiteDatabase db) {
+        ResumenEntity resumenIn;
+        Vector<EstructuraResumen> resumenOut = null;
+
+        resumenIn = getResumenEntity(db);
+        if (resumenIn != null)
+            resumenOut = getResumen(resumenIn);
+
+        return resumenOut;
     }
 
     public void activacionDesactivacionOpciones(boolean esSuperUsuario) {

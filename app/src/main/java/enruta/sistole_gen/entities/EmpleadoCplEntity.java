@@ -15,11 +15,15 @@ public class EmpleadoCplEntity {
     public String Telefono = "";
     public Date FechaAntiguedad;
     public Date FechaIngreso;
-    public int idAgencia;
-    public String Agencia;
-    public String Regional;
-    public String FotoURL;
-    public int idOperacionTipo;
-    public int ArchivoAbierto;
-    public String Token;
+    public int idAgencia=0;
+    public String Agencia= "";
+    public String Regional = "";
+    public String FotoURL="";
+    public int idOperacionTipo=0;
+    public int ArchivoAbierto=0;
+    public String Token="";
+    public boolean EsLecturista= false;
+    public boolean EsAdministrador= false;
+    public boolean EsSuperUsuario= false;
+    public boolean EsSupervisor = false;
 }

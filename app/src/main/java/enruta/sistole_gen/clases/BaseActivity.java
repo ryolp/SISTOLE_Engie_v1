@@ -1,12 +1,16 @@
 package enruta.sistole_gen.clases;
 
 import android.app.Activity;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.Date;
 
+import enruta.sistole_gen.DBHelper;
 import enruta.sistole_gen.Globales;
 import enruta.sistole_gen.TomaDeLecturasGenerica;
 import enruta.sistole_gen.TransmisionesPadre;
@@ -17,15 +21,9 @@ import enruta.sistole_gen.services.WebApiManager;
 import enruta.sistole_gen.trasmisionDatos;
 
 public abstract class BaseActivity extends Activity {
-    protected Globales globales;
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        globales = ((Globales) getApplicationContext());
-    }
+    protected DBHelper dbHelper;
+    protected SQLiteDatabase db;
+    protected Globales globales  = null;
 
     protected Date getDateTime() {
         Calendar calendar = Calendar.getInstance();
@@ -33,47 +31,40 @@ public abstract class BaseActivity extends Activity {
         return calendar.getTime();
     }
 
-    private void showMessageLong(String sMessage) {
-        Toast.makeText(this, sMessage, Toast.LENGTH_LONG).show();
+    protected void showMessageLong(String mensaje) {
+        Utils.showMessageShort(this, mensaje);
     }
 
-    private void showMessageShort(String sMessage) {
-        Toast.makeText(this, sMessage, Toast.LENGTH_SHORT).show();
+    protected void showMessageShort(String mensaje) {
+        Utils.showMessageLong(this, mensaje);
     }
 
-    protected WebApiManager getWebApiManager() throws Exception {
-        try {
-            TransmitionObject to= new TransmitionObject();
-            TomaDeLecturasGenerica tdlg;
-            String servidor = "";
-
-            tdlg =globales.tdlg;
-
-            if (tdlg != null){
-                if(!tdlg.getEstructuras( to, trasmisionDatos.TRANSMISION, TransmisionesPadre.WIFI).equals("")){
-                    //throw new Exception("Error al leer configuración");
-                    servidor = to.ls_servidor.trim();
-                }
-            }
-
-            if (servidor.trim().equals(""))
-                servidor = DbConfigMgr.getInstance().getServidor(this);
-
-            if (servidor.trim().equals(""))
-                servidor = globales.defaultServidorGPRS;
-
-
-            return WebApiManager.getInstance(servidor);
-        } catch (Exception ex) {
-            throw ex;
-        }
+    public void logMessageLong(String msg, Throwable t) {
+        Utils.logMessageShort(this, msg, t);
     }
+
+    public void logMessageShort(Context context, String msg, Throwable t) {
+        Utils.logMessageLong(this, msg, t);
+    }
+
 
     protected SesionEntity getSesion() {
         if (globales == null)
             return null;
 
         return globales.sesionEntity;
+    }
+
+    protected void openDatabase() {
+        dbHelper = new DBHelper(this);
+
+        db = dbHelper.getReadableDatabase();
+    }
+
+    protected void closeDatabase() {
+        db.close();
+        dbHelper.close();
+
     }
 
 }

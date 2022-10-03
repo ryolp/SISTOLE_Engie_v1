@@ -18,6 +18,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import enruta.sistole_gen.clases.ResumenEntity;
+
 /**
  * Esta clase crea las validaciones y los campos a mostrar
  **/
@@ -1056,5 +1058,4 @@ public abstract class TomaDeLecturasGenerica {
         ls_carpeta = "/fotos";
         return ls_carpeta;
     }
-
 }
