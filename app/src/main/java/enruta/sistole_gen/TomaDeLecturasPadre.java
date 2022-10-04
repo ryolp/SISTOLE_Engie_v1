@@ -54,7 +54,7 @@ public abstract class TomaDeLecturasPadre extends Activity {
 	final static int REQUEST_ENABLE_BT = 6;
 	final static int INPUT_CAMPOS_GENERICO_ME=7;
 	final static int CAMBIAR_MEDIDOR = 8;
-
+	final static int MENU_ENTRAR_SUPERVISOR = 9;
 
 	final static int LECTURA = 0;
 	final static int PRESION = 1;

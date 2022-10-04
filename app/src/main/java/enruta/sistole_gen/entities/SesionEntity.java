@@ -21,7 +21,9 @@ public class SesionEntity {
     public int SistoleDisponibleOk = 0;
     public int SesionOk = 0;
     public Date fechaHoraVerificacion;
-    public Boolean Autenticado = false;    
+    public Boolean Autenticado = false;
+    public String Unidad;
+    public long idArchivoUnidad;
 
     public SesionEntity(){
 
@@ -30,9 +32,9 @@ public class SesionEntity {
     public SesionEntity(LoginResponseEntity loginResponseEntity) {
         this.Usuario = loginResponseEntity.Usuario;
         this.Email = loginResponseEntity.Email;
-        this.EsLecturista = loginResponseEntity.EsLecturista;
-        this.EsAdministrador = loginResponseEntity.EsAdministrador;
-        this.EsSuperUsuario = loginResponseEntity.EsSuperUsuario;
+        this.EsLecturista = loginResponseEntity.Empleado.EsLecturista;
+        this.EsAdministrador = loginResponseEntity.Empleado.EsAdministrador;
+        this.EsSuperUsuario = loginResponseEntity.Empleado.EsSuperUsuario;
         this.NumCPL = loginResponseEntity.NumCPL;
         this.AutenticarConSMS = loginResponseEntity.AutenticarConSMS;
         this.VersionWeb = loginResponseEntity.VersionWeb;

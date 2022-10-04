@@ -9,6 +9,7 @@ public class OperacionResponse {
     public Date FechaEstatus = null;
     public Boolean Exito =false;
     public String Mensaje = "";
+    public int NumError = 0;
     public String MensajeError = "";
     public long idArchivo;
     public String Archivo;

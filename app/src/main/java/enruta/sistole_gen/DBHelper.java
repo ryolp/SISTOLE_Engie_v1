@@ -204,7 +204,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL("CREATE TABLE config (key, value, selected)");
 		//Configuraciones globales y extras
 		db.execSQL("CREATE TABLE usoAnomalias (anomalia, veces default 0, fecha )");
-		//fotos de lecturista: para su perfil y de las evidencias de inicio y finalización de labores.
+
+		//RL, 2022-09, Fotos de lecturista: para su perfil y de las evidencias de inicio y finalización de labores.
 		db.execSQL("CREATE TABLE fotosLecturista (secuencial, nombre, tipo, foto, envio default 0)");
 	}
 

@@ -1,7 +1,5 @@
 package enruta.sistole_gen;
 
-import static enruta.sistole_gen.clases.Utils.getDateTime;
-
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -16,21 +14,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.InputType;
-import android.text.TextPaint;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
-import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -43,19 +34,16 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 
+import enruta.sistole_gen.clases.EmergenciaCallback;
+import enruta.sistole_gen.clases.EmergenciaMgr;
 import enruta.sistole_gen.clases.Utils;
 import enruta.sistole_gen.entities.OperacionRequest;
 import enruta.sistole_gen.entities.OperacionResponse;
-import enruta.sistole_gen.services.WebApiManager;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class TomaDeLecturas extends TomaDeLecturasPadre implements
         OnGestureListener {
@@ -116,8 +104,7 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
     boolean modoLecturaObligatoria = false;
 
     private boolean mDialogoConfirmarAyuda = false;
-
-
+    private EmergenciaMgr mEmergenciaMgr = null;
 
     @SuppressLint("NewApi")
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
@@ -573,6 +560,8 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
                     capturar();
                 }
                 break;
+            case MENU_ENTRAR_SUPERVISOR:
+                entrarSupervisorFinalizado(resultCode, data);
         }
 
         if (Build.VERSION.SDK_INT >= 11)
@@ -2215,7 +2204,10 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 
                 break;
             case R.id.m_SolicitarAyuda:
-                solicitarAyuda();
+                solicitarEmergencia();
+                break;
+            case R.id.m_EntrarSupervisor:
+                entrarSupervisor();
         }
 
         if (Build.VERSION.SDK_INT >= 11)
@@ -3391,10 +3383,13 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
         startActivityForResult(intent, CAMBIAR_MEDIDOR);
     }
 
-    private void solicitarAyuda() {
-        if (!mDialogoConfirmarAyuda ) {
-            enviarSolicitudAyuda(false);
+    private void solicitarEmergencia() {
+        enviarSolicitudEmergencia(false);
+    }
 
+    protected void confirmarEmergencia()
+    {
+        if (!mDialogoConfirmarAyuda ) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
             builder.setTitle("Confirmar ayuda");
@@ -3403,7 +3398,7 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
             builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
                 public void onClick(DialogInterface dialog, int which) {
-                    enviarSolicitudAyuda(true);
+                    enviarSolicitudEmergencia(true);
                     dialog.dismiss();
                     mDialogoConfirmarAyuda = false;
                 }
@@ -3414,6 +3409,7 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
+                    mEmergenciaMgr = null;
                     mDialogoConfirmarAyuda = false;
                 }
             });
@@ -3424,60 +3420,60 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
         }
     }
 
-    protected void enviarSolicitudAyuda(boolean emergenciaConfirmada) {
-        OperacionRequest req;
-        OperacionResponse resp;
+    protected void enviarSolicitudEmergencia(boolean emergenciaConfirmada) {
+        if (globales == null) {
+            Utils.showMessageLong(this,"Error al solicitar ayuda. Contacte soporte técnico.");
+            return;
+        }
 
+        if (globales.sesionEntity == null) {
+            Utils.showMessageLong(this,"No se ha autenticado en la aplicación");
+            return;
+        }
+
+        if (globales.sesionEntity.empleado == null) {
+            Utils.showMessageLong(this,"No se ha autenticado en la aplicación");
+            return;
+        }
+
+        if (mEmergenciaMgr == null) {
+            mEmergenciaMgr = new EmergenciaMgr(this);
+
+            mEmergenciaMgr.setEmergenciaCallback(new EmergenciaCallback() {
+                @Override
+                public void enExito(OperacionResponse resp, boolean emergenciaConfirmada) {
+                    if (!emergenciaConfirmada)
+                        confirmarEmergencia();
+                }
+
+                @Override
+                public void enFallo(OperacionResponse resp) {
+                    Utils.showMessageLong(TomaDeLecturas.this,resp.MensajeError);
+                }
+            });
+        }
+
+        if (!emergenciaConfirmada)
+            Utils.showMessageLong(TomaDeLecturas.this,"Fue enviada la solicitud de emergencia");
+        else
+            Utils.showMessageLong(TomaDeLecturas.this,"Fue enviada la confirmación de emergencia");
+        mEmergenciaMgr.enviarSolicitudEmergencia(globales.sesionEntity, globales.location, emergenciaConfirmada);
+    }
+
+    protected void entrarSupervisor() {
         try {
-            if (globales == null) {
-                Utils.showMessageLong(this,"Error al solicitar ayuda. Intente nuevamente");
-                return;
-            }
+            Intent entrarSupervisor = new Intent(TomaDeLecturas.this, SupervisorLoginActivity.class);
 
-            if (globales.sesionEntity == null) {
-                Utils.showMessageLong(this,"No se ha autenticado en la aplicación");
-                return;
-            }
-
-            if (globales.sesionEntity.empleado == null) {
-                Utils.showMessageLong(this,"No se ha autenticado en la aplicación");
-                return;
-            }
-
-            req = new OperacionRequest();
-            req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
-            req.FechaOperacion = Utils.getDateTime();
-            req.ValorBoolean=emergenciaConfirmada;
-
-            WebApiManager.getInstance(this).solicitarAyuda(req, new Callback<OperacionResponse>() {
-                        @Override
-                        public void onResponse(Call<OperacionResponse> call, Response<OperacionResponse> response) {
-                            String valor;
-                            OperacionResponse resp;
-
-                            if (response.isSuccessful()) {
-                                resp = response.body();
-                                if (resp.Exito) {
-                                    Utils.showMessageLong(TomaDeLecturas.this,"Fue enviada la solicitud");
-                                } else {
-                                    Utils.showMessageLong(TomaDeLecturas.this,"Error al solicitar ayuda (1). Intente nuevamente");
-                                }
-                            } else
-                                Utils.showMessageLong(TomaDeLecturas.this,"Error al solicitar ayuda (2). Intente nuevamente");
-                        }
-
-                        @Override
-                        public void onFailure(Call<OperacionResponse> call, Throwable t) {
-                            Utils.showMessageLong(TomaDeLecturas.this,"Error al solicitar ayuda (3). Intente nuevamente : " + t.getMessage());
-                            Log.d("CPL", "Error al solicitar ayuda (3). Intente nuevamente : " + t.getMessage());
-                        }
-                    }
-            );
-        } catch (Exception ex) {
-            Utils.showMessageLong(TomaDeLecturas.this,"Error al solicitar ayuda (4). Intente nuevamente : " + ex.getMessage());
-            Log.d("CPL", "Error al solicitar ayuda (4). Intente nuevamente : " + ex.getMessage());
+            startActivityForResult(entrarSupervisor, MENU_ENTRAR_SUPERVISOR);
+        } catch (Exception e)
+        {
+            Log.e("CPL", "entrarSupervisor: ", e);
+            Utils.showMessageLong(this, "Hubo un error al iniciar la pantalla :" + e.getMessage());
         }
     }
 
-
+    protected void entrarSupervisorFinalizado(final int resultCode, final Intent data) {
+        if (resultCode == Activity.RESULT_OK)
+            Utils.showMessageLong(this, "Informe enviado");
+    }
 }

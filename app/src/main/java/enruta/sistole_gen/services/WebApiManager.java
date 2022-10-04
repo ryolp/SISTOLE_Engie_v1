@@ -10,6 +10,8 @@ import enruta.sistole_gen.entities.OperacionRequest;
 import enruta.sistole_gen.entities.OperacionResponse;
 import enruta.sistole_gen.entities.LoginRequestEntity;
 import enruta.sistole_gen.entities.LoginResponseEntity;
+import enruta.sistole_gen.entities.SupervisorLogRequest;
+import enruta.sistole_gen.entities.SupervisorLogResponse;
 import enruta.sistole_gen.interfaces.IWebApi;
 import enruta.sistole_gen.trasmisionDatos;
 import retrofit2.Call;
@@ -158,6 +160,12 @@ public class WebApiManager {
 
     public void verificarConexion(LoginRequestEntity request, Callback<LoginResponseEntity> callBack){
         Call<LoginResponseEntity> call = service.verificarConexion(request);
+
+        call.enqueue(callBack);
+    }
+
+    public void registrarLogSupervisor(SupervisorLogRequest request, Callback<SupervisorLogResponse> callBack){
+        Call<SupervisorLogResponse> call = service.registrarLogSupervisor(request);
 
         call.enqueue(callBack);
     }

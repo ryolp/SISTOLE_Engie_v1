@@ -11,13 +11,17 @@ import android.widget.TextView;
 
 import java.util.Vector;
 
-import enruta.sistole_gen.clases.Autenticador;
+import enruta.sistole_gen.clases.AutenticadorMgr;
 import enruta.sistole_gen.clases.AutenticadorCallback;
 import enruta.sistole_gen.clases.BaseActivity;
 import enruta.sistole_gen.clases.ResumenEntity;
+import enruta.sistole_gen.clases.SupervisorCallback;
+import enruta.sistole_gen.clases.SupervisorMgr;
 import enruta.sistole_gen.clases.Utils;
 import enruta.sistole_gen.entities.LoginRequestEntity;
 import enruta.sistole_gen.entities.LoginResponseEntity;
+import enruta.sistole_gen.entities.SupervisorLogRequest;
+import enruta.sistole_gen.entities.SupervisorLogResponse;
 
 public class SupervisorLoginActivity extends BaseActivity {
 
@@ -29,7 +33,7 @@ public class SupervisorLoginActivity extends BaseActivity {
     private Button btnValidarSMS = null;
     private Button btnEnviarInforme = null;
     private Button btnCancelar = null;
-    private TextView lblMensajeSupervisor= null;
+    private TextView lblMensajeSupervisor = null;
     private TextView lblUsuario = null;
     private EditText txtUsuario = null;
     private TextView lblPassword = null;
@@ -38,7 +42,9 @@ public class SupervisorLoginActivity extends BaseActivity {
     private EditText txtCodigoSMS = null;
     private GridView gv_resumen = null;
     private ResumenEntity mResumen = null;
-    private Autenticador mAutenticador = null;
+    private AutenticadorMgr mAutenticadorMgr = null;
+    private SupervisorMgr mSupervisorMgr = null;
+    private long mIdEmpleadoSupervisor = 0;
 
     private int estado = ESTADO_INICIAL;
 
@@ -63,7 +69,11 @@ public class SupervisorLoginActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
-
+        if (globales.tll == null) {
+            showMessageLong("Si hay lecturas vaya a la pantalla de lecturas y regrese o utilice el menú en la Toma de Lecturas.");
+            finalizado(false);
+            return;
+        }
     }
 
     /* -------------------------------------------------------------------------------------------
@@ -155,9 +165,11 @@ public class SupervisorLoginActivity extends BaseActivity {
         }
     }
 
-    protected void finalizado() {
-        // setResult(Activity.RESULT_OK, resultIntent);
-        setResult(Activity.RESULT_OK);
+    protected void finalizado(boolean exito) {
+        if (exito)
+            setResult(Activity.RESULT_OK);
+        else
+            setResult(Activity.RESULT_CANCELED);
         finish();
     }
 
@@ -183,6 +195,7 @@ public class SupervisorLoginActivity extends BaseActivity {
                 txtPassword.setVisibility(View.VISIBLE);
                 lblCodigoSMS.setVisibility(View.GONE);
                 txtCodigoSMS.setVisibility(View.GONE);
+                btnAutenticar.setVisibility(View.VISIBLE);
                 btnValidarSMS.setVisibility(View.GONE);
                 btnEnviarInforme.setVisibility(View.GONE);
                 gv_resumen.setVisibility(View.GONE);
@@ -225,48 +238,51 @@ public class SupervisorLoginActivity extends BaseActivity {
         Inicializa el autenticador de usuarios
     ------------------------------------------------------------------------------------------- */
 
-    protected void inicializarAutenticador()
-    {
-        if (mAutenticador == null)
-            mAutenticador = new Autenticador(this);
+    protected void inicializarAutenticador() {
+        if (mAutenticadorMgr == null)
+            mAutenticadorMgr = new AutenticadorMgr(this);
 
-        mAutenticador.setAutenticadorCallback(new AutenticadorCallback() {
+        mAutenticadorMgr.setAutenticadorCallback(new AutenticadorCallback() {
             @Override
             public void enAutenticarExito(LoginRequestEntity request, LoginResponseEntity resp) {
                 cambiarEstadoControles(ESTADO_AUTENTICADO);
 
-                if (resp.Empleado == null)
-                {
-                    showMessageLong( "Error en la respuesta de autenticación");
+                if (resp.Empleado == null) {
+                    showMessageLong("Error en la respuesta de autenticación");
                     return;
                 }
 
-                if (!resp.Empleado.EsSupervisor)
-                {
-                    showMessageLong( "No está registrado como Supervidor. Contacte a Soporte");
+                if (!resp.Empleado.EsSupervisor) {
+                    showMessageLong("No está registrado como Supervidor. Contacte a Soporte");
                     return;
                 }
 
                 if (resp.AutenticarConSMS)
                     cambiarEstadoControles(ESTADO_AUTENTICADO);
                 else
-                    procesarAutenticado();
+                    procesarAutenticado(resp);
             }
 
             @Override
             public void enAutenticarFallo(LoginRequestEntity request, LoginResponseEntity resp) {
-                Utils.showMessageLong(SupervisorLoginActivity.this, resp.MensajeError);
+                if (resp.Error)
+                    Utils.showMessageLong(SupervisorLoginActivity.this, resp.MensajeError);
+                else
+                    Utils.showMessageLong(SupervisorLoginActivity.this, resp.Mensaje);
             }
 
             @Override
             public void enValidarSMSExito(LoginRequestEntity request, LoginResponseEntity resp) {
                 cambiarEstadoControles(ESTADO_AUTENTICADO);
-                    procesarAutenticado();
+                procesarAutenticado(resp);
             }
 
             @Override
             public void enValidarSMSFallo(LoginRequestEntity request, LoginResponseEntity resp) {
-                showMessageLong( resp.MensajeError);
+                if (resp.Error)
+                    showMessageLong(resp.MensajeError);
+                else
+                    showMessageLong(resp.Mensaje);
             }
         });
     }
@@ -279,12 +295,17 @@ public class SupervisorLoginActivity extends BaseActivity {
         String usuario;
         String password;
 
-        inicializarAutenticador();
+        try {
+            inicializarAutenticador();
 
-        usuario = txtUsuario.getText().toString().trim();
-        password = txtPassword.getText().toString().trim();
+            usuario = txtUsuario.getText().toString().trim();
+            password = txtPassword.getText().toString().trim();
 
-        mAutenticador.autenticar(usuario, password);
+            showMessageLong("Autenticando");
+            mAutenticadorMgr.autenticar(usuario, password);
+        } catch (Exception e) {
+            logMessageLong("Error al querer autenticar", e);
+        }
     }
 
     /* -------------------------------------------------------------------------------------------
@@ -299,18 +320,28 @@ public class SupervisorLoginActivity extends BaseActivity {
             usuario = txtUsuario.getText().toString().trim();
             codigoSMS = txtCodigoSMS.getText().toString().trim();
 
-            if (mAutenticador==null) throw new AssertionError("El objetivo no puede ser nulo");
+            if (mAutenticadorMgr == null) throw new AssertionError("El objetivo no puede ser nulo");
 
-            mAutenticador.validarSMS(usuario, codigoSMS);
-        }
-        catch (Exception e){
+            showMessageLong("Validando SMS");
+            mAutenticadorMgr.validarSMS(usuario, codigoSMS);
+        } catch (Exception e) {
             logMessageLong("Error al validar SMS", e);
         }
     }
 
-    protected void procesarAutenticado() {
-        cambiarEstadoControles(ESTADO_SMS_VALIDADO);
-        mostrarResumen();
+    protected void procesarAutenticado(LoginResponseEntity resp) {
+        try {
+            if (resp.Empleado.idEmpleado == globales.sesionEntity.empleado.idEmpleado) {
+                showMessageLong("El lecturista no puede ser su propio supervisor");
+                cambiarEstadoControles(ESTADO_INICIAL);
+            } else {
+                cambiarEstadoControles(ESTADO_SMS_VALIDADO);
+                mIdEmpleadoSupervisor = resp.Empleado.idEmpleado;
+                mostrarResumen();
+            }
+        } catch (Exception e) {
+            logMessageLong("Error al mostrar el informe", e);
+        }
     }
 
 
@@ -319,7 +350,30 @@ public class SupervisorLoginActivity extends BaseActivity {
     ------------------------------------------------------------------------------------------- */
 
     protected void enviarInforme() {
-        finalizado();
+
+        try {
+            if (mSupervisorMgr == null) {
+                mSupervisorMgr = new SupervisorMgr(this);
+
+                mSupervisorMgr.setSupervisorCallback(new SupervisorCallback() {
+                    @Override
+                    public void enExito(SupervisorLogRequest request, SupervisorLogResponse resp) {
+                        finalizado(true);
+                    }
+
+                    @Override
+                    public void enFallo(SupervisorLogRequest request, SupervisorLogResponse resp) {
+                        showMessageLong(resp.MensajeError);
+                    }
+                });
+            }
+
+            mSupervisorMgr.enviarInforme(globales.sesionEntity, globales.tll, globales.location, mIdEmpleadoSupervisor, mResumen);
+        } catch (Exception e) {
+            logMessageLong("Error al enviar el informe", e);
+        } finally {
+            mSupervisorMgr = null;
+        }
     }
 
 
@@ -342,12 +396,9 @@ public class SupervisorLoginActivity extends BaseActivity {
             gv_resumen.setAdapter(new ResumenGridAdapter(this, resumen, 36));
 
             gv_resumen.setVisibility(View.VISIBLE);
-        }
-        catch (Exception e )
-        {
-
-        }
-        finally {
+        } catch (Exception e) {
+            throw e;
+        } finally {
             closeDatabase();
         }
     }

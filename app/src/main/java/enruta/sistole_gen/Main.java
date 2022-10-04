@@ -2308,10 +2308,8 @@ public class Main extends FragmentActivity implements TabListener {
     }
 
     protected void entrarSupervisorFinalizado(final int resultCode, final Intent data) {
-        if (resultCode != Activity.RESULT_OK)
-            return;
-
-        Utils.showMessageLong(this, "Finalizado OK");
+        if (resultCode == Activity.RESULT_OK)
+            Utils.showMessageLong(this, "Informe enviado");
     }
 
 

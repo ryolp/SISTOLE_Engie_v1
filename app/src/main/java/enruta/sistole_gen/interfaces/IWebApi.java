@@ -4,6 +4,8 @@ import enruta.sistole_gen.entities.OperacionRequest;
 import enruta.sistole_gen.entities.OperacionResponse;
 import enruta.sistole_gen.entities.LoginRequestEntity;
 import enruta.sistole_gen.entities.LoginResponseEntity;
+import enruta.sistole_gen.entities.SupervisorLogRequest;
+import enruta.sistole_gen.entities.SupervisorLogResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -14,10 +16,10 @@ public interface IWebApi {
     @GET("api/login/echoping")
     Call<String>echoping();
 
-    @POST("api/login/autenticarEmpleado")
+    @POST("api/loginv2/autenticarEmpleado")
     Call<LoginResponseEntity>autenticarEmpleado(@Body LoginRequestEntity loginRequestEntity);
 
-    @POST("api/login/validarEmpleadoSMS")
+    @POST("api/loginv2/validarEmpleadoSMS")
     Call<LoginResponseEntity>validarEmpleadoSMS(@Body LoginRequestEntity loginRequestEntity);
 
     @GET("autenticarEmpleado.aspx")
@@ -44,6 +46,9 @@ public interface IWebApi {
     @POST("api/operaciones/marcarArchivoDescargado")
     Call<OperacionResponse>marcarArchivoDescargado(@Body OperacionRequest request);
 
-    @POST("api/login/verificarConexion")
+    @POST("api/loginv2/verificarConexion")
     Call<LoginResponseEntity>verificarConexion(@Body LoginRequestEntity request);
+
+    @POST("api/supervisor/RegistrarLog")
+    Call<SupervisorLogResponse>registrarLogSupervisor(@Body SupervisorLogRequest request);
 }

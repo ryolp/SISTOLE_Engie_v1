@@ -3,7 +3,6 @@ package enruta.sistole_gen.clases;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
-import android.view.View;
 
 import enruta.sistole_gen.entities.LoginRequestEntity;
 import enruta.sistole_gen.entities.LoginResponseEntity;
@@ -12,31 +11,33 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Autenticador {
+public class AutenticadorMgr {
     protected Context mContext;
-    protected AutenticadorCallback mAutenticadorCallback = null;
+    protected AutenticadorCallback mCallback = null;
 
     public final int EXITO = 0;
     public final int FALTA_USUARIO_PASSWORD = 1;
     public final int FALTA_CODIGO_SMS = 3;
-    public final int ERROR_AUTENTICAR_1 = 4;
-    public final int ERROR_AUTENTICAR_2 = 5;
-    public final int ERROR_AUTENTICAR_3 = 6;
-    public final int ERROR_AUTENTICAR_4 = 7;
-    public final int ERROR_VALIDAR_SMS_1 = 8;
-    public final int ERROR_VALIDAR_SMS_2= 9;
-    public final int ERROR_VALIDAR_SMS_3 = 10;
+    public final int USUARIO_PASSWORD_INCORRECTO = 4;
+    public final int CODIGO_SMS_INCORRECTO = 5;
+    public final int ERROR_AUTENTICAR_1 = 6;
+    public final int ERROR_AUTENTICAR_2 = 7;
+    public final int ERROR_AUTENTICAR_3 = 8;
+    public final int ERROR_AUTENTICAR_4 = 9;
+    public final int ERROR_VALIDAR_SMS_1 = 10;
+    public final int ERROR_VALIDAR_SMS_2= 11;
+    public final int ERROR_VALIDAR_SMS_3 = 12;
 
 
     LoginResponseEntity mResp = null;
     LoginRequestEntity mRequest = null;
 
-    public Autenticador(Context context) {
+    public AutenticadorMgr(Context context) {
         mContext = context;
      }
 
     public void setAutenticadorCallback(AutenticadorCallback autenticadorCallback) {
-        this.mAutenticadorCallback = autenticadorCallback;
+        this.mCallback = autenticadorCallback;
     }
 
     public void autenticar(String usuario, String password) {
@@ -57,8 +58,6 @@ public class Autenticador {
             mRequest.Password = password;
             mRequest.VersionName = getVersionName();
             mRequest.VersionCode = getVersionCode();
-
-            Utils.showMessageLong(mContext, "Autenticando");
 
             WebApiManager.getInstance(mContext).autenticarEmpleado(mRequest, new Callback<LoginResponseEntity>() {
                         @Override
@@ -98,7 +97,6 @@ public class Autenticador {
             mRequest.VersionName = getVersionName();
             mRequest.VersionCode = getVersionCode();
 
-            Utils.showMessageLong(mContext, "Validando código SMS");
             WebApiManager.getInstance(mContext).validarEmpleadoSMS(mRequest, new Callback<LoginResponseEntity>() {
                         @Override
                         public void onResponse(Call<LoginResponseEntity> call, Response<LoginResponseEntity> response) {
@@ -128,8 +126,12 @@ public class Autenticador {
             resp.CodigoResultado = 0;
         }
 
-        if (mAutenticadorCallback != null)
-            mAutenticadorCallback.enAutenticarExito(req, resp);
+        if (mCallback != null) {
+            if (resp.Exito)
+                mCallback.enAutenticarExito(req, resp);
+            else
+                mCallback.enAutenticarFallo(req, resp);
+        }
     }
 
     private void falloAutenticacion(LoginRequestEntity req, LoginResponseEntity resp, int codigo, String mensaje) {
@@ -141,8 +143,8 @@ public class Autenticador {
             resp.CodigoResultado = codigo;
             resp.MensajeError = mensaje;
         }
-        if (mAutenticadorCallback != null)
-            mAutenticadorCallback.enAutenticarFallo(req, resp);
+        if (mCallback != null)
+            mCallback.enAutenticarFallo(req, resp);
     }
 
     private void exitoValidarSMS(LoginRequestEntity req, LoginResponseEntity resp) {
@@ -150,8 +152,12 @@ public class Autenticador {
             resp.CodigoResultado = 0;
         }
 
-        if (mAutenticadorCallback != null)
-            mAutenticadorCallback.enValidarSMSExito(req, resp);
+        if (mCallback != null) {
+            if (resp.Exito)
+                mCallback.enValidarSMSExito(req, resp);
+            else
+                mCallback.enValidarSMSFallo(req, resp);
+        }
     }
 
     private void falloValidarSMS(LoginRequestEntity req, LoginResponseEntity resp, int codigo, String mensaje) {
@@ -163,8 +169,8 @@ public class Autenticador {
             resp.CodigoResultado = codigo;
             resp.MensajeError = mensaje;
         }
-        if (mAutenticadorCallback != null)
-            mAutenticadorCallback.enValidarSMSFallo(req, resp);
+        if (mCallback != null)
+            mCallback.enValidarSMSFallo(req, resp);
     }
 
 
