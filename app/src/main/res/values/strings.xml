@@ -285,6 +285,8 @@
     <string name="str_lbl_mensaje_supervisor2">Se enviará la siguiente información como parte de la supervisión</string>
     <string name="str_lbl_usuario_supervisor">Usuario del supervisor:</string>
     <string name="str_lbl_codigo_sms">Código SMS:</string>
+    <string name="str_lbl_escaner">Escáner</string>
+    <string name="str_lbl_instruccion_escaner">Acerque la cámara de manera que el código esté dentro del recuadro</string>
     <string name="title_activity_supervisor">Supervisor</string>
 
 </resources>

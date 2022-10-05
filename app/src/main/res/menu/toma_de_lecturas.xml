@@ -72,4 +72,11 @@
         android:showAsAction="never"
         android:title="@string/str_lbl_supervisor"/>
 
+    <item
+        android:id="@+id/m_UsarEscaner"
+        android:icon="@drawable/ic_cambio_medidor"
+        android:orderInCategory="21"
+        android:showAsAction="never"
+        android:title="@string/str_lbl_escaner"/>
+
 </menu>

@@ -51,11 +51,11 @@ public class TodasLasLecturas {
 	
 	int ii_dondeEstaba=0;
 	
-	boolean encontrado=false;
+	public boolean encontrado=false;
 	
 	int ii_numVueltas=0;
 	
-	String ls_groupBy="";
+	public String ls_groupBy="";
 
 	int intentos=0, maxIntentos=6, intentosCorrectos=3, intentosSeguidos=0;
 	String lecturaAnt="";
@@ -71,7 +71,7 @@ public class TodasLasLecturas {
 	
 
 	
-	TodasLasLecturas(Context context, int li_lecturaActual) {
+	public TodasLasLecturas(Context context, int li_lecturaActual) {
 		this.context=context;
 		this.li_lecturaActual=li_lecturaActual;
 		globales= (Globales) context.getApplicationContext();

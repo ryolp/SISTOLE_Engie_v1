@@ -13,7 +13,7 @@
         android:layout_toLeftOf="@+id/im_clearText"
         android:ems="10"
         android:imeActionLabel="Buscar"
-        android:inputType="number" >
+        android:inputType="number">
 
     </EditText>
 
