@@ -74,9 +74,9 @@
 
     <item
         android:id="@+id/m_UsarEscaner"
-        android:icon="@drawable/ic_cambio_medidor"
+        android:icon="@drawable/ic_scanner_24"
         android:orderInCategory="21"
-        android:showAsAction="never"
+        android:showAsAction="always"
         android:title="@string/str_lbl_escaner"/>
 
 </menu>

@@ -761,8 +761,10 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 //		}
 
         permiteCerrar();
-        if (globales.bcerrar)
-            iniciarModoCorreccionCAPS();
+        if (globales.bcerrar) {
+            // iniciarModoCorreccionCAPS();
+            rutaFinalizada();
+        }
         else
             setDatos();
         // c.close();
@@ -1349,7 +1351,8 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
                         // finish();
                         //muere();
                         //Llegamos a la ultima lectura...  hay que ir al principio y empezar modo correccion
-                        iniciarModoCorreccionCAPS();
+                        //iniciarModoCorreccionCAPS();
+                        rutaFinalizada();
                         globales.permiteDarVuelta = false;
 
 //						globales.capsModoCorreccion = true;
@@ -1616,6 +1619,13 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
         //layout.setBackgroundResource(R.drawable.correccion_pattern);
         setFondoCorreccion();
         super.iniciarModoCorreccionCAPS();
+    }
+
+    // RL, 2022-10-05, Engie requiere que ya no puedan modificarse las lecturas realizadas.
+    protected void rutaFinalizada()
+    {
+        mensajeOK(getString(R.string.str_lbl_ruta_finalizada), getString(R.string.msj_tdl_fin_de_ruta));
+        muere();
     }
 
     private void setFondoCorreccion() {
