@@ -288,5 +288,10 @@
     <string name="str_lbl_escaner">Escáner</string>
     <string name="str_lbl_instruccion_escaner">Acerque la cámara de manera que el código esté dentro del recuadro</string>
     <string name="title_activity_supervisor">Supervisor</string>
-
+    <string name="str_title_medidor_encontrado">Medidor encontrado</string>
+    <string name="str_num_serie_medidor">Número de serie</string>
+    <string name="str_unidad">Unidad</string>
+    <string name="str_registrado_como_robado">Registrado como robado</string>
+    <string name="str_lbl_codigo_barras">Código de barras</string>
+    <string name="str_lbl_revisar_conectividad">Conectividad</string>
 </resources>

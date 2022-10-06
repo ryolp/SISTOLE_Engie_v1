@@ -110,9 +110,10 @@
             android:layout_height="wrap_content"
             android:onClick="entrarAdministrador"
             android:layout_weight=".5"
-            android:text="@string/lbl_admon" 
-              android:layout_marginLeft="-3dip"
-            android:layout_marginRight="-3dip"/>
+            android:text="@string/lbl_admon"
+            style="@style/AppTheme.RoundedCornerMaterialButton"
+              android:layout_marginLeft="3dip"
+            android:layout_marginRight="3dip"/>
 
         <Button
             android:id="@+id/b_lecturista"
@@ -120,9 +121,10 @@
             android:layout_height="wrap_content"
             android:onClick="entrarLecturista"
             android:layout_weight=".5"
-            android:text="@string/lbl_lecturista" 
-            android:layout_marginLeft="-3dip"
-            android:layout_marginRight="-3dip" />
+            android:text="@string/lbl_lecturista"
+            style="@style/AppTheme.RoundedCornerMaterialButton"
+            android:layout_marginLeft="3dip"
+            android:layout_marginRight="3dip" />
     </LinearLayout>
 
     <TextView

@@ -80,6 +80,10 @@
         android:id="@+id/m_EntrarSupervisor"
         android:title="@string/str_lbl_supervisor"
         android:visible="true"></item>
+    <item
+        android:id="@+id/m_VerificarConectividad"
+        android:title="@string/str_lbl_revisar_conectividad"
+        android:visible="true"></item>
 
 
 

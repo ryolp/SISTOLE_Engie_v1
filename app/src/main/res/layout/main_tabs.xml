@@ -34,6 +34,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
+                style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
                 android:text="Hacer Check In" />
 
             <Button
@@ -42,6 +43,7 @@
                 android:layout_weight="1.0"
                 android:layout_height="50dp"
                 android:layout_alignParentTop="true"
+                style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
                 android:layout_marginLeft="10dp"
                 android:text="Cerrar archivo" />
 
@@ -55,6 +57,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
+            style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
             android:enabled="false"
             android:onClick="inicia_tdl"
             android:text="@string/m_str_lecturas"

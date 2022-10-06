@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/lblTituloSupervisor"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_gravity="center"
+        android:background="@color/SteelBlue"
+        android:gravity="center"
+        android:text="@string/str_title_medidor_encontrado"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/White"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/lblNumMedidor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:text="@string/str_num_serie_medidor" />
+
+    <TextView
+        android:id="@+id/txtNumMedidor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/str_num_serie_medidor" />
+
+    <TextView
+        android:id="@+id/lblCodigoBarras"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:text="@string/str_lbl_codigo_barras" />
+
+    <TextView
+        android:id="@+id/txtCodigoBarras"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/str_lbl_codigo_barras" />
+
+    <TextView
+        android:id="@+id/lblUnidad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:text="@string/str_unidad" />
+
+    <TextView
+        android:id="@+id/txtUnidad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/str_unidad" />
+
+    <TextView
+        android:id="@+id/lblDireccion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:text="@string/str_direccion" />
+
+    <TextView
+        android:id="@+id/txtDireccion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/str_direccion" />
+
+    <TextView
+        android:id="@+id/lblEsMedidorRobado"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="@color/Red"
+        android:text="@string/str_registrado_como_robado" />
+
+    <Button
+        android:id="@+id/btnAceptar"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        style="@style/AppTheme.RoundedCornerMaterialButton"
+        android:text="@string/aceptar" />
+</LinearLayout>

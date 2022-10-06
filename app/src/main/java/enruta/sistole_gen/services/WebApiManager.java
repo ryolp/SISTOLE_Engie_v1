@@ -6,6 +6,8 @@ import enruta.sistole_gen.Globales;
 import enruta.sistole_gen.TomaDeLecturasGenerica;
 import enruta.sistole_gen.TransmisionesPadre;
 import enruta.sistole_gen.TransmitionObject;
+import enruta.sistole_gen.entities.BuscarMedidorRequest;
+import enruta.sistole_gen.entities.BuscarMedidorResponse;
 import enruta.sistole_gen.entities.OperacionRequest;
 import enruta.sistole_gen.entities.OperacionResponse;
 import enruta.sistole_gen.entities.LoginRequestEntity;
@@ -166,6 +168,12 @@ public class WebApiManager {
 
     public void registrarLogSupervisor(SupervisorLogRequest request, Callback<SupervisorLogResponse> callBack){
         Call<SupervisorLogResponse> call = service.registrarLogSupervisor(request);
+
+        call.enqueue(callBack);
+    }
+
+    public void buscarMedidor(BuscarMedidorRequest request, Callback<BuscarMedidorResponse> callBack){
+        Call<BuscarMedidorResponse> call = service.buscarMedidor(request);
 
         call.enqueue(callBack);
     }

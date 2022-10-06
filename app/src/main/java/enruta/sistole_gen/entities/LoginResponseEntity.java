@@ -1,22 +1,22 @@
 package enruta.sistole_gen.entities;
 
 public class LoginResponseEntity {
-    public String Usuario;
-    public String Email;
-    public String Token;
-    public String Mensaje;
-    public String MensajeError;
-    public String MensajeLecturista;
-    public int CodigoResultado;
-    public boolean Exito;
-    public boolean Error;
-    public boolean SesionOk;
-    public boolean EsLecturista;
-    public boolean EsAdministrador;
-    public boolean EsSuperUsuario;
-    public boolean AutenticarConSMS;
-    public String NumCPL;
-    public String VersionWeb;
+    public String Usuario = "";
+    public String Email = "";
+    public String Token = "";
+    public String Mensaje = "";
+    public String MensajeError = "";
+    public String MensajeLecturista = "";
+    public int CodigoResultado = 0;
+    public boolean Exito = false;
+    public boolean Error = false;
+    public boolean SesionOk = false;
+    public boolean EsLecturista = false;
+    public boolean EsAdministrador = false;
+    public boolean EsSuperUsuario = false;
+    public boolean AutenticarConSMS = false;
+    public String NumCPL = "";
+    public String VersionWeb = "";
     public EmpleadoCplEntity Empleado;
 
 //    public LoginResponseEntity(String Usuario, String Email, String Token, String Mensaje, boolean Exito, boolean Error,

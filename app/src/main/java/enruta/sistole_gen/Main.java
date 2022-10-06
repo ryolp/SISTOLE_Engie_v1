@@ -124,6 +124,7 @@ public class Main extends FragmentActivity implements TabListener {
     private Button btnCerrarArchivo;
 
     private Date fechaHoraVerificacion;
+    private DialogoVerificadorConectividad mDialogoVerificadorConectividad = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -710,6 +711,9 @@ public class Main extends FragmentActivity implements TabListener {
                 break;
             case R.id.m_EntrarSupervisor:
                 entrarSupervisor();
+                break;
+            case R.id.m_VerificarConectividad:
+                verificarConectividad();
                 break;
         }
 
@@ -1939,41 +1943,52 @@ public class Main extends FragmentActivity implements TabListener {
         boolean habilitarLecturas = false;
         ResumenEntity resumen;
 
-        if (globales.sesionEntity.empleado.ArchivoAbierto != 0) {
-            resumen = DbLecturasMgr.getInstance().getResumen(this);
-            habilitarLecturas = true;
+        if (ii_rol == CPL.LECTURISTA) {
 
-            btnCerrarArchivo.setVisibility(View.VISIBLE);
+            if (globales.sesionEntity.empleado.ArchivoAbierto != 0) {
+                resumen = DbLecturasMgr.getInstance().getResumen(this);
+                habilitarLecturas = true;
 
-            if (resumen != null) {
-                if (resumen.TotalRegistros > 0) {
-                    if (resumen.Realizados < resumen.TotalRegistros)
-                        btnCerrarArchivo.setEnabled(false);
-                    else
-                        btnCerrarArchivo.setEnabled(true);
+                btnCerrarArchivo.setVisibility(View.VISIBLE);
+
+                if (resumen != null) {
+                    if (resumen.TotalRegistros > 0) {
+                        if (resumen.Realizados < resumen.TotalRegistros)
+                            btnCerrarArchivo.setEnabled(false);
+                        else
+                            btnCerrarArchivo.setEnabled(true);
+                    }
                 }
+            } else {
+                habilitarLecturas = false;
+                btnCerrarArchivo.setEnabled(false);
+                btnCerrarArchivo.setVisibility(View.GONE);
             }
-        } else {
-            habilitarLecturas = false;
+
+            switch (globales.sesionEntity.empleado.idOperacionTipo) {
+                case CHECK_SEGURIDAD:
+                    btnOperacion.setText("Hacer Check Seguridad");
+                    b_lecturas.setEnabled(false);
+                    break;
+                case CHECK_OUT:
+                    btnOperacion.setText("Hacer Check Out");
+                    b_lecturas.setEnabled(habilitarLecturas);
+                    break;
+                case INDEFINIDO:
+                case CHECK_IN:
+                default:
+                    btnOperacion.setText("Hacer Check In");
+                    b_lecturas.setEnabled(false);
+                    break;
+            }
+        }
+        else
+        {
+            b_lecturas.setEnabled(false);
             btnCerrarArchivo.setEnabled(false);
             btnCerrarArchivo.setVisibility(View.GONE);
-        }
-
-        switch (globales.sesionEntity.empleado.idOperacionTipo) {
-            case CHECK_SEGURIDAD:
-                btnOperacion.setText("Hacer Check Seguridad");
-                b_lecturas.setEnabled(false);
-                break;
-            case CHECK_OUT:
-                btnOperacion.setText("Hacer Check Out");
-                b_lecturas.setEnabled(habilitarLecturas);
-                break;
-            case INDEFINIDO:
-            case CHECK_IN:
-            default:
-                btnOperacion.setText("Hacer Check In");
-                b_lecturas.setEnabled(false);
-                break;
+            btnOperacion.setVisibility(View.GONE);
+            btnOperacion.setEnabled(false);
         }
     }
 
@@ -2300,8 +2315,7 @@ public class Main extends FragmentActivity implements TabListener {
             Intent entrarSupervisor = new Intent(Main.this, SupervisorLoginActivity.class);
 
             startActivityForResult(entrarSupervisor, MENU_ENTRAR_SUPERVISOR);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             Log.e(TAG, "entrarSupervisor: ", e);
             Utils.showMessageLong(this, "Hubo un error al iniciar la pantalla :" + e.getMessage());
         }
@@ -2312,5 +2326,22 @@ public class Main extends FragmentActivity implements TabListener {
             Utils.showMessageLong(this, "Informe enviado");
     }
 
+    protected void verificarConectividad() {
+        if (mDialogoVerificadorConectividad == null) {
+            mDialogoVerificadorConectividad = new DialogoVerificadorConectividad(this, globales);
 
+            mDialogoVerificadorConectividad.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+        }
+
+        mDialogoVerificadorConectividad.verificarConectividad();
+    }
+
+    protected void hacerEscanceo(){
+
+    }
 }

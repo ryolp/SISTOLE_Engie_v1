@@ -17,12 +17,9 @@ public class SesionEntity {
     public String VersionWeb;
     public Bitmap fotoEmpleado=null;
     public EmpleadoCplEntity empleado;
-    public int ConectividadOk = 0;
-    public int SistoleDisponibleOk = 0;
-    public int SesionOk = 0;
-    public Date fechaHoraVerificacion;
     public Boolean Autenticado = false;
     public String Unidad;
+    public String Token;
     public long idArchivoUnidad;
 
     public SesionEntity(){
@@ -39,6 +36,7 @@ public class SesionEntity {
         this.AutenticarConSMS = loginResponseEntity.AutenticarConSMS;
         this.VersionWeb = loginResponseEntity.VersionWeb;
         this.empleado = loginResponseEntity.Empleado;
+        this.Token = loginResponseEntity.Token;
 
         inicializarHoraVencimiento();
     }

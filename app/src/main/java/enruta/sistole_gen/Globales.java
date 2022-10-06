@@ -161,7 +161,7 @@ public class Globales extends Application {
     /**
      * Variables de toma de lecturas
      **/
-    TodasLasLecturas tll; //Variable en donde estan todas las lecturas
+    public TodasLasLecturas tll; //Variable en donde estan todas las lecturas
     long il_ultimoSegReg = 0; //Ultimo medidor guardado
     String idMedidorUltimaLectura = "";
     String is_lectura, is_presion, is_caseta, is_terminacion;
@@ -206,7 +206,7 @@ public class Globales extends Application {
     boolean validar = true; // No se validará la lectura
 
 
-    Location location;
+    public Location location;
     /**
      * Fin de Variables de toma de lecturas
      **/
@@ -395,6 +395,26 @@ public class Globales extends Application {
         if (sesionEntity == null)
             return "";
         return sesionEntity.NumCPL;
+    }
+
+    public long getIdEmpleado() {
+        if (sesionEntity == null)
+            return 0;
+
+        if (sesionEntity.empleado == null)
+            return 0;
+
+        return sesionEntity.empleado.idEmpleado;
+    }
+
+    public String getSesionToken() {
+        if (sesionEntity == null)
+            return "";
+
+        if (sesionEntity.Token == null)
+            return "";
+
+        return sesionEntity.Token;
     }
 
     public void setUsuario(String s) {

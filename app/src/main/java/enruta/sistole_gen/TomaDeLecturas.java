@@ -1616,7 +1616,6 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
         //layout.setBackgroundResource(R.drawable.correccion_pattern);
         setFondoCorreccion();
         super.iniciarModoCorreccionCAPS();
-
     }
 
     private void setFondoCorreccion() {
@@ -2222,8 +2221,10 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
                 break;
             case R.id.m_EntrarSupervisor:
                 entrarSupervisor();
+                break;
             case R.id.m_UsarEscaner:
                 usarEscaner();
+                break;
         }
 
         if (Build.VERSION.SDK_INT >= 11)
@@ -3504,7 +3505,13 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
     protected void buscarMedidorEscaneado(String codigo) {
         int secuencia;
 
-        Utils.showMessageLong(this, "Código: " +codigo);
+        if (codigo == null)
+            return;
+
+        if (codigo.equals(""))
+            return;
+
+        Utils.showMessageShort(this, "Código a buscar: " +codigo);
 
         if (mBuscarMedidorMgr == null)
             mBuscarMedidorMgr=new BuscarMedidorMgr(this);

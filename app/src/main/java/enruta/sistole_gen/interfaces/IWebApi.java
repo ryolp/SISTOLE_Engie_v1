@@ -1,5 +1,7 @@
 package enruta.sistole_gen.interfaces;
 
+import enruta.sistole_gen.entities.BuscarMedidorRequest;
+import enruta.sistole_gen.entities.BuscarMedidorResponse;
 import enruta.sistole_gen.entities.OperacionRequest;
 import enruta.sistole_gen.entities.OperacionResponse;
 import enruta.sistole_gen.entities.LoginRequestEntity;
@@ -51,4 +53,7 @@ public interface IWebApi {
 
     @POST("api/supervisor/RegistrarLog")
     Call<SupervisorLogResponse>registrarLogSupervisor(@Body SupervisorLogRequest request);
+
+    @POST("api/operaciones/BuscarMedidor")
+    Call<BuscarMedidorResponse> buscarMedidor(@Body BuscarMedidorRequest request);
 }

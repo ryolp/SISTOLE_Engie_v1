@@ -135,6 +135,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".25"
+            android:layout_marginLeft="3dip"
+            android:layout_marginRight="3dip"
+            style="@style/AppTheme.RoundedCornerMaterialButton"
             android:text="@string/str_lbl_autenticar" />
 
         <Button
@@ -142,6 +145,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".25"
+            android:layout_marginLeft="3dip"
+            android:layout_marginRight="3dip"
+            style="@style/AppTheme.RoundedCornerMaterialButton"
             android:text="@string/str_lbl_validar_sms" />
 
         <Button
@@ -149,6 +155,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".25"
+            android:layout_marginLeft="3dip"
+            android:layout_marginRight="3dip"
+            style="@style/AppTheme.RoundedCornerMaterialButton"
             android:text="@string/str_lbl_enviar_informe" />
 
         <Button
@@ -156,6 +165,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".25"
+            android:layout_marginLeft="3dip"
+            android:layout_marginRight="3dip"
+            style="@style/AppTheme.RoundedCornerMaterialButton"
             android:text="@string/cancelar" />
     </LinearLayout>
 </LinearLayout>

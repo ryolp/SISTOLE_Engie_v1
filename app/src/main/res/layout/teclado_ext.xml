@@ -22,6 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight=".3333"
                 android:onClick="clickTeclado"
+                style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
                 android:tag="1"
                 android:text="1"
                 android:textSize="50dp" />
@@ -32,6 +33,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight=".3333"
                 android:onClick="clickTeclado"
+                style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
                 android:tag="2"
                 android:text="2"
                 android:textSize="50sp" />
@@ -42,6 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight=".3333"
                 android:onClick="clickTeclado"
+                style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
                 android:tag="3"
                 android:text="3"
                 android:textSize="50sp" />
@@ -59,6 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight=".3333"
                 android:onClick="clickTeclado"
+                style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
                 android:tag="4"
                 android:text="4"
                 android:textSize="50sp" />
@@ -69,6 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight=".3333"
                 android:onClick="clickTeclado"
+                style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
                 android:tag="5"
                 android:text="5"
                 android:textSize="50sp" />
@@ -79,6 +84,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight=".3333"
                 android:onClick="clickTeclado"
+                style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
                 android:tag="6"
                 android:text="6"
                 android:textSize="50sp" />
@@ -96,6 +102,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight=".3333"
                 android:onClick="clickTeclado"
+                style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
                 android:tag="7"
                 android:text="7"
                 android:textSize="50sp" />
@@ -106,6 +113,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight=".3333"
                 android:onClick="clickTeclado"
+                style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
                 android:tag="8"
                 android:text="8"
                 android:textSize="50sp" />
@@ -116,6 +124,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight=".3333"
                 android:onClick="clickTeclado"
+                style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
                 android:tag="9"
                 android:text="9"
                 android:textSize="50sp" />
@@ -133,6 +142,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight=".3333"
                 android:onClick="clickTeclado"
+                style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
                 android:tag="-1"
                 android:text="@string/borrar" />
 
@@ -142,6 +152,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight=".3333"
                 android:onClick="clickTeclado"
+                style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
                 android:tag="0"
                 android:text="0"
                 android:textSize="50sp" />
@@ -152,6 +163,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight=".3333"
                 android:onClick="clickTeclado"
+                style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
                 android:tag="."
                 android:textSize="50sp"
                 android:enabled="false"
@@ -169,6 +181,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight=".3333"
                 android:onClick="capturaLectura"
+                style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
                 android:tag=""
                 android:text="@string/capturayregresa" />
 
@@ -177,6 +190,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight=".3333"
+                style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
                 android:onClick="capturarYAnomalia"
                 android:text="@string/capturayanomalia"/>
 
@@ -185,6 +199,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight=".3333"
+                style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
                 android:onClick="capturarYSiguiente"
                 android:text="@string/capturaysiguiente" />
 

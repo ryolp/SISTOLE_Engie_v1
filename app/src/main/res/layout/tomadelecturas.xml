@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/relativeLayoutm"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -57,41 +58,43 @@
                 android:id="@+id/button1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight=".3333"
-                android:layout_marginLeft="-3dip"
-           		android:layout_marginRight="-3dip"
-           		android:layout_marginTop="-3dip"
-            	android:layout_marginBottom="-3dip"
+                android:layout_weight="1"
+				android:layout_marginLeft="0dip"
+				android:layout_marginRight="2dip"
+				android:layout_marginTop="0dip"
+				android:layout_marginBottom="0dip"
                 android:text="@string/str_lectura"
                 android:textStyle="bold"
-				android:theme="@style/Estilo_Boton_Lectura"/>
+				style="@style/AppTheme.RoundedCornerMaterialButton.Green"
+				/>
 
             <Button
                 android:id="@+id/button2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight=".3333"
-                android:layout_marginLeft="-3dip"
-           		android:layout_marginRight="-3dip"
-           		android:layout_marginTop="-3dip"
-            	android:layout_marginBottom="-3dip"
+                android:layout_weight="1"
+				android:layout_marginLeft="2dip"
+				android:layout_marginRight="2dip"
+				android:layout_marginTop="0dip"
+				android:layout_marginBottom="2dip"
                 android:text="@string/str_buscar"
                 android:textStyle="bold"
-                android:visibility="visible" />
+                android:visibility="visible"
+				style="@style/AppTheme.RoundedCornerMaterialButton"/>
 
             <Button
                 android:id="@+id/button3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight=".3333"
-                android:layout_marginLeft="-3dip"
-           		android:layout_marginRight="-3dip"
-           		android:layout_marginTop="-3dip"
-            	android:layout_marginBottom="-3dip"
+                android:layout_weight="1"
+                android:layout_marginLeft="2dip"
+           		android:layout_marginRight="0dip"
+           		android:layout_marginTop="0dip"
+            	android:layout_marginBottom="2dip"
                 android:enabled="true"
                 android:text="@string/str_anomalia"
                 android:textStyle="bold"
-				android:theme="@style/Estilo_Boton_Anomalia"/>
+				style="@style/AppTheme.RoundedCornerMaterialButton.Red" />
 
         </LinearLayout>
 
@@ -106,37 +109,40 @@
                 android:id="@+id/button4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight=".3333"
-                android:layout_marginLeft="-3dip"
-           		android:layout_marginRight="-3dip"
-           		android:layout_marginTop="-3dip"
-            	android:layout_marginBottom="-3dip"
+                android:layout_weight="1"
+				android:layout_marginLeft="0dip"
+				android:layout_marginRight="2dip"
+				android:layout_marginTop="0dip"
+				android:layout_marginBottom="0dip"
                 android:text="@string/m_str_anterior"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+				style="@style/AppTheme.RoundedCornerMaterialButton"/>
 
             <Button
                 android:id="@+id/button5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="-3dip"
-                android:layout_marginLeft="-3dip"
-                android:layout_marginRight="-3dip"
-                android:layout_marginTop="-3dip"
-                android:layout_weight="0.3333"
+				android:layout_marginLeft="2dip"
+				android:layout_marginRight="2dip"
+				android:layout_marginTop="0dip"
+				android:layout_marginBottom="0dip"
+				android:layout_weight="1"
                 android:onClick="verFotos"
                 android:textStyle="bold"
+				style="@style/AppTheme.RoundedCornerMaterialButton"
                 android:text="@string/str_fotos" />
 
             <Button
                 android:id="@+id/button6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight=".3333"
-                android:layout_marginLeft="-3dip"
-           		android:layout_marginRight="-3dip"
-           		android:layout_marginTop="-3dip"
-            	android:layout_marginBottom="-3dip"
+                android:layout_weight="1"
+                android:layout_marginLeft="2dip"
+           		android:layout_marginRight="0dip"
+           		android:layout_marginTop="0dip"
+            	android:layout_marginBottom="0dip"
                 android:text="@string/m_str_siguiente"
+				style="@style/AppTheme.RoundedCornerMaterialButton"
                 android:textStyle="bold" />
 
         </LinearLayout>
