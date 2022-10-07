@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -45,6 +46,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import enruta.sistole_gen.clases.ArchivosLectCallback;
+import enruta.sistole_gen.clases.ArchivosLectMgr;
+import enruta.sistole_gen.entities.ArchivosLectRequest;
+import enruta.sistole_gen.entities.ArchivosLectResponse;
 import enruta.sistole_gen.entities.LoginRequestEntity;
 import enruta.sistole_gen.entities.LoginResponseEntity;
 import enruta.sistole_gen.entities.OperacionRequest;
@@ -118,13 +123,13 @@ public class Main extends FragmentActivity implements TabListener {
     ThreadTransmitirWifi ttw;
     boolean cambiarDeUsuario = true;
 
-    // RL, 2022-09, Nuevas funcionalidades de Check-In, Check-Out, Check-Seguridad, Cerrar Archivo y verificación datos
+    // RL, 2022-09, Nuevas funcionalidades de Check-In, Check-Out, Check-Seguridad y verificación datos
 
     private Button btnOperacion;
-    private Button btnCerrarArchivo;
 
     private Date fechaHoraVerificacion;
     private DialogoVerificadorConectividad mDialogoVerificadorConectividad = null;
+    private ArchivosLectMgr mArchivosLectMgr = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -714,6 +719,9 @@ public class Main extends FragmentActivity implements TabListener {
                 break;
             case R.id.m_VerificarConectividad:
                 verificarConectividad();
+                break;
+            case R.id.m_ActualizarEstatusArchivos:
+                actualizarEstatusArchivos();
                 break;
         }
 
@@ -1895,7 +1903,6 @@ public class Main extends FragmentActivity implements TabListener {
     private void inicializarActualizarControles() {
         b_lecturas = (Button) this.findViewById(R.id.b_lecturas);
         btnOperacion = (Button) this.findViewById(R.id.btnOperacion);
-        btnCerrarArchivo = (Button) this.findViewById(R.id.btnCerrarArchivo);
 
         btnOperacion.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1925,13 +1932,6 @@ public class Main extends FragmentActivity implements TabListener {
             }
         });
 
-        btnCerrarArchivo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cerrarArchivo();
-            }
-        });
-
         if (globales == null) return;
         if (globales.sesionEntity == null) return;
         if (globales.sesionEntity.empleado == null) return;
@@ -1944,25 +1944,15 @@ public class Main extends FragmentActivity implements TabListener {
         ResumenEntity resumen;
 
         if (ii_rol == CPL.LECTURISTA) {
+            resumen = DbLecturasMgr.getInstance().getResumen(this);
 
-            if (globales.sesionEntity.empleado.ArchivoAbierto != 0) {
-                resumen = DbLecturasMgr.getInstance().getResumen(this);
-                habilitarLecturas = true;
-
-                btnCerrarArchivo.setVisibility(View.VISIBLE);
-
-                if (resumen != null) {
-                    if (resumen.TotalRegistros > 0) {
-                        if (resumen.Realizados < resumen.TotalRegistros)
-                            btnCerrarArchivo.setEnabled(false);
-                        else
-                            btnCerrarArchivo.setEnabled(true);
-                    }
+            if (resumen != null) {
+                if (resumen.TotalRegistros > 0) {
+                    if (resumen.Realizados < resumen.TotalRegistros)
+                        habilitarLecturas = true;
+                    else
+                        habilitarLecturas = false;
                 }
-            } else {
-                habilitarLecturas = false;
-                btnCerrarArchivo.setEnabled(false);
-                btnCerrarArchivo.setVisibility(View.GONE);
             }
 
             switch (globales.sesionEntity.empleado.idOperacionTipo) {
@@ -1985,8 +1975,6 @@ public class Main extends FragmentActivity implements TabListener {
         else
         {
             b_lecturas.setEnabled(false);
-            btnCerrarArchivo.setEnabled(false);
-            btnCerrarArchivo.setVisibility(View.GONE);
             btnOperacion.setVisibility(View.GONE);
             btnOperacion.setEnabled(false);
         }
@@ -2178,138 +2166,6 @@ public class Main extends FragmentActivity implements TabListener {
         }
     }
 
-    protected void cerrarArchivo() {
-        OperacionRequest req;
-        OperacionResponse resp;
-
-        try {
-            if (globales == null) {
-                Utils.showMessageLong(getApplicationContext(), "Error al cerrar archivo. Intente nuevamente");
-                return;
-            }
-
-            if (globales.sesionEntity == null) {
-                Utils.showMessageLong(getApplicationContext(), "No se ha autenticado en la aplicación");
-                return;
-            }
-
-            if (globales.sesionEntity.empleado == null) {
-                Utils.showMessageLong(getApplicationContext(), "No se ha autenticado en la aplicación");
-                return;
-            }
-
-            req = new OperacionRequest();
-            req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
-            req.FechaOperacion = Utils.getDateTime();
-
-            getWebApiManager().cerrarArchivo(req, new Callback<OperacionResponse>() {
-                        @Override
-                        public void onResponse(Call<OperacionResponse> call, Response<OperacionResponse> response) {
-                            String valor;
-                            OperacionResponse resp;
-
-                            if (response.isSuccessful()) {
-                                resp = response.body();
-                                if (resp.Exito) {
-                                    globales.sesionEntity.empleado.ArchivoAbierto = 0;
-                                    inicializarActualizarControles();
-                                    Utils.showMessageLong(getApplicationContext(), "Archivo cerrado");
-                                } else {
-                                    Utils.showMessageLong(getApplicationContext(), "Error al hacer cerrar archivo (1). Intente nuevamente");
-                                }
-                            } else
-                                Utils.showMessageLong(getApplicationContext(), "Error al hacer cerrar archivo (2). Intente nuevamente");
-                        }
-
-                        @Override
-                        public void onFailure(Call<OperacionResponse> call, Throwable t) {
-                            Utils.logMessageLong(getApplicationContext(), "Error al hacer cerrar archivo (3). Intente nuevamente", t);
-                        }
-                    }
-            );
-        } catch (Exception ex) {
-            Utils.logMessageLong(getApplicationContext(), "Error al hacer cerrar archivo (4). Intente nuevamente", ex);
-        }
-    }
-
-//    private void hacerVerificacionConexion() {
-//        boolean verificar = false;
-//        Date horaActual;
-//
-//        horaActual = Utils.getDateTime();
-//
-//        if (fechaHoraVerificacion == null) {
-//            fechaHoraVerificacion = Utils.getFechaAgregarSegundos(10);
-//            verificar = true;
-//        } else if (fechaHoraVerificacion.after(horaActual)) {
-//            fechaHoraVerificacion = Utils.getFechaAgregarSegundos(10);
-//            verificarConexion();
-//        }
-//    }
-//
-//    protected void verificarConexion() {
-//        LoginRequestEntity req;
-//        LoginResponseEntity resp;
-//
-//        try {
-//            Utils.showMessageLong(getApplicationContext(), "Verificar Conexión");
-//
-//            if (globales == null) {
-//                actualizarEstatusConectividad(false, false);
-//            }
-//
-//            if (globales.sesionEntity == null) {
-//                actualizarEstatusConectividad(false, false);
-//            }
-//
-//            if (globales.sesionEntity.empleado == null) {
-//                actualizarEstatusConectividad(false, false);
-//            }
-//
-//            req = new LoginRequestEntity();
-//            req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
-//            req.Usuario = globales.sesionEntity.Usuario;
-//            req.Token = globales.sesionEntity.empleado.Token;
-//
-//            getWebApiManager().verificarConexion(req, new Callback<LoginResponseEntity>() {
-//                        @Override
-//                        public void onResponse(Call<LoginResponseEntity> call, Response<LoginResponseEntity> response) {
-//                            String valor;
-//                            LoginResponseEntity resp;
-//
-//                            if (response.isSuccessful()) {
-//                                resp = response.body();
-//                                if (resp.Exito) {
-//                                    actualizarEstatusConectividad(true, resp.SesionOk);
-//                                } else {
-//                                    actualizarEstatusConectividad(false, false);
-//                                    Utils.showMessageLong(getApplicationContext(), "Error al verificar conexión (1)");
-//                                }
-//                            } else {
-//                                actualizarEstatusConectividad(false, false);
-//                                Utils.showMessageLong(getApplicationContext(), "Error al verificar conexión (2)");
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onFailure(Call<LoginResponseEntity> call, Throwable t) {
-//                            actualizarEstatusConectividad(false, false);
-//                            //Utils.logMessageLong(getApplicationContext(), "Error al hacer Check Out (3). Intente nuevamente", t);
-//                        }
-//                    }
-//            );
-//        } catch (Exception ex) {
-//            actualizarEstatusConectividad(false, false);
-//            //Utils.logMessageLong(getApplicationContext(), "Error al hacer Check Out (4). Intente nuevamente", ex);
-//        }
-//    }
-//
-//    private void actualizarEstatusConectividad(boolean exito, boolean sesionOk) {
-//        globales.sesionEntity.ConectividadOk = (Utils.isNetworkAvailable(this)) ? 1 : 2;
-//        globales.sesionEntity.SesionOk = (sesionOk && exito) ? 1 : 2;
-//        globales.sesionEntity.SistoleDisponibleOk = exito ? 1: 2;
-//    }
-
     protected void entrarSupervisor() {
         try {
             Intent entrarSupervisor = new Intent(Main.this, SupervisorLoginActivity.class);
@@ -2341,7 +2197,33 @@ public class Main extends FragmentActivity implements TabListener {
         mDialogoVerificadorConectividad.verificarConectividad();
     }
 
-    protected void hacerEscanceo(){
+    protected void actualizarEstatusArchivos(){
+        try
+        {
+            if (mArchivosLectMgr == null) {
+                mArchivosLectMgr = new ArchivosLectMgr(this, globales);
 
+                mArchivosLectMgr.setCallback(new ArchivosLectCallback() {
+                    @Override
+                    public void enExito(ArchivosLectRequest request, ArchivosLectResponse resp) {
+                        Utils.mostrarAlerta(Main.this, "Mensaje", "Terminados con éxito");
+                    }
+
+                    @Override
+                    public void enFallo(ArchivosLectRequest request, ArchivosLectResponse resp, int numError, String mensajeError) {
+                        Utils.mostrarAlerta(Main.this, "Error", "Hubo un error :" + mensajeError);
+                    }
+
+                    @Override
+                    public void enSinArchivos() {
+                        Utils.mostrarAlerta(Main.this, "Alerta", "No se encontraron archivos para finalizar");
+                    }
+                });
+            }
+            mArchivosLectMgr.marcarArchivosTerminados();
+
+        } catch (Exception e) {
+            Utils.mostrarAlerta(this, "Error", e.getMessage());
+        }
     }
 }

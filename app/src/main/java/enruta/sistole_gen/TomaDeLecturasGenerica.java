@@ -448,7 +448,7 @@ public abstract class TomaDeLecturasGenerica {
     public String getNombreArchvio(int tipo) {
 
         //Por default es el numero de CPL
-        String ls_extension = "TPL";
+        String ls_extension = "TPL2";
         String ls_archivo = "";
 
         switch (tipo) {

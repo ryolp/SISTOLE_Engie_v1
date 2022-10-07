@@ -1,6 +1,8 @@
 package enruta.sistole_gen.clases;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
@@ -11,6 +13,8 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
+import enruta.sistole_gen.R;
 
 public final class Utils {
     public static Date getDateTime() {
@@ -58,6 +62,13 @@ public final class Utils {
         return result;
     }
 
+    public static String ifNullStr(String s) {
+        if (s == null)
+            return "";
+        else
+            return s;
+    }
+
     public static Date getFechaAgregarSegundos(int segundos){
         Calendar calendar = Calendar.getInstance();
 
@@ -67,6 +78,20 @@ public final class Utils {
 
     public static int convToInt(String value, Integer...defaultValue) {
         int defaultValueAux = 0;
+
+        try {
+            if (defaultValue.length>0)
+                defaultValueAux = defaultValue[0];
+
+            return Integer.parseInt(value.trim());
+        } catch (Exception e)
+        {
+            return defaultValueAux;
+        }
+    }
+
+    public static long convToLong(String value, long...defaultValue) {
+        long defaultValueAux = 0;
 
         try {
             if (defaultValue.length>0)
@@ -114,5 +139,30 @@ public final class Utils {
         }
         Log.i("update_statut","Network is available : FALSE ");
         return false;
+    }
+
+    public static void mostrarAlerta(Context context, String titulo, String ls_mensaje){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(ls_mensaje).setTitle(titulo)
+                .setCancelable(false)
+                .setNegativeButton(R.string.aceptar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    public static void mostrarAlerta(Context context, String titulo, String ls_mensaje, DialogInterface.OnClickListener onClickListener){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(ls_mensaje).setTitle(titulo)
+                .setCancelable(false)
+                .setNegativeButton(R.string.aceptar, onClickListener);
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }

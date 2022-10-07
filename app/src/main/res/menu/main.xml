@@ -87,6 +87,10 @@
         android:id="@+id/m_VerificarConectividad"
         android:title="@string/str_lbl_revisar_conectividad"
         android:visible="true"/>
+    <item
+        android:id="@+id/m_ActualizarEstatusArchivos"
+        android:title="@string/str_lbl_actualizar_estatus_archivos"
+        android:visible="true"/>
 
 
 

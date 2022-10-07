@@ -381,6 +381,18 @@ public abstract class TomaDeLecturasPadre extends Activity {
 		// globales.permiteDarVuelta=false;
 
 	}
+
+	protected void mensajeOK(String ls_mensaje, String titulo, DialogInterface.OnClickListener onClickListener){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(ls_mensaje).setTitle(titulo)
+				.setCancelable(false)
+				.setNegativeButton(R.string.aceptar, onClickListener);
+
+		AlertDialog alert = builder.create();
+		alert.show();
+
+
+	}
 	
 	 protected void mensajeOK(String ls_mensaje, String titulo){
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);

@@ -1,5 +1,7 @@
 package enruta.sistole_gen.interfaces;
 
+import enruta.sistole_gen.entities.ArchivosLectRequest;
+import enruta.sistole_gen.entities.ArchivosLectResponse;
 import enruta.sistole_gen.entities.BuscarMedidorRequest;
 import enruta.sistole_gen.entities.BuscarMedidorResponse;
 import enruta.sistole_gen.entities.OperacionRequest;
@@ -45,8 +47,14 @@ public interface IWebApi {
     @POST("api/operaciones/SolicitarAyuda")
     Call<OperacionResponse>solicitarAyuda(@Body OperacionRequest request);
 
+//    @POST("api/operaciones/marcarArchivoDescargado")
+//    Call<OperacionResponse>marcarArchivoDescargado(@Body OperacionRequest request);
+
     @POST("api/operaciones/marcarArchivoDescargado")
-    Call<OperacionResponse>marcarArchivoDescargado(@Body OperacionRequest request);
+    Call<ArchivosLectResponse>marcarArchivoDescargado(@Body ArchivosLectRequest request);
+
+    @POST("api/operaciones/marcarArchivoTerminado")
+    Call<ArchivosLectResponse>marcarArchivoTerminado(@Body ArchivosLectRequest request);
 
     @POST("api/loginv2/verificarConexion")
     Call<LoginResponseEntity>verificarConexion(@Body LoginRequestEntity request);

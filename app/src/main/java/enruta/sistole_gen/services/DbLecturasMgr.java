@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+
 import enruta.sistole_gen.DBHelper;
 import enruta.sistole_gen.entities.ResumenEntity;
 
@@ -48,6 +50,54 @@ public class DbLecturasMgr {
             resumen.Realizados = c.getLong(c.getColumnIndex("canti"));
 
             return resumen;
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            closeDatabase();
+        }
+    }
+
+    public long getCantidadPendientes(Context context)
+    {
+        try {
+            ResumenEntity resumen = new ResumenEntity();
+            Cursor c;
+            long n;
+
+            openDatabase(context);
+
+            c = db.rawQuery("Select count(*) canti from ruta where trim(tipoLectura)=''", null);
+            c.moveToFirst();
+            n = c.getLong(c.getColumnIndex("canti"));
+
+            return n;
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            closeDatabase();
+        }
+    }
+
+    public ArrayList<Long> getIdsArchivo(Context context)
+    {
+        try {
+            ResumenEntity resumen = new ResumenEntity();
+            ArrayList<Long> lista = new ArrayList<Long>();
+            Cursor c;
+            long n;
+
+            openDatabase(context);
+
+            c = db.rawQuery("Select idArchivo from ruta GROUP BY idArchivo", null);
+
+            while(c.moveToNext()) {
+                n = c.getLong(c.getColumnIndex("idArchivo"));
+                lista.add(n);
+            }
+
+            // Pendiente obtener todos los Id Archivo para luego usarlos para cerrar cuando termine la ruta.
+
+            return lista;
         } catch (Exception e) {
             throw e;
         } finally {

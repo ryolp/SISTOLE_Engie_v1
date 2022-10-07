@@ -1346,7 +1346,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 //
 //			   c.close();
 
-        to.ls_categoria = ls_itinerario + ".tpl";
+        to.ls_categoria = ls_itinerario + ".tpl2";
 
         // closeDatabase();
         return "";
@@ -1621,13 +1621,40 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         return lect;
     }
 
+    // RL, 2022-10-06, se modifica porque truena con la última lectura cuando no se sigue el camino de corrección.
     public boolean mostrarVentanaDeSellos() {
-        return globales.tll.getLecturaActual().selloRetNumero.equals("") && globales.tll.getLecturaActual().is_aviso.startsWith("Dem");
+        String selloRetNumero;
+        String aviso;
+        Lectura lect;
+
+        lect = globales.tll.getLecturaActual();
+
+        if (lect != null) {
+            selloRetNumero = Utils.ifNullStr(globales.tll.getLecturaActual().selloRetNumero);
+            aviso = Utils.ifNullStr(globales.tll.getLecturaActual().is_aviso);
+        }
+        else
+        {
+            selloRetNumero ="";
+            aviso = "";
+        }
+
+        return selloRetNumero.equals("") && aviso.startsWith("Dem");
     }
 
     public boolean tomarFotoModificar() {
+        String aviso;
+        Lectura lect;
+
+        lect = globales.tll.getLecturaActual();
+
+        if (lect != null)
+            aviso = Utils.ifNullStr(lect.is_aviso);
+        else
+            aviso = "";
+
         // TODO Auto-generated method stub
-        if (globales.tll.getLecturaActual().is_aviso.startsWith("Rea") || globales.tll.getLecturaActual().is_aviso.startsWith("Dem")) {
+        if (aviso.startsWith("Rea") || aviso.startsWith("Dem")) {
             return false;
         }
         return true;

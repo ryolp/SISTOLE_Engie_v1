@@ -1,5 +1,6 @@
 package enruta.sistole_gen;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -42,12 +43,14 @@ import android.widget.LinearLayout.LayoutParams;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import enruta.sistole_gen.clases.ArchivosLectMgr;
 import enruta.sistole_gen.clases.BuscarMedidorCallback;
 import enruta.sistole_gen.clases.BuscarMedidorMgr;
 import enruta.sistole_gen.clases.EmergenciaCallback;
 import enruta.sistole_gen.clases.EmergenciaMgr;
 import enruta.sistole_gen.clases.Utils;
 import enruta.sistole_gen.entities.OperacionResponse;
+import enruta.sistole_gen.services.DbLecturasMgr;
 
 public class TomaDeLecturas extends TomaDeLecturasPadre implements
         OnGestureListener {
@@ -112,6 +115,7 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 
     private IntentIntegrator scanIntent;
     private BuscarMedidorMgr mBuscarMedidorMgr = null;
+    private ArchivosLectMgr mArchivosLectMgr = null;
 
     @SuppressLint("NewApi")
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
@@ -1624,8 +1628,27 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
     // RL, 2022-10-05, Engie requiere que ya no puedan modificarse las lecturas realizadas.
     protected void rutaFinalizada()
     {
-        mensajeOK(getString(R.string.str_lbl_ruta_finalizada), getString(R.string.msj_tdl_fin_de_ruta));
-        muere();
+        ArrayList<Long> listadoIdsArchivos;
+
+        if (mArchivosLectMgr == null) {
+            mArchivosLectMgr = new ArchivosLectMgr(this, globales);
+        }
+
+        listadoIdsArchivos = DbLecturasMgr.getInstance().getIdsArchivo(this);
+
+        if (listadoIdsArchivos != null){
+
+        }
+
+
+
+        mensajeOK(getString(R.string.str_lbl_ruta_finalizada), getString(R.string.msj_tdl_fin_de_ruta),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        muere();
+                    }
+                });
     }
 
     private void setFondoCorreccion() {

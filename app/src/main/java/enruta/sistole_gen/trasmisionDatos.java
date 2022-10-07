@@ -2,6 +2,7 @@ package enruta.sistole_gen;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
@@ -30,6 +31,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import enruta.sistole_gen.clases.ArchivosLectCallback;
+import enruta.sistole_gen.clases.ArchivosLectMgr;
+import enruta.sistole_gen.clases.Utils;
+import enruta.sistole_gen.entities.ArchivosLectRequest;
+import enruta.sistole_gen.entities.ArchivosLectResponse;
 import enruta.sistole_gen.entities.OperacionRequest;
 import enruta.sistole_gen.entities.OperacionResponse;
 import enruta.sistole_gen.services.WebApiManager;
@@ -43,6 +49,8 @@ public class trasmisionDatos extends TransmisionesPadre {
     Serializacion serial = null;
 
     public static final int ABRIR_ARCHIVO = 8;
+
+    private ArchivosLectMgr mArchivosLectMgr = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -573,6 +581,9 @@ public class trasmisionDatos extends TransmisionesPadre {
     public void recepcion() {
         final trasmisionDatos context = this;
         puedoCerrar = false;
+
+        inicializarArchivosLectMgr();
+
         hilo = new Thread() {
             int cantidad;
 
@@ -589,6 +600,7 @@ public class trasmisionDatos extends TransmisionesPadre {
                 String[] ls_cambios;
                 String mPhoneNumber;
                 String nombreArchivo = "";
+                long idArchivo = 0;
 
                 /*
                  * TelephonyManager tMgr
@@ -605,7 +617,6 @@ public class trasmisionDatos extends TransmisionesPadre {
                 int i = 0;
 
                 try {
-
                     puedoCerrar = true;
 
                     openDatabase();
@@ -720,19 +731,20 @@ public class trasmisionDatos extends TransmisionesPadre {
 
                         }
 
-                        // RL, Solo se verifica un valor mínimo de longitud de línea
-                        if (ls_linea.length() < globales.tdlg.long_registro) {
-                            // Error general
-                            serial.close();
-                            // db.setTransactionSuccessful();
-                            db.endTransaction();
-                            // db.execSQL("delete from Lecturas ");
-                            closeDatabase();
-                            algunError = true;
-                            muere(false,
-                                    getString(R.string.msj_trans_file_doesnt_match));
-
-                        }
+                        // RL, Ya no se verifica un valor mínimo de longitud de línea..
+                        // ... la validación será con base a la cantidad de columnas recibidas.
+//                        if (ls_linea.length() < globales.tdlg.long_registro) {
+//                            // Error general
+//                            serial.close();
+//                            // db.setTransactionSuccessful();
+//                            db.endTransaction();
+//                            // db.execSQL("delete from Lecturas ");
+//                            closeDatabase();
+//                            algunError = true;
+//                            muere(false,
+//                                    getString(R.string.msj_trans_file_doesnt_match));
+//
+//                        }
 
                         // Agregamos mientras verificamos...
                         // vLecturas.add(ls_cadena);
@@ -742,7 +754,19 @@ public class trasmisionDatos extends TransmisionesPadre {
                                 && !globales.tdlg.esUnRegistroRaro(ls_linea)
                                 && ls_linea.startsWith("L")) {
                             secuenciaReal++;
-                            globales.tlc.strToBD(db, ls_linea, secuenciaReal);// Esta
+                            idArchivo = globales.tlc.strToBD(db, ls_linea, secuenciaReal);// Esta
+
+                            if (idArchivo == 0)     // Si es cero significa que el renglón no trae el mínimo de columnas
+                            {
+                                serial.close();
+                                db.endTransaction();
+                                closeDatabase();
+                                algunError = true;
+                                muere(false, getString(R.string.msj_trans_file_doesnt_match));
+                            }
+                            else
+                                mArchivosLectMgr.agregarArchivoLect(idArchivo);
+
                             // clase
                             // ahora
                             // guarda
@@ -829,7 +853,7 @@ public class trasmisionDatos extends TransmisionesPadre {
                     closeDatabase();
 
                     if (yaAcabo)
-                        marcarArchivoDescargado(nombreArchivo);
+                        mArchivosLectMgr.marcarArchivosDescargados();
                     // dialog.cancel();
                 }
 
@@ -1723,13 +1747,32 @@ public class trasmisionDatos extends TransmisionesPadre {
 
     }
 
-//    protected WebApiManager getWebApiManager() throws Exception {
-//        try {
-//            return WebApiManager.getInstance(globales.defaultServidorGPRS);
-//        } catch (Exception ex) {
-//            throw ex;
-//        }
-//    }
+    protected void inicializarArchivosLectMgr(){
+        if (mArchivosLectMgr == null) {
+            mArchivosLectMgr = new ArchivosLectMgr(this, globales);
+
+            mArchivosLectMgr.setCallback(new ArchivosLectCallback() {
+                @Override
+                public void enExito(ArchivosLectRequest request, ArchivosLectResponse resp) {
+                    Utils.showMessageLong(trasmisionDatos.this, "Exito");
+                }
+
+                @Override
+                public void enFallo(ArchivosLectRequest request, ArchivosLectResponse resp, int numError, String mensajeError) {
+                    Utils.showMessageLong(trasmisionDatos.this, "Fallo : "+mensajeError);
+                }
+
+                @Override
+                public void enSinArchivos() {
+                    Utils.showMessageLong(trasmisionDatos.this, "Sin archivos");
+                }
+            });
+        }
+
+        mArchivosLectMgr.inicializarListaArchivosLect();
+    }
+
+
 
     protected Date getDateTime() {
         Calendar calendar = Calendar.getInstance();
@@ -1745,57 +1788,5 @@ public class trasmisionDatos extends TransmisionesPadre {
         Toast.makeText(this, sMessage, Toast.LENGTH_SHORT).show();
     }
 
-    protected void marcarArchivoDescargado(String archivo) {
-        OperacionRequest req;
-        OperacionResponse resp;
 
-        try {
-            if (globales == null) {
-                showMessageLong("Error al marcar archivo descargado. Intente nuevamente");
-                return;
-            }
-
-            if (globales.sesionEntity == null) {
-                showMessageLong("No se ha autenticado en la aplicación");
-                return;
-            }
-
-            if (globales.sesionEntity.empleado == null) {
-                showMessageLong("No se ha autenticado en la aplicación");
-                return;
-            }
-
-            req = new OperacionRequest();
-            req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
-            req.FechaOperacion = getDateTime();
-            req.Archivo = archivo;
-
-            WebApiManager.getInstance(this).marcarArchivoDescargado(req, new Callback<OperacionResponse>() {
-                        @Override
-                        public void onResponse(Call<OperacionResponse> call, Response<OperacionResponse> response) {
-                            String valor;
-                            OperacionResponse resp;
-
-                            if (response.isSuccessful()) {
-                                resp = response.body();
-                                if (resp.Exito) {
-                                    globales.sesionEntity.empleado.ArchivoAbierto = 1;
-                                } else
-                                    showMessageLong("Error al marcar archivo descargado (1). Intente nuevamente");
-                            } else
-                                showMessageLong("Error al marcar archivo descargado (2). Intente nuevamente");
-                        }
-
-                        @Override
-                        public void onFailure(Call<OperacionResponse> call, Throwable t) {
-                            showMessageLong("Error al marcar archivo descargado (3). Intente nuevamente : " + t.getMessage());
-                            Log.d("CPL", "Error al marcar archivo descargado (3). Intente nuevamente : " + t.getMessage());
-                        }
-                    }
-            );
-        } catch (Exception ex) {
-            showMessageLong("Error al marcar archivo descargado (4). Intente nuevamente : " + ex.getMessage());
-            Log.d("CPL", "Error al marcar archivo descargado (4). Intente nuevamente : " + ex.getMessage());
-        }
-    }
 }

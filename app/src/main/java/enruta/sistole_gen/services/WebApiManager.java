@@ -6,6 +6,8 @@ import enruta.sistole_gen.Globales;
 import enruta.sistole_gen.TomaDeLecturasGenerica;
 import enruta.sistole_gen.TransmisionesPadre;
 import enruta.sistole_gen.TransmitionObject;
+import enruta.sistole_gen.entities.ArchivosLectRequest;
+import enruta.sistole_gen.entities.ArchivosLectResponse;
 import enruta.sistole_gen.entities.BuscarMedidorRequest;
 import enruta.sistole_gen.entities.BuscarMedidorResponse;
 import enruta.sistole_gen.entities.OperacionRequest;
@@ -148,8 +150,20 @@ public class WebApiManager {
         call.enqueue(callBack);
     }
 
-    public void marcarArchivoDescargado(OperacionRequest request, Callback<OperacionResponse> callBack){
-        Call<OperacionResponse> call = service.marcarArchivoDescargado(request);
+//    public void marcarArchivoDescargado(OperacionRequest request, Callback<OperacionResponse> callBack){
+//        Call<OperacionResponse> call = service.marcarArchivoDescargado(request);
+//
+//        call.enqueue(callBack);
+//    }
+
+    public void marcarArchivoDescargado(ArchivosLectRequest request, Callback<ArchivosLectResponse> callBack){
+        Call<ArchivosLectResponse> call = service.marcarArchivoDescargado(request);
+
+        call.enqueue(callBack);
+    }
+
+    public void marcarArchivoTerminado(ArchivosLectRequest request, Callback<ArchivosLectResponse> callBack){
+        Call<ArchivosLectResponse> call = service.marcarArchivoTerminado(request);
 
         call.enqueue(callBack);
     }
