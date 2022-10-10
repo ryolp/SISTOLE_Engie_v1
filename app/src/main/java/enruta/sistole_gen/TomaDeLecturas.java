@@ -608,8 +608,8 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tomadelecturas);
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
-                WindowManager.LayoutParams.FLAG_SECURE);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+//                WindowManager.LayoutParams.FLAG_SECURE);
 
         is_mensaje_direccion = getString(R.string.msj_lecturas_no_hay_mas);
         setTitle("");

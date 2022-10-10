@@ -13,4 +13,6 @@ public class OperacionResponse {
     public String MensajeError = "";
     public long idArchivo;
     public String Archivo;
+    public boolean RequiereCheckIn = false;
+    public boolean RequiereCheckSeguridad = false;
 }

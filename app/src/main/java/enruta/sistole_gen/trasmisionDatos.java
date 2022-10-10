@@ -1753,18 +1753,26 @@ public class trasmisionDatos extends TransmisionesPadre {
 
             mArchivosLectMgr.setCallback(new ArchivosLectCallback() {
                 @Override
-                public void enExito(ArchivosLectRequest request, ArchivosLectResponse resp) {
-                    Utils.showMessageLong(trasmisionDatos.this, "Exito");
+                public void enExitoComunicacion(ArchivosLectRequest request, ArchivosLectResponse resp) {
+                    if (resp.Exito)
+                        Utils.showMessageLong(trasmisionDatos.this, "Exito");
+                    else
+                        Utils.mostrarAlerta(trasmisionDatos.this, "Alerta", resp.Mensaje);
                 }
 
                 @Override
-                public void enFallo(ArchivosLectRequest request, ArchivosLectResponse resp, int numError, String mensajeError) {
-                    Utils.showMessageLong(trasmisionDatos.this, "Fallo : "+mensajeError);
+                public void enFalloComunicacion(ArchivosLectRequest request, ArchivosLectResponse resp, int numError, String mensajeError) {
+                    Utils.mostrarAlerta(trasmisionDatos.this, "Error", resp.MensajeError);
+                    //Utils.showMessageLong(trasmisionDatos.this, "Fallo : "+mensajeError);
                 }
 
                 @Override
                 public void enSinArchivos() {
-                    Utils.showMessageLong(trasmisionDatos.this, "Sin archivos");
+                    try {
+                        Utils.mostrarAlerta(trasmisionDatos.this, "Error", "No se encontraron archivos");
+                    } catch (Exception e) {
+
+                    }
                 }
             });
         }

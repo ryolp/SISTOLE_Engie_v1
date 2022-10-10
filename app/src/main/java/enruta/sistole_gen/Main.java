@@ -48,10 +48,14 @@ import android.widget.Toast;
 
 import enruta.sistole_gen.clases.ArchivosLectCallback;
 import enruta.sistole_gen.clases.ArchivosLectMgr;
+import enruta.sistole_gen.clases.OperacionGenericaCallback;
+import enruta.sistole_gen.clases.OperacionGenericaMgr;
 import enruta.sistole_gen.entities.ArchivosLectRequest;
 import enruta.sistole_gen.entities.ArchivosLectResponse;
 import enruta.sistole_gen.entities.LoginRequestEntity;
 import enruta.sistole_gen.entities.LoginResponseEntity;
+import enruta.sistole_gen.entities.OperacionGenericaRequest;
+import enruta.sistole_gen.entities.OperacionGenericaResponse;
 import enruta.sistole_gen.entities.OperacionRequest;
 import enruta.sistole_gen.entities.OperacionResponse;
 import enruta.sistole_gen.entities.ResumenEntity;
@@ -130,6 +134,7 @@ public class Main extends FragmentActivity implements TabListener {
     private Date fechaHoraVerificacion;
     private DialogoVerificadorConectividad mDialogoVerificadorConectividad = null;
     private ArchivosLectMgr mArchivosLectMgr = null;
+    private OperacionGenericaMgr operacionGenericaMgr = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -722,6 +727,9 @@ public class Main extends FragmentActivity implements TabListener {
                 break;
             case R.id.m_ActualizarEstatusArchivos:
                 actualizarEstatusArchivos();
+                break;
+            case R.id.m_OperacionGenerica:
+                operacionGenerica();
                 break;
         }
 
@@ -1955,25 +1963,32 @@ public class Main extends FragmentActivity implements TabListener {
                 }
             }
 
-            switch (globales.sesionEntity.empleado.idOperacionTipo) {
-                case CHECK_SEGURIDAD:
-                    btnOperacion.setText("Hacer Check Seguridad");
-                    b_lecturas.setEnabled(false);
-                    break;
-                case CHECK_OUT:
-                    btnOperacion.setText("Hacer Check Out");
-                    b_lecturas.setEnabled(habilitarLecturas);
-                    break;
-                case INDEFINIDO:
-                case CHECK_IN:
-                default:
-                    btnOperacion.setText("Hacer Check In");
-                    b_lecturas.setEnabled(false);
-                    break;
+            if (globales.sesionEntity.empleado.RequiereCheckIn) {
+                btnOperacion.setText("Hacer Check In");
+                b_lecturas.setEnabled(false);
+                globales.sesionEntity.empleado.idOperacionTipo = CHECK_IN;
             }
-        }
-        else
-        {
+            else if (globales.sesionEntity.empleado.RequiereCheckSeguridad) {
+                btnOperacion.setText("Hacer Check Seguridad");
+                b_lecturas.setEnabled(false);
+                globales.sesionEntity.empleado.idOperacionTipo = CHECK_SEGURIDAD;
+            }
+            else if (globales.sesionEntity.empleado.idOperacionTipo == CHECK_IN) {
+                btnOperacion.setText("Hacer Check In");
+                b_lecturas.setEnabled(habilitarLecturas);
+                globales.sesionEntity.empleado.idOperacionTipo = CHECK_IN;
+            }
+            else if (globales.sesionEntity.empleado.idOperacionTipo == CHECK_OUT) {
+                btnOperacion.setText("Hacer Check Out");
+                b_lecturas.setEnabled(habilitarLecturas);
+                globales.sesionEntity.empleado.idOperacionTipo = CHECK_OUT;
+            }
+            else {
+                btnOperacion.setText("Hacer Check In");
+                b_lecturas.setEnabled(false);
+                globales.sesionEntity.empleado.idOperacionTipo = CHECK_IN;
+            }
+        } else {
             b_lecturas.setEnabled(false);
             btnOperacion.setVisibility(View.GONE);
             btnOperacion.setEnabled(false);
@@ -2041,7 +2056,9 @@ public class Main extends FragmentActivity implements TabListener {
                             if (response.isSuccessful()) {
                                 resp = response.body();
                                 if (resp.Exito) {
-                                    globales.sesionEntity.empleado.idOperacionTipo = CHECK_SEGURIDAD;
+                                    globales.sesionEntity.empleado.idOperacionTipo = CHECK_OUT;
+                                    globales.sesionEntity.empleado.RequiereCheckIn = resp.RequiereCheckIn;
+                                    globales.sesionEntity.empleado.RequiereCheckSeguridad = resp.RequiereCheckSeguridad;
                                     inicializarActualizarControles();
                                 } else
                                     Utils.showMessageLong(getApplicationContext(), "Error al hacer checkIn (1). Intente nuevamente");
@@ -2094,6 +2111,8 @@ public class Main extends FragmentActivity implements TabListener {
                                 resp = response.body();
                                 if (resp.Exito) {
                                     globales.sesionEntity.empleado.idOperacionTipo = CHECK_OUT;
+                                    globales.sesionEntity.empleado.RequiereCheckIn = resp.RequiereCheckIn;
+                                    globales.sesionEntity.empleado.RequiereCheckSeguridad = resp.RequiereCheckSeguridad;
                                     inicializarActualizarControles();
                                 } else {
                                     Utils.showMessageLong(getApplicationContext(), "Error al hacer check de seguridad  (1). Intente nuevamente");
@@ -2147,6 +2166,8 @@ public class Main extends FragmentActivity implements TabListener {
                                 resp = response.body();
                                 if (resp.Exito) {
                                     globales.sesionEntity.empleado.idOperacionTipo = CHECK_IN;
+                                    globales.sesionEntity.empleado.RequiereCheckIn = resp.RequiereCheckIn;
+                                    globales.sesionEntity.empleado.RequiereCheckSeguridad = resp.RequiereCheckSeguridad;
                                     inicializarActualizarControles();
                                 } else {
                                     Utils.showMessageLong(getApplicationContext(), "Error al hacer Check Out (1). Intente nuevamente");
@@ -2197,20 +2218,19 @@ public class Main extends FragmentActivity implements TabListener {
         mDialogoVerificadorConectividad.verificarConectividad();
     }
 
-    protected void actualizarEstatusArchivos(){
-        try
-        {
+    protected void actualizarEstatusArchivos() {
+        try {
             if (mArchivosLectMgr == null) {
                 mArchivosLectMgr = new ArchivosLectMgr(this, globales);
 
                 mArchivosLectMgr.setCallback(new ArchivosLectCallback() {
                     @Override
-                    public void enExito(ArchivosLectRequest request, ArchivosLectResponse resp) {
+                    public void enExitoComunicacion(ArchivosLectRequest request, ArchivosLectResponse resp) {
                         Utils.mostrarAlerta(Main.this, "Mensaje", "Terminados con éxito");
                     }
 
                     @Override
-                    public void enFallo(ArchivosLectRequest request, ArchivosLectResponse resp, int numError, String mensajeError) {
+                    public void enFalloComunicacion(ArchivosLectRequest request, ArchivosLectResponse resp, int numError, String mensajeError) {
                         Utils.mostrarAlerta(Main.this, "Error", "Hubo un error :" + mensajeError);
                     }
 
@@ -2225,5 +2245,26 @@ public class Main extends FragmentActivity implements TabListener {
         } catch (Exception e) {
             Utils.mostrarAlerta(this, "Error", e.getMessage());
         }
+    }
+
+    protected void operacionGenerica()
+    {
+        if (operacionGenericaMgr == null) {
+            operacionGenericaMgr = new OperacionGenericaMgr(this, globales);
+
+            operacionGenericaMgr.setSupervisorCallback(new OperacionGenericaCallback() {
+                @Override
+                public void enExito(OperacionGenericaRequest request, OperacionGenericaResponse resp) {
+                    Utils.mostrarAlerta(Main.this, "Operacion recibida", resp.Resultado);
+                }
+
+                @Override
+                public void enFallo(OperacionGenericaRequest request, OperacionGenericaResponse resp, int numError, String mensajeError) {
+                    Utils.mostrarAlerta(Main.this, "Operacion con fallo", mensajeError);
+                }
+            });
+        }
+
+        operacionGenericaMgr.enviarOperacion("Operacion 1", "dato 2", "dato 3");
     }
 }

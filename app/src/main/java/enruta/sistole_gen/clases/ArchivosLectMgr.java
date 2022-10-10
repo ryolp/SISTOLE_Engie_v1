@@ -8,10 +8,6 @@ import java.util.ArrayList;
 import enruta.sistole_gen.Globales;
 import enruta.sistole_gen.entities.ArchivosLectRequest;
 import enruta.sistole_gen.entities.ArchivosLectResponse;
-import enruta.sistole_gen.entities.OperacionRequest;
-import enruta.sistole_gen.entities.OperacionResponse;
-import enruta.sistole_gen.entities.SupervisorLogRequest;
-import enruta.sistole_gen.entities.SupervisorLogResponse;
 import enruta.sistole_gen.services.DbLecturasMgr;
 import enruta.sistole_gen.services.WebApiManager;
 import retrofit2.Call;
@@ -84,10 +80,7 @@ public class ArchivosLectMgr {
 
                             if (response.isSuccessful()) {
                                 resp = response.body();
-                                if (resp.Exito) {
-                                    exito(mRequest, resp);
-                                } else
-                                    fallo(mRequest, null, ERROR_ENVIAR_1, "Error al marcar archivo descargado (1). Intente nuevamente.");
+                                exito(mRequest, resp);
                             } else
                                 fallo(mRequest, null, ERROR_ENVIAR_2, "Error al marcar archivo descargado (2). Intente nuevamente.");
                         }
@@ -143,7 +136,7 @@ public class ArchivosLectMgr {
 
         if (mListadoArchivosLect.size() == 0){
             if (mCallback != null)
-                mCallback.enExito(req, resp);
+                mCallback.enExitoComunicacion(req, resp);
         }
         else
         {
@@ -163,7 +156,7 @@ public class ArchivosLectMgr {
             resp.MensajeError = mensajeError;
         }
         if (mCallback != null)
-            mCallback.enFallo(req, resp, numError, mensajeError);
+            mCallback.enFalloComunicacion(req, resp, numError, mensajeError);
     }
 
     private void exitoTerminado(ArchivosLectRequest req, ArchivosLectResponse resp) {
@@ -171,15 +164,20 @@ public class ArchivosLectMgr {
             resp.NumError = 0;
         }
 
-        if (mListadoArchivosLect.size() == 0){
-            if (mCallback != null)
-                mCallback.enExito(req, resp);
+        if (resp.Exito) {
+            if (mListadoArchivosLect.size() == 0) {
+                if (mCallback != null)
+                    mCallback.enExitoComunicacion(req, resp);
+            } else {
+                mIdArchivo = mListadoArchivosLect.get(0);
+                mListadoArchivosLect.remove(0);
+                marcarArchivoTerminado(mIdArchivo);
+            }
         }
         else
         {
-            mIdArchivo =mListadoArchivosLect.get(0);
-            mListadoArchivosLect.remove(0);
-            marcarArchivoTerminado(mIdArchivo);
+            if (mCallback != null)
+                mCallback.enExitoComunicacion(req, resp);
         }
     }
 
@@ -193,7 +191,7 @@ public class ArchivosLectMgr {
             resp.MensajeError = mensajeError;
         }
         if (mCallback != null)
-            mCallback.enFallo(req, resp, numError, mensajeError);
+            mCallback.enFalloComunicacion(req, resp, numError, mensajeError);
     }
 
     public void inicializarListaArchivosLect(){

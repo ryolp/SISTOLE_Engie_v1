@@ -10,6 +10,8 @@ import enruta.sistole_gen.entities.ArchivosLectRequest;
 import enruta.sistole_gen.entities.ArchivosLectResponse;
 import enruta.sistole_gen.entities.BuscarMedidorRequest;
 import enruta.sistole_gen.entities.BuscarMedidorResponse;
+import enruta.sistole_gen.entities.OperacionGenericaRequest;
+import enruta.sistole_gen.entities.OperacionGenericaResponse;
 import enruta.sistole_gen.entities.OperacionRequest;
 import enruta.sistole_gen.entities.OperacionResponse;
 import enruta.sistole_gen.entities.LoginRequestEntity;
@@ -188,6 +190,12 @@ public class WebApiManager {
 
     public void buscarMedidor(BuscarMedidorRequest request, Callback<BuscarMedidorResponse> callBack){
         Call<BuscarMedidorResponse> call = service.buscarMedidor(request);
+
+        call.enqueue(callBack);
+    }
+
+    public void operacionGenerica(OperacionGenericaRequest request, Callback<OperacionGenericaResponse> callBack){
+        Call<OperacionGenericaResponse> call = service.operacionGenerica(request);
 
         call.enqueue(callBack);
     }
