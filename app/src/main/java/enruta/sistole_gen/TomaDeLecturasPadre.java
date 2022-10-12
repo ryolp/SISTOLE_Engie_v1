@@ -1275,19 +1275,16 @@ public abstract class TomaDeLecturasPadre extends Activity {
 		builder.show();
 	}
 	
-public void preguntaInput(final MensajeEspecial me){
-		
+	public void preguntaInput(final MensajeEspecial me){
 //	Intent intent = new Intent(this, InputCamposGenerico.class);
 //	intent.putExtra("campos",me.campos);
 //	intent.putExtra("label","");
-	if (me.respondeA==TomaDeLecturasGenerica.RETIRAR_SELLOS){
+		if (me.respondeA==TomaDeLecturasGenerica.RETIRAR_SELLOS){
 //		intent.putExtra("anomalia", "sellos");
 //		intent.putExtra("titulo", "Retirar Sellos");
 //		intent.putExtra("boton", "Grabar");
 //		startActivityForResult(intent, INPUT_CAMPOS_GENERICO_ME);
-	}
-	
-	
+		}
 	}
 	
 	public void capturar() {
@@ -1302,18 +1299,13 @@ public void preguntaInput(final MensajeEspecial me){
 		if (regreseDe==ANOMALIA && globales.legacyCaptura){
 			if (globales.tll.getLecturaActual().requiereLectura()==Anomalia.LECTURA_AUSENTE && !globales.tdlg.avanzarDespuesDeAnomalia(ultimaAnomaliaSeleccionada, ultimaSubAnomaliaSeleccionada, false)){
 				voyATomarFoto=true;
-
 				capturar();
-
 			}
 			else if (globales.tdlg.avanzarDespuesDeAnomalia(ultimaAnomaliaSeleccionada, ultimaSubAnomaliaSeleccionada, false)){
 				voyATomarFoto=true;
 				avanzarDespuesDeAnomalia();
-
 			}
-	 }
-
-		else if (globales.legacyCaptura && regreseDe==LECTURA){
+	 	} else if (globales.legacyCaptura && regreseDe==LECTURA){
 			voyATomarFoto=true;
 			capturar();
 		}

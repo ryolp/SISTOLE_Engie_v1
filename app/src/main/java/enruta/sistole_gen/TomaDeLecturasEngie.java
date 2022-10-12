@@ -86,12 +86,9 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         mj_sellos = new MensajeEspecial("Retirar Sellos", getCamposGenerico("sellos"), RETIRAR_SELLOS);
 
         respuesta = new Vector<Respuesta>();
-        respuesta.add(new Respuesta("4J", "J-Sin Servicio"));
-        respuesta.add(new Respuesta("4O", "O-No usan gas"));
-        respuesta.add(new Respuesta("4P", "P-Refaccion"));
-        respuesta.add(new Respuesta("4Q", "Q-Bien Tomado"));
-        respuesta.add(new Respuesta("4U", "U-Desocupado"));
-        respuesta.add(new Respuesta("4X", "X-Cerrado Vacaciones"));
+        respuesta.add(new Respuesta("4J", "J-Esta Habitado"));
+        respuesta.add(new Respuesta("4O", "O-Esta Deshabitado"));
+        respuesta.add(new Respuesta("4P", "P-Indeterminado"));
         mj_consumocero = new MensajeEspecial("Consumo Cero. Seleccione una de las opciones", respuesta, PREGUNTAS_CONSUMO_CERO);
         mj_consumocero.cancelable = false;
 
@@ -469,11 +466,66 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
     @Override
     public MensajeEspecial mensajeDeConsumo(String ls_lectAct) {
+        //Vamos a investigar si es un Consumo Cero
+
+        int li_lectAct= Integer.parseInt(ls_lectAct);
+        if ((globales.tll.getLecturaActual().consAnoAnt == li_lectAct) && (globales.tll.getLecturaActual().consBimAnt == li_lectAct)){
+            //Si es la misma o menor... quiere decir que no hubo un consumo
+            return mj_consumocero;
+        }
         return null;
     }
 
     @Override
     public void RespuestaMensajeSeleccionada(MensajeEspecial me, int respuesta) {
+        // TODO Auto-generated method stub
+
+        switch (me.respondeA){
+            case PREGUNTAS_SIGUE_CORTADO:
+                if (respuesta== MensajeEspecial.NO){
+                    //Borramos si hay una j
+                    globales.tll.getLecturaActual().deleteAnomalia("J");
+                    //Agregamos la anomalia J al vector de anomalias
+                    cambiosAnomaliaAntesDeGuardar(globales.is_lectura);
+                    globales.tll.getLecturaActual().setAnomalia("J");
+                    globales.is_presion=globales.tll.getLecturaActual().getAnomalia();
+                    globales.tll.getLecturaActual().is_estadoDelSuministroReal="0";
+                }else{
+                    globales.tll.getLecturaActual().is_estadoDelSuministroReal="1";
+                }
+                break;
+            case PREGUNTAS_CONSUMO_CERO:
+                //Borramos la anomalia y la sub
+//                globales.tll.getLecturaActual().deleteAnomalia(me.regresaValor(respuesta).substring(0, 1));
+                //Agregamos
+//                cambiosAnomaliaAntesDeGuardar(globales.is_lectura);
+//                globales.tll.getLecturaActual().setAnomalia(me.regresaValor(respuesta).substring(0, 1));
+//                globales.tll.getLecturaActual().setSubAnomalia(me.regresaValor(respuesta));
+
+//                globales.is_presion=globales.tll.getLecturaActual().getAnomalia();
+                break;
+            case PREGUNTAS_EN_EJECUCION:
+                break;
+
+            case PREGUNTAS_UBICACION_VACIA:
+                globales.tll.getLecturaActual().is_ubicacion=me.regresaValor(respuesta).substring(1,2);
+                globales.tll.getLecturaActual().deleteAnomalia(me.regresaValor(respuesta).substring(0,1));
+                globales.tll.getLecturaActual().setAnomalia(me.regresaValor(respuesta).substring(0,1));
+                globales.tll.getLecturaActual().setSubAnomalia(me.regresaValor(respuesta));
+                break;
+
+            case ANOMALIA_SEIS:
+                globales.tll.getLecturaActual().deleteAnomalia("6");
+//			globales.tll.getLecturaActual().deleteAnomalia("R");
+//			globales.tll.getLecturaActual().deleteAnomalia("Z");
+//			globales.tll.getLecturaActual().deleteAnomalia("5");
+//			globales.tll.getLecturaActual().deleteAnomalia("G");
+//			globales.tll.getLecturaActual().deleteAnomalia(me.regresaValor(respuesta));
+                globales.tll.getLecturaActual().setAnomalia(me.regresaValor(respuesta));
+                globales.tll.getLecturaActual().setAnomalia("6");
+                break;
+        }
+
     }
 
     @Override

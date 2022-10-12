@@ -519,21 +519,16 @@ public class Input extends TomaDeLecturasPadre {
 								Toast.makeText(this, ls_respuesta,
 										Toast.LENGTH_SHORT).show();
 							}
-							
 						}
-						
 						if(li_sospecha==TomaDeLecturasGenerica.SOSPECHOSA || li_sospecha==TomaDeLecturasGenerica.SOSPECHOSA_MENSAJE){
 							sospechosa = true;
 							il_lectConf++;
 						}
-						
 						if(globales.sonidos)
 							sonidos.playSoundMedia(globales.sonidoIncorrecta);
 						return;
 					}
-
 				}
-				
 				esLecturaValida = true;
 				globales.is_lectura = et_generico.getText().toString();
 				MensajeEspecial me= globales.tdlg.mensajeDeConsumo(et_generico.getText().toString());
@@ -542,31 +537,20 @@ public class Input extends TomaDeLecturasPadre {
 					esLecturaValida=false;
 					return;
 				}
-				
 				if(globales.sonidos){
 					if (!sospechosa){
-						
-							sonidos.playSoundMedia(globales.sonidoCorrecta);
+						sonidos.playSoundMedia(globales.sonidoCorrecta);
 					}else{
 						sonidos.playSoundMedia(globales.sonidoConfirmada);
 					}
-					
 				}
-				
-				
-				
 			}
 			else{
 				esLecturaValida=true;
 			}
-
 			if (salir)
 				captura();
-			
-			
-			
 			break;
-
 		case MAC:
 
 			if (et_generico.getText().toString().length() != 12) {
@@ -1504,7 +1488,6 @@ public class Input extends TomaDeLecturasPadre {
 			//Ya no validamos, ya lo hicimos
 			pregunteConsumo=true;
 			globales.ignorarContadorControlCalidad=true;
-			
 			globales.calidadOverride=globales.tdlg.cambiaCalidadSegunTabla( me.regresaValor(respuesta).substring(0,1),  me.regresaValor(respuesta));
 //			globales.ignorarGeneracionCalidadOverride=true;
 			//regresamos a la funcion

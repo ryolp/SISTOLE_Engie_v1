@@ -74,7 +74,7 @@ public class CamaraActivity extends Activity {
     Globales globales;
     ImageButton ib_flash;
     boolean tieneFlash = true;
-    boolean tieneZoom = false;
+    boolean tieneZoom = true;
     boolean tieneCamaraFrontal = false;
     AlertDialog alert;
     /**
@@ -315,8 +315,9 @@ public class CamaraActivity extends Activity {
             //Si no pudimos habrir la camara, mandamos un lindo mensajito...
             if (mCamera == null) {
                 Toast.makeText(this, String.format(getString(R.string.msj_error_descripcion), getString(R.string.msj_camara_obtener)) + mensajeDeErrorCamera, Toast.LENGTH_LONG).show();
-                this.finish();
+                tieneCamaraFrontal = false;
                 ca.alert.dismiss();
+                this.finish();
                 return;
             }
             Camera.Parameters cp = mCamera.getParameters();
@@ -335,7 +336,6 @@ public class CamaraActivity extends Activity {
             Cursor c = db.rawQuery("Select cast(value as integer) value from config where key='tam_fotos'", null);
             if (c.getCount() > 0) {
                 int n, m;
-
                 c.moveToFirst();
                 n = c.getColumnIndex("value");
                 m = c.getInt(n);
@@ -352,7 +352,8 @@ public class CamaraActivity extends Activity {
                 if (tieneFlash) {
                     cp.setFlashMode(flashMode);
                 }
-                if (cp.isZoomSupported()) {
+                tieneZoom = cp.isZoomSupported();
+                if (tieneZoom) {
                     cp.setZoom(globales.zoom);
                 }
                 //cp.setPictureSize(1633, 1225);
@@ -361,13 +362,13 @@ public class CamaraActivity extends Activity {
         } else {
             try {
                 if (!tieneCamaraFrontal) {
+                    Camera.Parameters cp = mCamera.getParameters();
                     if (tieneFlash) {
-                        Camera.Parameters cp = mCamera.getParameters();
                         cp.setFlashMode(flashMode);
                         mCamera.setParameters(cp);
                     }
+                    tieneZoom = cp.isZoomSupported();
                     if (tieneZoom) {
-                        Camera.Parameters cp = mCamera.getParameters();
                         cp.setZoom(globales.zoom);
                         mCamera.setParameters(cp);
                     }
@@ -380,6 +381,8 @@ public class CamaraActivity extends Activity {
             }
         }
         if (mCamera == null) {
+            globales.camaraFrontal = 0;
+            tieneCamaraFrontal = false;
             ca.alert.dismiss();
             this.finish();
         }
@@ -400,7 +403,6 @@ public class CamaraActivity extends Activity {
         } catch (Exception e1) {
         }
     }
-
 
     public static Camera getCameraInstance(int numCamara) {
         Camera c = null;
@@ -445,11 +447,9 @@ public class CamaraActivity extends Activity {
     }*/
 
     private void guardarFotoTmp(byte[] foto) {
-
         DBHelper dbHelper = new DBHelper(this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         String ls_unicom, ls_nisrad;
-
 
 //    	Cursor c= db.rawQuery("Select registro from encabezado", null);
 //    	
@@ -513,7 +513,10 @@ public class CamaraActivity extends Activity {
             mCamera.stopPreview();
             mPreview.setCamera(null);
 
+            globales.camaraFrontal = 0;
+            tieneCamaraFrontal = false;
             if (mCamera != null) {
+                globales.camaraFrontal = findBackCamera();
                 mCamera.release();
                 mCamera = null;
             }
@@ -521,18 +524,22 @@ public class CamaraActivity extends Activity {
         }
     }
 
-
     public void regresar() {
-
         guardarFotoBD();
+        globales.camaraFrontal = 0;
+        tieneCamaraFrontal = false;
+// CE, 10/10/22, Estoy cerrando la camara aqui para evitar un problema al volverla a abrir
+        if (mCamera != null) {
+            globales.camaraFrontal = findBackCamera();
+            mCamera.release();
+            mCamera = null;
+        }
         this.finish();
-
     }
 
     public void guardarFotoBD() {
         DBHelper dbHelper = new DBHelper(this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-
 
         db.insert("fotos", null, cv_datos);
 
@@ -558,10 +565,13 @@ public class CamaraActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        if (mCamera != null)
+        tieneCamaraFrontal = false;
+        if (mCamera != null) {
+            globales.camaraFrontal = findBackCamera();
             mCamera.release();
+            mCamera = null;
+        }
         super.onDestroy();
-
     }
 
     private static File getOutputMediaFile(int type, String ls_nombre) {
