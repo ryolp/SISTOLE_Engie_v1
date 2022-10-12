@@ -169,7 +169,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         globales.defaultUnicom = "1120";                                // CE, Hay que ver si tenemos el campo CPL
         globales.defaultRuta = "03";
         globales.defaultItinerario = "4480";
-        globales.defaultServidorGPRS = "https://engie.sistoleweb.com";
+        globales.defaultServidorGPRS = "http://dev-engie.sistoleweb.com";
 //		globales.defaultServidorGPRS="http://www.espinosacarlos.com";
         globales.defaultServidorWIFI = "http://10.240.225.11/1120";
         globales.defaultServidorDeActualizacion = "";
@@ -398,6 +398,13 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 // CE, 23/09/15, Vamos a hacer una prueba para Ecogas Chihuahua'
 //		datos.add("Clave Usuario: " + lectura.sinUso3);
         datos.add(lectura.getNombreCliente().trim());
+
+// CE, 10/10/22, Vamos a mostrar las Nuevas Columnas
+        datos.add("Codigo de Barras: " + lectura.getCodigoBarras().trim());
+        datos.add("Nota 1: " + lectura.getNota1().trim());
+        datos.add("Nota 2: " + lectura.getNota2().trim());
+        datos.add("miLatitud: " + lectura.getMiLatitud().trim());
+        datos.add("miLongitud: " + lectura.getMiLongitud().trim());
 
         //Vamos a agregar los campos que se van llenando mientras se agregan anomalias
         String ls_anom = lectura.getAnomaliasCapturadas();
@@ -728,9 +735,15 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
         globales.tlc.add(new Campo(18, "idArchivo", 344, 10, Campo.I, " "));
         globales.tlc.add(new Campo(19, "codigoBarras", 354, 50, Campo.I, " "));
-        globales.tlc.add(new Campo(20, "nota1", 404, 10, Campo.I, " "));
+        globales.tlc.add(new Campo(26, "nota1", 404, 10, Campo.I, " "));
         globales.tlc.add(new Campo(21, "nota2", 414, 10, Campo.I, " "));
 
+        // CE, 10/10/22, Vamos a agregar unas Columnas Nuevas
+        globales.tlc.add(new Campo(22, "miLatitud", 424, 5, Campo.I, " "));
+        globales.tlc.add(new Campo(23, "miLongitud", 429, 5, Campo.I, " "));
+        globales.tlc.add(new Campo(24, "Estimaciones", 434, 10, Campo.I, " "));
+        globales.tlc.add(new Campo(25, "TipoDeCliente", 444, 10, Campo.I, " "));
+        globales.tlc.add(new Campo(20, "TipoDeAcuse", 454, 10, Campo.I, " "));
 
         // Columnas que ya existían estaban en este código de la versión 1.0.11 y anteriores
 
@@ -769,14 +782,13 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
     public String obtenerContenidoDeEtiqueta(String ls_etiqueta) {
         // TODO Auto-generated method stub
         if (ls_etiqueta.equals("campo0")) {
-            return globales.tll.getLecturaActual().is_marcaMedidor.trim();
+            return globales.tll.getLecturaActual().getTipoDeCliente().trim();
         } else if (ls_etiqueta.equals("campo1")) {
             return globales.tll.getLecturaActual().is_giro.trim();
         } else if (ls_etiqueta.equals("campo2")) {
-            return globales.tll.getLecturaActual().is_toma.trim();
-
+            return globales.tll.getLecturaActual().getEstimacionesEngie().trim();
         } else if (ls_etiqueta.equals("campo3")) {
-            return globales.tll.getLecturaActual().sinUso4.trim();
+            return globales.tll.getLecturaActual().getTipoDeAcuse().trim();
         } else {
             return "";
         }
@@ -785,13 +797,13 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
     public String obtenerTituloDeEtiqueta(String ls_etiqueta) {
         if (ls_etiqueta.equals("campo0")) {
-            return "Marca";
+            return "Tipo";
         } else if (ls_etiqueta.equals("campo1")) {
-            return "Giro";
+            return "Aviso";
         } else if (ls_etiqueta.equals("campo2")) {
-            return "Toma";
+            return "Estim.";
         } else if (ls_etiqueta.equals("campo3")) {
-            return "TU";
+            return "Acuse";
         } else {
             return super.obtenerTituloDeEtiqueta(ls_etiqueta);
         }
@@ -811,7 +823,15 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 //			return new FormatoDeEtiquetas(globales.tll.getLecturaActual().is_aviso.trim(), R.color.Orange);
 //		}
 
-        if (globales.tll.getLecturaActual().is_giro.trim().equals("20"))
+        if (globales.tll.getLecturaActual().getTipoDeAcuse().trim().equals("1"))
+            return new FormatoDeEtiquetas("Acuse por Reclamacion", R.color.BlueViolet);
+        else if (globales.tll.getLecturaActual().getTipoDeAcuse().trim().equals("2"))
+            return new FormatoDeEtiquetas("Acuse por Cliente Nuevo", R.color.Brown);
+        else if (globales.tll.getLecturaActual().getTipoDeAcuse().trim().equals("3"))
+            return new FormatoDeEtiquetas("Acuse por Comercio", R.color.Coral);
+        else if (globales.tll.getLecturaActual().getTipoDeAcuse().trim().equals("4"))
+            return new FormatoDeEtiquetas("Acuse por Cliente VIP", R.color.DarkSalmon);
+        else if (globales.tll.getLecturaActual().is_giro.trim().equals("20"))
             return new FormatoDeEtiquetas("Cliente suscrito a Paperless", R.color.Blue);
         else
             return new FormatoDeEtiquetas(globales.tll.getLecturaActual().is_tarifa.trim(), R.color.Orange);

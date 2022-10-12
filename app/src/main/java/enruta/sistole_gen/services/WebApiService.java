@@ -21,7 +21,7 @@ public class WebApiService {
         //apiURL = "http://192.168.2.103/sistolewebapi/";
         //apiURL = "http://192.168.2.103/sistoleweb_dev1/";
         //apiURL = "http://192.168.2.103:8080/";
-        apiURL = "https://engie.sistoleweb.com/";
+        apiURL = "http://dev-engie.sistoleweb.com/";
 
         return Create(apiURL);
     }

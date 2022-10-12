@@ -122,9 +122,8 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (scanResult != null) {
-            buscarMedidorEscaneado(scanResult.getContents());
-        }
-        else {
+            mostrarMedidorEscaneado(scanResult.getContents());
+        } else {
 
             switch (requestCode) {
                 case FOTOS:
@@ -764,8 +763,7 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
         if (globales.bcerrar) {
             // iniciarModoCorreccionCAPS();
             rutaFinalizada();
-        }
-        else
+        } else
             setDatos();
         // c.close();
     }
@@ -1622,8 +1620,7 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
     }
 
     // RL, 2022-10-05, Engie requiere que ya no puedan modificarse las lecturas realizadas.
-    protected void rutaFinalizada()
-    {
+    protected void rutaFinalizada() {
         mensajeOK(getString(R.string.str_lbl_ruta_finalizada), getString(R.string.msj_tdl_fin_de_ruta),
                 new DialogInterface.OnClickListener() {
                     @Override
@@ -3419,9 +3416,8 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
         enviarSolicitudEmergencia(false);
     }
 
-    protected void confirmarEmergencia()
-    {
-        if (!mDialogoConfirmarAyuda ) {
+    protected void confirmarEmergencia() {
+        if (!mDialogoConfirmarAyuda) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
             builder.setTitle("Confirmar ayuda");
@@ -3454,17 +3450,17 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 
     protected void enviarSolicitudEmergencia(boolean emergenciaConfirmada) {
         if (globales == null) {
-            Utils.showMessageLong(this,"Error al solicitar ayuda. Contacte soporte técnico.");
+            Utils.showMessageLong(this, "Error al solicitar ayuda. Contacte soporte técnico.");
             return;
         }
 
         if (globales.sesionEntity == null) {
-            Utils.showMessageLong(this,"No se ha autenticado en la aplicación");
+            Utils.showMessageLong(this, "No se ha autenticado en la aplicación");
             return;
         }
 
         if (globales.sesionEntity.empleado == null) {
-            Utils.showMessageLong(this,"No se ha autenticado en la aplicación");
+            Utils.showMessageLong(this, "No se ha autenticado en la aplicación");
             return;
         }
 
@@ -3480,15 +3476,15 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 
                 @Override
                 public void enFallo(OperacionResponse resp) {
-                    Utils.showMessageLong(TomaDeLecturas.this,resp.MensajeError);
+                    Utils.showMessageLong(TomaDeLecturas.this, resp.MensajeError);
                 }
             });
         }
 
         if (!emergenciaConfirmada)
-            Utils.showMessageLong(TomaDeLecturas.this,"Fue enviada la solicitud de emergencia");
+            Utils.showMessageLong(TomaDeLecturas.this, "Fue enviada la solicitud de emergencia");
         else
-            Utils.showMessageLong(TomaDeLecturas.this,"Fue enviada la confirmación de emergencia");
+            Utils.showMessageLong(TomaDeLecturas.this, "Fue enviada la confirmación de emergencia");
         mEmergenciaMgr.enviarSolicitudEmergencia(globales.sesionEntity, globales.location, emergenciaConfirmada);
     }
 
@@ -3497,8 +3493,7 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
             Intent entrarSupervisor = new Intent(TomaDeLecturas.this, SupervisorLoginActivity.class);
 
             startActivityForResult(entrarSupervisor, RESULTADO_ACTIVITY_ENTRAR_SUPERVISOR);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             Log.e("CPL", "entrarSupervisor: ", e);
             Utils.showMessageLong(this, "Hubo un error al iniciar la pantalla :" + e.getMessage());
         }
@@ -3509,12 +3504,22 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
             Utils.showMessageLong(this, "Informe enviado");
     }
 
-    protected void usarEscaner(){
+    protected void usarEscaner() {
         scanIntent = new IntentIntegrator(this);
         scanIntent.setCaptureActivity(ScanActivity.class);
         scanIntent.setBeepEnabled(true);
         scanIntent.setPrompt(getString(R.string.str_lbl_instruccion_escaner));
         scanIntent.initiateScan();
+    }
+
+    protected void mostrarMedidorEscaneado(String codigo) {
+        Utils.mostrarAlerta(this, "Medidor escaneado", "Se buscará el medidor con código: " + codigo,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        buscarMedidorEscaneado(codigo);
+                    }
+                });
     }
 
     protected void buscarMedidorEscaneado(String codigo) {
@@ -3526,10 +3531,8 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
         if (codigo.equals(""))
             return;
 
-        Utils.showMessageShort(this, "Código a buscar: " +codigo);
-
         if (mBuscarMedidorMgr == null)
-            mBuscarMedidorMgr=new BuscarMedidorMgr(this);
+            mBuscarMedidorMgr = new BuscarMedidorMgr(this);
 
         mBuscarMedidorMgr.setOnBuscarMedidorListener(new BuscarMedidorCallback() {
             @Override
