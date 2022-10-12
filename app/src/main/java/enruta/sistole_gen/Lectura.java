@@ -63,6 +63,14 @@ public class Lectura {
     String unidad;          // RL, 2022-10-03, Código de la Unidad en Sistole Web
     long idArchivo;         // RL, 2022-10-03, id del archivo en Sistole Web
     String codigoBarras;    // RL, 2022-10-03, id del archivo en Sistole Web
+    String nota1;    // RL, 2022-10-03, id del archivo en Sistole Web
+    String nota2;    // RL, 2022-10-03, id del archivo en Sistole Web
+
+    String miLatitud;            // CE, 10/10/22, Geolocalizacion del Medidor
+    String miLongitud;           // CE, 10/10/22, Geolocalizacion del Medidor
+    String estimacionesEngie;    // CE, 10/10/22, Numero de Estimaciones
+    String tipoDeCliente;        // CE, 10/10/22, Tipo de Cliente
+    String tipoDeAcuse;          // CE, 10/10/22, Motivo por el que se pide Acuse
 
     private Resources res;
 
@@ -253,9 +261,51 @@ public class Lectura {
             }
 
             try {
-                codigoBarras = c.getString(c.getColumnIndex("CodigoBarras"));
+                codigoBarras = c.getString(c.getColumnIndex("codigoBarras"));
             } catch (Throwable e) {
                 codigoBarras = "";
+            }
+
+            try {
+                nota1 = c.getString(c.getColumnIndex("nota1"));
+            } catch (Throwable e) {
+                nota1 = "";
+            }
+
+            try {
+                nota2 = c.getString(c.getColumnIndex("nota2"));
+            } catch (Throwable e) {
+                nota2 = "";
+            }
+
+            try {
+                miLatitud = c.getString(c.getColumnIndex("miLatitud"));
+            } catch (Throwable e) {
+                miLatitud = "";
+            }
+
+            try {
+                miLongitud = c.getString(c.getColumnIndex("miLongitud"));
+            } catch (Throwable e) {
+                miLongitud = "";
+            }
+
+            try {
+                estimacionesEngie = c.getString(c.getColumnIndex("EstimacionesEngie"));
+            } catch (Throwable e) {
+                estimacionesEngie = "";
+            }
+
+            try {
+                tipoDeCliente = c.getString(c.getColumnIndex("TipoDeCliente"));
+            } catch (Throwable e) {
+                tipoDeCliente = "";
+            }
+
+            try {
+                tipoDeAcuse = c.getString(c.getColumnIndex("TipoDeAcuse"));
+            } catch (Throwable e) {
+                tipoDeAcuse = "";
             }
 
             unidad = is_sectorCorto;
@@ -1592,5 +1642,31 @@ public class Lectura {
         return codigoBarras;
     }
 
+    public String getNota1(){
+        return nota1;
+    }
 
+    public String getNota2(){
+        return nota2;
+    }
+
+    public String getMiLatitud(){
+        return miLatitud;
+    }
+
+    public String getMiLongitud(){
+        return miLongitud;
+    }
+
+    public String getEstimacionesEngie(){
+        return estimacionesEngie;
+    }
+
+    public String getTipoDeCliente(){
+        return tipoDeCliente;
+    }
+
+    public String getTipoDeAcuse(){
+        return tipoDeAcuse;
+    }
 }

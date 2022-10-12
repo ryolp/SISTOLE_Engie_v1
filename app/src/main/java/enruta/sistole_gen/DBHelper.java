@@ -193,7 +193,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				"indicadorGPS default '', satelites default '', unicom default '', ruta default '', itinerario default '', ciclo default '', tabulador default '', " +
 				"selloRetNumero default '', selloRetEstado default '', selloRetColor default '', selloRetModelo default '', " +
 				"selloInstNumero default '', selloInstColor default '', selloInstModelo default '', codigoObservacion default '', observacion default '', datosCampana default '', toma default '', giro default '', envio default 0, " +
-				"idArchivo default 0, codigoBarras default '', nota1 default '', nota2 default '')");
+				"idArchivo default 0, codigoBarras default '', nota1 default '', nota2 default '', miLatitud default '', miLongitud default '', EstimacionesEngie default '', TipoDeCliente default '', TipoDeAcuse default '')");
 		//Usuarios
 		db.execSQL("CREATE TABLE usuarios (usuario , contrasena , nombre, rol default 1, fotosControlCalidad default 1, baremo default 75)");
 		//fotos
@@ -427,6 +427,22 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		if (!existsColumnInTable(db, "ruta", "Nota2"))
 			db.execSQL("ALTER TABLE ruta add column Nota2 default '' " );
+
+		// CE, 10/10/22, Vamos a agregar las Nuevas Columnas que se necesitan
+		if (!existsColumnInTable(db, "ruta", "miLatitud"))
+			db.execSQL("ALTER TABLE ruta add column miLatitud default '' " );
+
+		if (!existsColumnInTable(db, "ruta", "miLongitud"))
+			db.execSQL("ALTER TABLE ruta add column miLongitud default '' " );
+
+		if (!existsColumnInTable(db, "ruta", "EstimacionesEngie"))
+			db.execSQL("ALTER TABLE ruta add column EstimacionesEngie default '' " );
+
+		if (!existsColumnInTable(db, "ruta", "TipoDeCliente"))
+			db.execSQL("ALTER TABLE ruta add column TipoDeCliente default '' " );
+
+		if (!existsColumnInTable(db, "ruta", "TipoDeAcuse"))
+			db.execSQL("ALTER TABLE ruta add column TipoDeAcuse default '' " );
 
 
 	}

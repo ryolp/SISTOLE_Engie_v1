@@ -58,66 +58,66 @@ public class TodosLosCampos {
         db.insert(is_tabla, null, cv_params);
     }
 
-    public long strToBD(SQLiteDatabase db, String datos, int secuenciaReal) {
-        ContentValues cv_params = new ContentValues(this.cv_params);
-        Enumeration<Campo> e;
-        String[] camposStr = datos.split("\\|", -1);
-        String valor;
-        int numColumna;
-        long idArchivo = 0;
-        String nombreCampo = "";
+	public long strToBD(SQLiteDatabase db, String datos, int secuenciaReal) {
+		ContentValues cv_params = new ContentValues(this.cv_params);
+		Enumeration<Campo> e;
+		String[] camposStr = datos.split("\\|", -1);
+		String valor;
+		int numColumna;
+		long idArchivo = 0;
+		String nombreCampo = "";
 
-        int numCampos;
-        int i = 2;
+		int numCampos;
+		int i = 2;
 
-        if (camposStr == null) // Si al separar los campos es un valor nulo, la estructura del dato no es correcta
-            return 0;
+		if (camposStr == null) // Si al separar los campos es un valor nulo, la estructura del dato no es correcta
+			return 0;
 
-        if (camposStr.length < 2)  // Si al separar los campos no hay al menos 2 columnas, la estructura del dato no es correcta
-            return 0;
+		if (camposStr.length < 2)  // Si al separar los campos no hay al menos 2 columnas, la estructura del dato no es correcta
+			return 0;
 
-        if (!camposStr[0].equals("L"))  // Si la 1er columna no empieza con L, la estructura del dato no es correcta.
-            return 0;
+		if (!camposStr[0].equals("L"))  // Si la 1er columna no empieza con L, la estructura del dato no es correcta.
+			return 0;
 
-        numCampos = Utils.convToInt(camposStr[1]);
+		numCampos = Utils.convToInt(camposStr[1]);
 
-        if (numCampos < 24)  // Si la 2a columna viene una cantidad de campos menor a la esperada, entonces la estructura del dato no es correcta.
-            return 0;
+		if (numCampos < 24)  // Si la 2a columna viene una cantidad de campos menor a la esperada, entonces la estructura del dato no es correcta.
+			return 0;
 
-        try {
-            e = campos.elements();
+		try {
+			e = campos.elements();
 
-            while (e.hasMoreElements()) {
-                //for (int i=0; i<campos.size() ;i++){
-                Campo campo = e.nextElement();
+			while (e.hasMoreElements()) {
+				//for (int i=0; i<campos.size() ;i++){
+				Campo campo = e.nextElement();
 
-                if (!campo.esDeEntrada) {
-                    continue;
-                }
+				if (!campo.esDeEntrada) {
+					continue;
+				}
 
-                numColumna = campo.getNumColumna();
+				numColumna = campo.getNumColumna();
 
-                if ((numColumna + 2) < numCampos) {
-                    nombreCampo = campo.getNombre();
-                    valor = camposStr[numColumna + 2];
+				if ((numColumna + 2) < numCampos) {
+					nombreCampo = campo.getNombre();
+					valor = camposStr[numColumna + 2];
 
-                    if (nombreCampo.toUpperCase().equals("IDARCHIVO"))
-                        idArchivo = Utils.convToLong(valor);
+					if (nombreCampo.toUpperCase().equals("IDARCHIVO"))
+						idArchivo = Utils.convToLong(valor);
 
-                    cv_params.put(nombreCampo, valor);
-                }
-                else
-                    throw new Exception("Campo incorrecto");
-                i++;
-            }
-            cv_params.put("secuenciaReal", secuenciaReal);
-            db.insert(is_tabla, null, cv_params);
-        } catch (Exception exp) {
-            throw exp;
-        } finally {
-            return idArchivo;
-        }
-    }
+					cv_params.put(nombreCampo, valor);
+				}
+				else
+					throw new Exception("Campo incorrecto");
+				i++;
+			}
+			cv_params.put("secuenciaReal", secuenciaReal);
+			db.insert(is_tabla, null, cv_params);
+		} catch (Exception exp) {
+			throw exp;
+		} finally {
+			return idArchivo;
+		}
+	}
 
     public void byteToBD(SQLiteDatabase db, String bytes, int secuenciaReal) {
         ContentValues cv_params = new ContentValues(this.cv_params);

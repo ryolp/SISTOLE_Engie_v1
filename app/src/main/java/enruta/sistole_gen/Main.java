@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -81,6 +80,8 @@ public class Main extends FragmentActivity implements TabListener {
 
     final static int CONFIG = 5;
     final static int MENU_ENTRAR_SUPERVISOR = 9;
+
+    final static int FOTO_CHECK_SEGURIDAD = 10;
 
     public static final int INDEFINIDO = 1;
     public static final int CHECK_IN = 2;
@@ -789,6 +790,8 @@ public class Main extends FragmentActivity implements TabListener {
                 bu_params = data.getExtras();
                 bHabilitarImpresion = bu_params.getBoolean("bHabilitarImpresion");
                 break;
+            case FOTO_CHECK_SEGURIDAD:
+                break;
             case REQUEST_ENABLE_BT_IMP:
                 mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                 if (mBluetoothAdapter.isEnabled()) {
@@ -1392,6 +1395,19 @@ public class Main extends FragmentActivity implements TabListener {
     public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
         // TODO Auto-generated method stub
 
+    }
+
+    // CE, 10/10/22, Vamos a tomar la Foto del Check de Seguridad
+    public void FotoDeSeguridad(View view) {
+        Intent camara = new Intent(this, CamaraActivity.class);
+        camara.putExtra("secuencial", globales.sesionEntity.empleado.idEmpleado);
+        camara.putExtra("caseta", Long.toString(globales.sesionEntity.empleado.idEmpleado));
+        camara.putExtra("terminacion", "Check");
+        camara.putExtra("temporal", 1);
+        camara.putExtra("cantidad", 1);
+        camara.putExtra("anomalia", "SinAnomalia");
+        // vengoDeFotos = true;
+        startActivityForResult(camara, FOTO_CHECK_SEGURIDAD);
     }
 
     public void inicia_tdl(View view) {
@@ -2101,6 +2117,10 @@ public class Main extends FragmentActivity implements TabListener {
             req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
             req.FechaOperacion = Utils.getDateTime();
 
+            // CE, 10/10/22, Vamos a tomar la Foto del Check de Seguridad
+            btnOperacion = (Button) this.findViewById(R.id.btnOperacion);
+            FotoDeSeguridad(btnOperacion);
+
             getWebApiManager().checkSeguridad(req, new Callback<OperacionResponse>() {
                         @Override
                         public void onResponse(Call<OperacionResponse> call, Response<OperacionResponse> response) {
@@ -2187,7 +2207,7 @@ public class Main extends FragmentActivity implements TabListener {
         }
     }
 
-    protected void entrarSupervisor() {
+   protected void entrarSupervisor() {
         try {
             Intent entrarSupervisor = new Intent(Main.this, SupervisorLoginActivity.class);
 

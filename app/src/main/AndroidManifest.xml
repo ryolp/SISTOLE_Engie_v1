@@ -108,6 +108,9 @@
             android:name=".SupervisorLoginActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".SignaturePadActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

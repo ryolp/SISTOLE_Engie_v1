@@ -294,7 +294,7 @@
     <string name="str_registrado_como_robado">Registrado como robado</string>
     <string name="str_lbl_codigo_barras">Código de barras</string>
     <string name="str_lbl_revisar_conectividad">Conectividad</string>
-    <string name="str_lbl_ruta_finalizada">Ya no hay lecturas pendientes por realizadas. Ruta finalizada.</string>
+    <string name="str_lbl_ruta_finalizada">Ya no hay lecturas pendientes por realizar. Ruta finalizada.</string>
     <string name="str_lbl_actualizar_estatus_archivos">Actualizar Estatus Arch.</string>
     <string name="str_operacion">Operacion genérica</string>
 </resources>
