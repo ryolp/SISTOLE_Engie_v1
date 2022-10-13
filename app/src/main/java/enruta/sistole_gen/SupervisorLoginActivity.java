@@ -14,7 +14,7 @@ import java.util.Vector;
 import enruta.sistole_gen.clases.AutenticadorMgr;
 import enruta.sistole_gen.clases.AutenticadorCallback;
 import enruta.sistole_gen.clases.BaseActivity;
-import enruta.sistole_gen.clases.ResumenEntity;
+import enruta.sistole_gen.entities.ResumenEntity;
 import enruta.sistole_gen.clases.SupervisorCallback;
 import enruta.sistole_gen.clases.SupervisorMgr;
 import enruta.sistole_gen.clases.Utils;

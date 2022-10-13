@@ -1,6 +1,15 @@
 package enruta.sistole_gen.entities;
 
 public class ResumenEntity {
-    public long TotalRegistros = 0;
-    public long Realizados = 0;
+    public String archivo;
+    public long totalRegistros = 0;
+    public long cantLecturasRealizadas = 0;
+    public long cantFotos = 0;
+    public long cantLecturasPendientes = 0;
+    public long cantConAnomalia = 0;
+    public long cantSinLectura = 0;
+    public long cantNoRegistrados = 0;
+    public long conDir = 0;
+    public long ordenesSinEnviar = 0;
+    public long fotosSinEnviar = 0;
 }

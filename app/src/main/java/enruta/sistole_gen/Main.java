@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 
 
 import android.annotation.SuppressLint;
@@ -51,8 +53,6 @@ import enruta.sistole_gen.clases.OperacionGenericaCallback;
 import enruta.sistole_gen.clases.OperacionGenericaMgr;
 import enruta.sistole_gen.entities.ArchivosLectRequest;
 import enruta.sistole_gen.entities.ArchivosLectResponse;
-import enruta.sistole_gen.entities.LoginRequestEntity;
-import enruta.sistole_gen.entities.LoginResponseEntity;
 import enruta.sistole_gen.entities.OperacionGenericaRequest;
 import enruta.sistole_gen.entities.OperacionGenericaResponse;
 import enruta.sistole_gen.entities.OperacionRequest;
@@ -62,7 +62,6 @@ import enruta.sistole_gen.services.DbConfigMgr;
 import enruta.sistole_gen.services.DbLecturasMgr;
 import enruta.sistole_gen.services.WebApiManager;
 import enruta.sistole_gen.clases.Utils;
-import okhttp3.internal.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -786,6 +785,8 @@ public class Main extends FragmentActivity implements TabListener {
 
             case LECTURAS:
                 //actualizaResumen();
+                actualizarEstatusArchivos();
+                operacionGenerica();
                 actualizaTabs();
                 bu_params = data.getExtras();
                 bHabilitarImpresion = bu_params.getBoolean("bHabilitarImpresion");
@@ -1971,8 +1972,8 @@ public class Main extends FragmentActivity implements TabListener {
             resumen = DbLecturasMgr.getInstance().getResumen(this);
 
             if (resumen != null) {
-                if (resumen.TotalRegistros > 0) {
-                    if (resumen.Realizados < resumen.TotalRegistros)
+                if (resumen.totalRegistros > 0) {
+                    if (resumen.cantLecturasRealizadas < resumen.totalRegistros)
                         habilitarLecturas = true;
                     else
                         habilitarLecturas = false;
@@ -1983,23 +1984,19 @@ public class Main extends FragmentActivity implements TabListener {
                 btnOperacion.setText("Hacer Check In");
                 b_lecturas.setEnabled(false);
                 globales.sesionEntity.empleado.idOperacionTipo = CHECK_IN;
-            }
-            else if (globales.sesionEntity.empleado.RequiereCheckSeguridad) {
+            } else if (globales.sesionEntity.empleado.RequiereCheckSeguridad) {
                 btnOperacion.setText("Hacer Check Seguridad");
                 b_lecturas.setEnabled(false);
                 globales.sesionEntity.empleado.idOperacionTipo = CHECK_SEGURIDAD;
-            }
-            else if (globales.sesionEntity.empleado.idOperacionTipo == CHECK_IN) {
+            } else if (globales.sesionEntity.empleado.idOperacionTipo == CHECK_IN) {
                 btnOperacion.setText("Hacer Check In");
                 b_lecturas.setEnabled(habilitarLecturas);
                 globales.sesionEntity.empleado.idOperacionTipo = CHECK_IN;
-            }
-            else if (globales.sesionEntity.empleado.idOperacionTipo == CHECK_OUT) {
+            } else if (globales.sesionEntity.empleado.idOperacionTipo == CHECK_OUT) {
                 btnOperacion.setText("Hacer Check Out");
                 b_lecturas.setEnabled(habilitarLecturas);
                 globales.sesionEntity.empleado.idOperacionTipo = CHECK_OUT;
-            }
-            else {
+            } else {
                 btnOperacion.setText("Hacer Check In");
                 b_lecturas.setEnabled(false);
                 globales.sesionEntity.empleado.idOperacionTipo = CHECK_IN;
@@ -2207,7 +2204,7 @@ public class Main extends FragmentActivity implements TabListener {
         }
     }
 
-   protected void entrarSupervisor() {
+    protected void entrarSupervisor() {
         try {
             Intent entrarSupervisor = new Intent(Main.this, SupervisorLoginActivity.class);
 
@@ -2267,15 +2264,19 @@ public class Main extends FragmentActivity implements TabListener {
         }
     }
 
-    protected void operacionGenerica()
-    {
+    protected void operacionGenerica() {
+        ArrayList<Long> mListadoArchivosLect;
+        long mIdArchivo;
+
+        Utils.showMessageShort(this, "Solicitando avance...");
+
         if (operacionGenericaMgr == null) {
             operacionGenericaMgr = new OperacionGenericaMgr(this, globales);
 
             operacionGenericaMgr.setSupervisorCallback(new OperacionGenericaCallback() {
                 @Override
                 public void enExito(OperacionGenericaRequest request, OperacionGenericaResponse resp) {
-                    Utils.mostrarAlerta(Main.this, "Operacion recibida", resp.Resultado);
+                    marcarLecturasRealizadas(resp.Resultado);
                 }
 
                 @Override
@@ -2285,6 +2286,54 @@ public class Main extends FragmentActivity implements TabListener {
             });
         }
 
-        operacionGenericaMgr.enviarOperacion("Operacion 1", "dato 2", "dato 3");
+        mListadoArchivosLect = DbLecturasMgr.getInstance().getIdsArchivo(this);
+
+        if (mListadoArchivosLect.size() != 0) {
+            mIdArchivo = mListadoArchivosLect.get(0);
+            operacionGenericaMgr.enviarOperacion("1", String.valueOf(mIdArchivo), globales.getUsuario());
+        }
+
     }
+
+    private void marcarLecturasRealizadas(String datos) {
+//        Enumeration<Campo> e;
+        String[] camposStr = datos.split("\\|", -1);
+        long idArchivo = 0;
+        String nombreCampo = "";
+        String idLectura;
+        String campo;
+        int i;
+        int n = 0;
+        ContentValues cv_params;
+        String params[] = new String[1];
+
+        if (camposStr == null) // Si al separar los campos es un valor nulo, la estructura del dato no es correcta
+            return;
+
+        try {
+            if (camposStr.length > 0)
+                openDatabase();
+
+            for (i = 0; i < camposStr.length; i++) {
+                campo = camposStr[i].trim();
+                if (!campo.equals("")) {
+                    params[0] = String.valueOf(campo);
+
+                    cv_params = new ContentValues();
+                    cv_params.put("tipoLectura", "0");
+                    // idLectura = " poliza = '" + campo + "'";
+                    n = db.update("ruta", cv_params, "cast(poliza as Long)= cast(? as Long)", params);
+                    if (n == 0)
+                        Utils.showMessageShort(this, "Problema al actualizar base de datos");
+                }
+            }
+        } catch (Exception exp) {
+            Utils.mostrarAlerta(this, "Error", "No fue posible obtener la información del trabajo realizado : " + exp.getMessage());
+        } finally {
+            if (camposStr != null)
+                if (camposStr.length > 0)
+                    closeDatabase();
+        }
+    }
+
 }

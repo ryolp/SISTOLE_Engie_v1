@@ -3,8 +3,8 @@
     package="enruta.sistole_gen"
     android:installLocation="preferExternal"
     android:versionCode="39"
-    android:versionCodeMajor="10105"
-    android:versionName="ENGIE CPL (1.1.5)">
+    android:versionCodeMajor="10106"
+    android:versionName="ENGIE CPL (1.1.6)">
 
     <uses-sdk
         android:minSdkVersion="25"

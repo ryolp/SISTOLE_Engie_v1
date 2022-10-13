@@ -5,7 +5,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import enruta.sistole_gen.clases.ResumenEntity;
+import enruta.sistole_gen.entities.ResumenEntity;
 import enruta.sistole_gen.clases.Utils;
 import enruta.sistole_gen.entities.EmpleadoCplEntity;
 

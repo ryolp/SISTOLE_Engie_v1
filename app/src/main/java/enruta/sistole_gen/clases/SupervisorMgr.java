@@ -4,14 +4,13 @@ import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
-import enruta.sistole_gen.Globales;
 import enruta.sistole_gen.TodasLasLecturas;
-import enruta.sistole_gen.entities.LoginRequestEntity;
 import enruta.sistole_gen.entities.LoginResponseEntity;
 import enruta.sistole_gen.entities.SesionEntity;
 import enruta.sistole_gen.entities.SupervisorLogEntity;
 import enruta.sistole_gen.entities.SupervisorLogRequest;
 import enruta.sistole_gen.entities.SupervisorLogResponse;
+import enruta.sistole_gen.entities.ResumenEntity;
 import enruta.sistole_gen.services.WebApiManager;
 import retrofit2.Call;
 import retrofit2.Callback;

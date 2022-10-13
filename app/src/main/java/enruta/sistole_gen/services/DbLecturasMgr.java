@@ -43,11 +43,15 @@ public class DbLecturasMgr {
 
             c = db.rawQuery("Select count(*) canti from Ruta", null);
             c.moveToFirst();
-            resumen.TotalRegistros = c.getLong(c.getColumnIndex("canti"));
+            resumen.totalRegistros = c.getLong(c.getColumnIndex("canti"));
 
             c = db.rawQuery("Select count(*) canti from ruta where tipoLectura='0'", null);
             c.moveToFirst();
-            resumen.Realizados = c.getLong(c.getColumnIndex("canti"));
+            resumen.cantLecturasRealizadas = c.getLong(c.getColumnIndex("canti"));
+
+            c = db.rawQuery("Select count(*) canti from ruta where trim(tipoLectura)=''", null);
+            c.moveToFirst();
+            resumen.cantLecturasPendientes = c.getLong(c.getColumnIndex("canti"));
 
             return resumen;
         } catch (Exception e) {

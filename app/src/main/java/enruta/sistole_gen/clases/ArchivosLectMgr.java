@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import enruta.sistole_gen.Globales;
 import enruta.sistole_gen.entities.ArchivosLectRequest;
 import enruta.sistole_gen.entities.ArchivosLectResponse;
+import enruta.sistole_gen.entities.ResumenEntity;
 import enruta.sistole_gen.services.DbLecturasMgr;
 import enruta.sistole_gen.services.WebApiManager;
 import retrofit2.Call;
@@ -28,6 +29,8 @@ public class ArchivosLectMgr {
     private Globales mGlobales;
     private ArrayList<Long> mListadoArchivosLect = new ArrayList<Long>();
     private long mIdArchivo = 0;
+    private ResumenEntity mResumen;
+
 
     public ArchivosLectMgr(Context context, Globales globales) {
         mContext = context;
@@ -52,17 +55,18 @@ public class ArchivosLectMgr {
     }
     public void marcarArchivosTerminados()
     {
-        mListadoArchivosLect = DbLecturasMgr.getInstance().getIdsArchivo(mContext);
+        mResumen = DbLecturasMgr.getInstance().getResumen(mContext);
 
-        if (mListadoArchivosLect.size() == 0)
-        {
-            if (mCallback != null)
-                mCallback.enSinArchivos();
-        }
-        else {
-            mIdArchivo = mListadoArchivosLect.get(0);
-            mListadoArchivosLect.remove(0);
-            marcarArchivoTerminado(mIdArchivo);
+        if (mResumen.totalRegistros >= 0 && mResumen.cantLecturasPendientes == 0) {
+            mListadoArchivosLect = DbLecturasMgr.getInstance().getIdsArchivo(mContext);
+
+            if (mListadoArchivosLect != null) {
+                if (mListadoArchivosLect.size() != 0) {
+                    mIdArchivo = mListadoArchivosLect.get(0);
+                    mListadoArchivosLect.remove(0);
+                    marcarArchivoTerminado(mIdArchivo);
+                }
+            }
         }
     }
 
