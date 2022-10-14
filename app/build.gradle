@@ -6,7 +6,7 @@ android {
     buildToolsVersion "33.0.0"
 
     defaultConfig {
-        applicationId "enruta.sistole_gen"
+        applicationId "enruta.sistole_engie"
         minSdkVersion 25
         targetSdkVersion 31
     }
