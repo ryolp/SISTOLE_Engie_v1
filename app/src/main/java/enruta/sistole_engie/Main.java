@@ -2276,6 +2276,7 @@ public class Main extends FragmentActivity implements TabListener {
                 @Override
                 public void enExito(OperacionGenericaRequest request, OperacionGenericaResponse resp) {
                     marcarLecturasRealizadas(resp.Resultado);
+                    actualizarResumen();
                 }
 
                 @Override
@@ -2332,6 +2333,18 @@ public class Main extends FragmentActivity implements TabListener {
             if (camposStr != null)
                 if (camposStr.length > 0)
                     closeDatabase();
+        }
+    }
+
+    private void actualizarResumen()
+    {
+        Fragment page;
+
+        page = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + 1);
+        // based on the current position you can then cast the page to the correct
+        // class and call the method:
+        if (/*viewPager.getCurrentItem() == 0 &&*/ page != null) {
+            ((Resumen) page).actualizaResumen();
         }
     }
 
