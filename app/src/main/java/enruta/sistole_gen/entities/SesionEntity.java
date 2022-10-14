@@ -21,6 +21,7 @@ public class SesionEntity {
     public String Unidad;
     public String Token;
     public long idArchivoUnidad;
+    public String MensajeLecturista = "";
 
     public SesionEntity(){
 
@@ -37,6 +38,7 @@ public class SesionEntity {
         this.VersionWeb = loginResponseEntity.VersionWeb;
         this.empleado = loginResponseEntity.Empleado;
         this.Token = loginResponseEntity.Token;
+        this.MensajeLecturista = loginResponseEntity.MensajeLecturista;
 
         inicializarHoraVencimiento();
     }

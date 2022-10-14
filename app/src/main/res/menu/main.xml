@@ -88,13 +88,13 @@
         android:title="@string/str_lbl_revisar_conectividad"
         android:visible="true"/>
     <item
-        android:id="@+id/m_ActualizarEstatusArchivos"
-        android:title="@string/str_lbl_actualizar_estatus_archivos"
+        android:id="@+id/m_ActualizarAvance"
+        android:title="@string/str_lbl_actualizar_avance"
         android:visible="true"/>
     <item
         android:id="@+id/m_OperacionGenerica"
         android:title="@string/str_operacion"
-        android:visible="true"/>
+        android:visible="false"/>
 
 
 

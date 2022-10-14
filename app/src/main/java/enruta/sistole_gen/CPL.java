@@ -194,6 +194,10 @@ public class CPL extends Activity {
             tienePermisos=false;
         }
 
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
+            tienePermisos=false;
+        }
+
         if (!tienePermisos) {
             showMessageLong("Faltan permisos");
             lblMensaje.setText("Faltan permisos");
@@ -871,7 +875,7 @@ public class CPL extends Activity {
                 showMessageLong("Máximo de intentos");
                 deshabilitarAutenticacion();
             } else
-                showMessageLong("Usuario o contraseña incorrecta. Intento " + intentosAutenticacion + " de 5");
+                showMessageLong(loginResponseEntity.Mensaje + ". Intento " + intentosAutenticacion + " de 5");
         }
     }
 

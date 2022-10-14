@@ -10,7 +10,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Enumeration;
 
 
 import android.annotation.SuppressLint;
@@ -725,11 +724,11 @@ public class Main extends FragmentActivity implements TabListener {
             case R.id.m_VerificarConectividad:
                 verificarConectividad();
                 break;
-            case R.id.m_ActualizarEstatusArchivos:
+            case R.id.m_ActualizarAvance:
+                actualizarAvance();
                 actualizarEstatusArchivos();
                 break;
             case R.id.m_OperacionGenerica:
-                operacionGenerica();
                 break;
         }
 
@@ -786,7 +785,7 @@ public class Main extends FragmentActivity implements TabListener {
             case LECTURAS:
                 //actualizaResumen();
                 actualizarEstatusArchivos();
-                operacionGenerica();
+                actualizarAvance();
                 actualizaTabs();
                 bu_params = data.getExtras();
                 bHabilitarImpresion = bu_params.getBoolean("bHabilitarImpresion");
@@ -2264,7 +2263,7 @@ public class Main extends FragmentActivity implements TabListener {
         }
     }
 
-    protected void operacionGenerica() {
+    protected void actualizarAvance() {
         ArrayList<Long> mListadoArchivosLect;
         long mIdArchivo;
 

@@ -39,6 +39,7 @@ public class Principal extends Fragment {
     // RL, 2022-09, Nuevas funcionalidades Engie
 
     private ImageView fotoEmpleado = null;
+    private TextView tv_mensajeLecturista = null;
 
 
     @Override
@@ -171,7 +172,14 @@ public class Principal extends Fragment {
         gv_resumen.setVisibility(View.VISIBLE);
         closeDatabase();
 
+        if (tv_mensajeLecturista == null)
+            tv_mensajeLecturista=(TextView)rootView.findViewById(R.id.tv_MensajeLecturista);
 
+        if (globales != null)
+        {
+            if (globales.sesionEntity != null)
+                tv_mensajeLecturista.setText(globales.sesionEntity.MensajeLecturista);
+        }
     }
 
 //    @Override

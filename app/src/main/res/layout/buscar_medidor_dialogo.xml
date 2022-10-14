@@ -92,7 +92,7 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:textColor="@color/Red"
-        android:text="@string/str_registrado_como_robado" />
+        android:text="@string/str_reporte_de_oim" />
 
     <Button
         android:id="@+id/btnAceptar"

@@ -8,6 +8,7 @@ import java.util.Vector;
 import enruta.sistole_gen.entities.ResumenEntity;
 import enruta.sistole_gen.clases.Utils;
 import enruta.sistole_gen.entities.EmpleadoCplEntity;
+import enruta.sistole_gen.services.DbLecturasMgr;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -1558,6 +1559,12 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
             emp = globales.sesionEntity.empleado;
             if (emp != null) {
+                try {
+                    resumen.add(new EstructuraResumen(DbLecturasMgr.getInstance().getUnidad(this.context), "Unidad:"));
+                } catch (Exception e)
+                {
+                    resumen.add(new EstructuraResumen("---", "Unidad:"));
+                }
                 resumen.add(new EstructuraResumen(emp.NombreCompleto, "Lect:"));
                 resumen.add(new EstructuraResumen(Utils.convToDateTimeStr(emp.FechaIngreso), "F. Activo:"));
                 resumen.add(new EstructuraResumen(emp.Telefono, "Cel:"));

@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     useLibrary 'org.apache.http.legacy'
-    compileSdk 30
+    compileSdk 31
     buildToolsVersion "33.0.0"
 
     defaultConfig {
         applicationId "enruta.sistole_gen"
         minSdkVersion 25
-        targetSdkVersion 30
+        targetSdkVersion 31
     }
 
     buildTypes {

@@ -82,6 +82,27 @@ public class DbLecturasMgr {
         }
     }
 
+    public String getUnidad(Context context)
+    {
+        try {
+            ResumenEntity resumen = new ResumenEntity();
+            Cursor c;
+            String s="";
+
+            openDatabase(context);
+
+            c = db.rawQuery("SELECT  sectorCorto FROM ruta LIMIT 1", null);
+            if (c.moveToFirst())
+                s = c.getString(c.getColumnIndex("sectorCorto"));
+
+            return s;
+        } catch (Exception e) {
+            return "";
+        } finally {
+            closeDatabase();
+        }
+    }
+
     public ArrayList<Long> getIdsArchivo(Context context)
     {
         try {

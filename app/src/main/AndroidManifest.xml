@@ -3,12 +3,11 @@
     package="enruta.sistole_gen"
     android:installLocation="preferExternal"
     android:versionCode="39"
-    android:versionCodeMajor="10106"
-    android:versionName="ENGIE CPL (1.1.6)">
+    android:versionName="ENGIE CPL (1.1.7)">
 
     <uses-sdk
         android:minSdkVersion="25"
-        android:targetSdkVersion="25" />
+        android:targetSdkVersion="31" />
 
     <uses-feature
         android:name="android.hardware.camera.autofocus"
@@ -19,6 +18,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -37,59 +37,73 @@
         <activity
             android:name=".Main"
             android:label="@string/app_name"
+            android:exported="true"
             android:screenOrientation="portrait" />
         <activity
             android:name=".TomaDeLecturas"
             android:configChanges="keyboardHidden|navigation|orientation|screenSize"
             android:label="@string/title_activity_toma_de_lecturas"
+            android:exported="false"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".CamaraActivity"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name=".trasmisionDatos"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name=".VerFotos"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Filtrado"
             android:label="@string/title_activity_filtrado"
             android:screenOrientation="portrait"
+            android:exported="false"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".Input"
             android:screenOrientation="portrait"
+            android:exported="false"
             android:windowSoftInputMode="stateVisible" />
         <activity
             android:name=".PantallaAnomalias"
             android:screenOrientation="portrait"
+            android:exported="false"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".BuscarMedidor"
             android:label="@string/title_activity_buscar_medidor"
+            android:exported="false"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity
             android:name=".Configuracion"
             android:label="@string/title_activity_configuracion"
+            android:exported="false"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".Informacion"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name=".NoRegistrados"
             android:label="@string/title_activity_no_registrados"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name=".trasmisionDatosBt"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name=".CPL"
             android:configChanges="keyboardHidden|orientation|screenLayout|screenSize"
             android:screenOrientation="portrait"
+            android:exported="true"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -99,10 +113,12 @@
         </activity>
         <activity
             android:name=".InputCamposGenerico"
+            android:exported="false"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".PantallaCodigos"
+            android:exported="false"
             android:label="@string/title_activity_pantalla_codigos" />
         <activity
             android:name=".SupervisorLoginActivity"
