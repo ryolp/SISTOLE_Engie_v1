@@ -1,5 +1,7 @@
 package enruta.sistole_engie;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -10,6 +12,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Hashtable;
+import java.util.UUID;
 
 
 import android.annotation.SuppressLint;
@@ -125,6 +129,8 @@ public class Main extends FragmentActivity implements TabListener {
 
     ThreadTransmitirWifi ttw;
     boolean cambiarDeUsuario = true;
+    
+    protected int mNumErrores = 0;
 
     // RL, 2022-09, Nuevas funcionalidades de Check-In, Check-Out, Check-Seguridad y verificación datos
 
@@ -331,6 +337,16 @@ public class Main extends FragmentActivity implements TabListener {
         mi_borrarRuta = menu.findItem(R.id.m_borrarruta);
         mi_tamanoDeFuente = menu.findItem(R.id.m_verTamanosLetra);
         mi_grabarEnSD = menu.findItem(R.id.m_grabarEnSD);
+
+        if (globales.esSuperUsuario) {
+            mi_grabarEnSD.setVisible(true);
+            mi_grabarEnSD.setEnabled(true);
+        }
+        else
+        {
+            mi_grabarEnSD.setVisible(false);
+            mi_grabarEnSD.setEnabled(false);
+        }
 
         //Vamos a establecer los roles encesarios
         switch (ii_rol) {
@@ -709,7 +725,8 @@ public class Main extends FragmentActivity implements TabListener {
                 mensajeOK(cadena);
                 break;
             case R.id.m_grabarEnSD:
-                GrabarSDCard();
+                // GrabarSDCard();
+                GrabarFotosEnSD();
                 break;
             case R.id.m_escaneo:
                 try {
@@ -1472,6 +1489,236 @@ public class Main extends FragmentActivity implements TabListener {
         closeDatabase();
 
         return value;
+    }
+
+	/* =======================================================================================================================================
+		Método: GrabarFotosEnSD
+		Descripción: Guarda las fotos para el caso de Engie
+		Historial: 2022-09-29 / RL / Creación
+	 ======================================================================================================================================= */
+
+    private void GrabarFotosEnSD() {
+        Cursor cFoto = null;
+        Cursor cFotoPadre = null;
+        Cursor cLectura = null;
+        File imagenesDir = null;
+        File repositorioFotos = null;
+        String path;
+        String nombreFotoPadre;
+        String nombreFotoPadreQuery;
+        String sectorCorto;
+        long imageSize;
+        final long MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB
+        int i = 0;
+
+        try {
+            // String path = Environment.getExternalStorageDirectory().toString();
+
+            //path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            imagenesDir = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+            if (!imagenesDir.exists())
+                throw new Exception("No existe el directorio de imagenes");
+
+            path = imagenesDir.getAbsolutePath() + "/sistole";
+
+            repositorioFotos = new File(path);
+
+            if (!repositorioFotos.exists()) {
+                repositorioFotos.mkdir();
+            }
+
+            Utils.showMessageLong(this, "Path: " + path);
+
+            openDatabase();
+
+            cLectura = db.rawQuery("Select sectorCorto from ruta", null);
+
+            if (cLectura.moveToFirst()) {
+                sectorCorto = cLectura.getString(cLectura.getColumnIndex("sectorCorto"));
+                cLectura.close();
+                cLectura = null;
+
+                path = path + "/" + sectorCorto.trim();
+
+                repositorioFotos = new File(path);
+
+                if (!repositorioFotos.exists()) {
+                    repositorioFotos.mkdir();
+                }
+
+                cFotoPadre = db.rawQuery("Select nombre, length(foto) imageSize from fotos", null);
+
+//                for (i = 1; i < mNumErrores; i++)
+ //                   cFotoPadre.moveToNext();
+
+                while (cFotoPadre.moveToNext()) {
+
+                    nombreFotoPadre = cFotoPadre.getString(cFotoPadre.getColumnIndex("nombre"));
+                    imageSize = cFotoPadre.getLong(cFotoPadre.getColumnIndex("imageSize"));
+
+                    if (imageSize <= MAX_IMAGE_SIZE )
+                        guardarFoto1(nombreFotoPadre, path);        // Para guardar fotos menores a 2MB
+                    else
+                        guardarFoto2(nombreFotoPadre, path, imageSize);        // Para guardar fotos mayores a 2MB, hacerlo por bloques
+                }
+            }
+
+            if (mNumErrores == 0)
+                Utils.showMessageLong(this, "Operacion terminada");
+            else
+                Utils.showMessageLong(this, "Operacion terminada con " + String.valueOf(mNumErrores) + " errores");
+        } catch (Exception e) {
+            mNumErrores++;
+            e.printStackTrace();
+            Utils.logMessageLong(this, "Error al grabar fotos", e);
+        } finally {
+            if (cFotoPadre != null)
+                cFotoPadre.close();
+            if (cLectura != null)
+                cLectura.close();
+            closeDatabase();
+        }
+    }
+
+    private void guardarFoto1(String nombreFotoPadre, String path)
+    {
+        String query;
+        Cursor cFoto = null;
+        String nombreFoto;
+        File archivoFoto = null;
+        byte[] imagen = null;
+        FileOutputStream fsFoto = null;
+
+        try {
+            query = "Select nombre, foto from fotos where nombre = '" + nombreFotoPadre + "'";
+            cFoto = db.rawQuery(query, null);
+
+            while (cFoto.moveToNext()) {
+
+                nombreFoto = cFoto.getString(cFoto.getColumnIndex("nombre"));
+
+                nombreFoto = path + "/" + nombreFoto;
+                archivoFoto = new File(nombreFoto);
+
+                archivoFoto.createNewFile();
+
+                if (!archivoFoto.exists()) {
+                    //	throw new Exception("Hubo un problema al crear la foto. Verifique que su dispositivo tenga espacio.");
+                    mNumErrores++;
+                }
+
+                imagen = cFoto.getBlob(cFoto.getColumnIndex("foto"));
+
+                fsFoto = new FileOutputStream(archivoFoto);
+                fsFoto.write(imagen);
+            }
+        } catch (Exception e) {
+            mNumErrores++;
+        } finally {
+            if (cFoto != null) {
+                try {
+                    cFoto.close();
+                } catch (Exception e) {
+                    mNumErrores++;
+                }
+            }
+            if (fsFoto != null) {
+                try {
+                    fsFoto.close();
+                } catch (Exception e) {
+                    mNumErrores++;
+                }
+            }
+            fsFoto = null;
+        }
+    }
+
+    private void guardarFoto2(String nombreFoto, String path, long imageSize)
+    {
+        String query;
+        Cursor cFoto = null;
+        File archivoFoto = null;
+        byte[] image = null;
+        ByteArrayOutputStream outputStream;
+        FileOutputStream fsFoto = null;
+        long idx = 0;
+        long actualImageSize;
+        long sizeToCopy;
+        final long IMAGE_BLOCK_SIZE = 1 * 1024 * 1024; // 1MB
+
+        try {
+            actualImageSize = imageSize;
+
+            outputStream = new ByteArrayOutputStream( );
+
+            // Obtener la imagen del campo blob en bloques de 1MB
+
+            while (actualImageSize > 0) {
+                if (actualImageSize > IMAGE_BLOCK_SIZE)
+                    sizeToCopy = IMAGE_BLOCK_SIZE;
+                else
+                    sizeToCopy = actualImageSize;
+
+                query = "Select nombre, substr(foto," + String.valueOf(idx) + ","+ String.valueOf(sizeToCopy)+"  ) fotoParcial from fotos where nombre = '" + nombreFoto + "'";
+                cFoto = db.rawQuery(query, null);
+
+                while (cFoto.moveToNext()) {
+
+                    nombreFoto = cFoto.getString(cFoto.getColumnIndex("nombre"));
+
+                    outputStream.write(cFoto.getBlob(cFoto.getColumnIndex("fotoParcial")));
+                }
+
+                cFoto.close();
+                cFoto = null;
+
+                idx += sizeToCopy;
+                actualImageSize -= sizeToCopy;
+            }
+
+            // Si se pudo obtener todos los bytes de la foto, se escribe en el almacenamiento SD
+
+            if (idx == imageSize) {
+                image = outputStream.toByteArray();
+
+                try {
+                    outputStream.flush();
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                nombreFoto = path + "/" + nombreFoto;
+                archivoFoto = new File(nombreFoto);
+                archivoFoto.createNewFile();
+
+                if (!archivoFoto.exists()) {
+                    //	throw new Exception("Hubo un problema al crear la foto. Verifique que su dispositivo tenga espacio.");
+                    mNumErrores++;
+                }
+                fsFoto = new FileOutputStream(archivoFoto);
+                fsFoto.write(image);
+            }
+        } catch (Exception e) {
+            mNumErrores++;
+        } finally {
+            if (cFoto != null) {
+                try {
+                    cFoto.close();
+                } catch (Exception e) {
+                    mNumErrores++;
+                }
+            }
+            if (fsFoto != null) {
+                try {
+                    fsFoto.close();
+                } catch (Exception e) {
+                    mNumErrores++;
+                }
+            }
+            fsFoto = null;
+        }
     }
 
     private void GrabarSDCard() {

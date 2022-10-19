@@ -44,6 +44,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_below="@+id/tv_msj_login"
                 android:layout_marginTop="16dp"
+                android:labelFor="@+id/et_usuario"
                 android:text="@string/str_usuario"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -54,6 +55,7 @@
                 android:layout_below="@+id/et_usuario"
                 android:layout_alignParentLeft="true"
                 android:layout_marginTop="16dp"
+                android:labelFor="@+id/et_contrasena"
                 android:text="@string/str_contrasena"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -83,7 +85,8 @@
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/btnAutenticar"
                 android:layout_marginTop="16dp"
-                android:text="Código SMS"
+                android:labelFor="@+id/txtCodigoSMS"
+                android:text="@string/str_lbl_codigo_sms"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <EditText

@@ -121,7 +121,7 @@
     <string name="lbl_regresar">Regresar</string>
     <string name="lbl_seleccionar">Selecc.</string>
     <string name="m_str_borrarAnom">Borrar Anomalia</string>
-    <string name="m_str_desendente">Desendente</string>
+    <string name="m_str_descendente">Descendente</string>
     <string name="m_str_ascendente">Ascendente</string>
     <string name="title_activity_configuracion">Configuracion</string>
     <string name="msj_warning_pendientes">Hay lecturas pendientes. Confirme que desea hacer un cierre forzado.</string>
@@ -298,4 +298,6 @@
     <string name="str_lbl_actualizar_avance">Actualizar avance</string>
     <string name="str_operacion">Operacion genérica</string>
     <string name="str_mensaje_lecturista">Cuida tu seguridad</string>
+    <string name="str_logo_empresa">Logo de cliente</string>
+    <string name="str_logo_enruta">Logo de Enruta</string>
 </resources>

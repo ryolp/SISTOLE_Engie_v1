@@ -294,6 +294,19 @@ public class Configuracion extends Activity {
                 if (tmp.view_name.equals("calidad_foto"))
                     et_view.setEnabled(false);
 
+                // RL, 2022-10-04, Habilitar controles críticos solo al super usuario
+
+                if (!globales.esSuperUsuario) {
+                    if (tmp.view_name.equals("servidor_gprs"))
+                        et_view.setEnabled(false);
+
+                    if (tmp.view_name.equals("servidor_wifi"))
+                        et_view.setEnabled(false);
+
+                    if (tmp.view_name.equals("ruta_descarga"))
+                        et_view.setEnabled(false);
+                }
+
 
                 //Agregamos al layout
                 layout.addView(et_view);
@@ -317,6 +330,13 @@ public class Configuracion extends Activity {
 
                 if (tmp.view_name.equals("modo"))
                     spinner.setEnabled(false);
+
+                /* RL - 2022-10-04
+                Deshabilitar el control Spínner del tamaño de fotos si no es Superusuario  */
+
+                if (tmp.view_name.equals("tam_fotos")) {
+                    spinner.setEnabled(globales.esSuperUsuario);
+                }
 
                 ArrayList<String> spinnerArray = new ArrayList<String>();
 
@@ -604,6 +624,10 @@ public class Configuracion extends Activity {
                             texto = "100";
                         }
                         globales.calidadDeLaFoto = Integer.parseInt(texto);
+                    }
+
+                    if (dbField.equals("cpl")) {
+                        texto = texto.trim();
                     }
 //						else if (dbField.equals("cpl")){
 //							if (globales.bloquearCPLNoSuper && !globales.esSuperUsuario)

@@ -2560,7 +2560,7 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
         else
             mi_orden.setIcon(R.drawable.ic_action_descendente);
 
-        mi_orden.setTitle(globales.ii_orden == ASC ? R.string.m_str_desendente
+        mi_orden.setTitle(globales.ii_orden == ASC ? R.string.m_str_descendente
                 : R.string.m_str_ascendente);
 
         if (globales.gpsEncendido) {
