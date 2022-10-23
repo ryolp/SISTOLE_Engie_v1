@@ -168,7 +168,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         globales.defaultUnicom = "1120";                                // CE, Hay que ver si tenemos el campo CPL
         globales.defaultRuta = "03";
         globales.defaultItinerario = "4480";
-        globales.defaultServidorGPRS = "http://dev-engie.sistoleweb.com";
+        globales.defaultServidorGPRS = "https://engie.sistoleweb.com";
 //		globales.defaultServidorGPRS="http://www.espinosacarlos.com";
         globales.defaultServidorWIFI = "http://10.240.225.11/1120";
         globales.defaultServidorDeActualizacion = "";
@@ -620,8 +620,8 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
             campos[1] = COLONIA;
             campos[2] = NUM_MEDIDOR;
             campos[3] = NUM_ESFERAS;
-            campos[4] = LECTURA;
-            campos[5] = OBSERVACIONES;
+            campos[3] = LECTURA;
+            campos[4] = OBSERVACIONES;
 
         } else if (anomalia.equals("cambiomedidor")) {
             campos = new int[2];
@@ -1549,7 +1549,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 //		resumen.add(new EstructuraResumen(ruta, "Ruta"));
 //		resumen.add(new EstructuraResumen(itinerario, "Itinerario"));
 //		resumen.add(new EstructuraResumen(ciclo, "Ciclo"));
-        resumen.add(new EstructuraResumen(cpl, "CPL"));
+        resumen.add(new EstructuraResumen(cpl, "Unidad"));
 //		resumen.add(new EstructuraResumen(mac_bt, "Servidor"));
 
         resumen.add(new EstructuraResumen("", "")); //Agregamos una linea mas

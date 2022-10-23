@@ -166,7 +166,7 @@ public class TomaDeLecturasComapaTampico extends TomaDeLecturasGenerica {
 		globales.defaultRuta="03";
 		globales.defaultItinerario="4480";
 //		globales.defaultServidorGPRS="http://horus.sistoleweb.com";
-		globales.defaultServidorGPRS="http://dev-engie.sistoleweb.com";
+		globales.defaultServidorGPRS="https://engie.sistoleweb.com";
 //		globales.defaultServidorGPRS="http://www.espinosacarlos.com";
 		globales.defaultServidorWIFI="http://10.240.225.11/1120";
 		globales.defaultServidorDeActualizacion="";

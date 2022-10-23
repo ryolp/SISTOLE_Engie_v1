@@ -28,7 +28,8 @@
 			    android:layout_alignParentBottom="true"
 			    android:layout_alignParentLeft="true"
 			    android:layout_alignParentRight="true"
-			    android:text="@string/continuar"
+				style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
+				android:text="@string/continuar"
 			    android:visibility="gone" />
 
 	</RelativeLayout>
