@@ -1,7 +1,6 @@
 package enruta.sistole_engie;
 
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,8 +11,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Hashtable;
-import java.util.UUID;
 
 
 import android.annotation.SuppressLint;
@@ -742,7 +739,8 @@ public class Main extends FragmentActivity implements TabListener {
                 verificarConectividad();
                 break;
             case R.id.m_ActualizarAvance:
-                actualizarAvance();
+                activarSincronizarAvance();
+                sincronizarAvance();
                 actualizarEstatusArchivos();
                 break;
             case R.id.m_OperacionGenerica:
@@ -802,7 +800,7 @@ public class Main extends FragmentActivity implements TabListener {
             case LECTURAS:
                 //actualizaResumen();
                 actualizarEstatusArchivos();
-                actualizarAvance();
+                sincronizarAvance();
                 actualizaTabs();
                 bu_params = data.getExtras();
                 bHabilitarImpresion = bu_params.getBoolean("bHabilitarImpresion");
@@ -2510,9 +2508,32 @@ public class Main extends FragmentActivity implements TabListener {
         }
     }
 
-    protected void actualizarAvance() {
+    protected void activarSincronizarAvance() {
+        if (globales == null)
+            return;
+
+        if (globales.sesionEntity == null)
+            return;
+
+        globales.sesionEntity.hacerSincronizacion = true;
+    }
+    
+    protected boolean sincronizarAvanceActivado() {
+        if (globales == null)
+            return false;
+
+        if (globales.sesionEntity == null)
+            return false;
+
+        return globales.sesionEntity.hacerSincronizacion;
+    }
+
+    protected void sincronizarAvance() {
         ArrayList<Long> mListadoArchivosLect;
         long mIdArchivo;
+
+        if (!sincronizarAvanceActivado())
+            return;
 
         Utils.showMessageShort(this, "Solicitando avance...");
 

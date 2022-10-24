@@ -15,15 +15,16 @@ public class SesionEntity {
     public boolean AutenticarConSMS = false;
     public Date HoraFinSesion;
     public String VersionWeb;
-    public Bitmap fotoEmpleado=null;
+    public Bitmap fotoEmpleado = null;
     public EmpleadoCplEntity empleado;
     public Boolean Autenticado = false;
     public String Unidad;
     public String Token;
     public long idArchivoUnidad;
     public String MensajeLecturista = "";
+    public boolean hacerSincronizacion = false;
 
-    public SesionEntity(){
+    public SesionEntity() {
 
     }
 
@@ -43,18 +44,18 @@ public class SesionEntity {
         inicializarHoraVencimiento();
     }
 
-    public void inicializarHoraVencimiento(){
+    public void inicializarHoraVencimiento() {
         Calendar calendar = Calendar.getInstance();
 
         calendar.add(Calendar.HOUR, 4);
         HoraFinSesion = calendar.getTime();
     }
 
-    public boolean esSesionVencida(){
+    public boolean esSesionVencida() {
         Date horaActual;
-        
+
         if (!this.Autenticado)
-            return true;        
+            return true;
 
         horaActual = Calendar.getInstance().getTime();
 

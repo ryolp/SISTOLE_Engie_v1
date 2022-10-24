@@ -620,8 +620,8 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
             campos[1] = COLONIA;
             campos[2] = NUM_MEDIDOR;
             campos[3] = NUM_ESFERAS;
-            campos[3] = LECTURA;
-            campos[4] = OBSERVACIONES;
+            campos[4] = LECTURA;
+            campos[5] = OBSERVACIONES;
 
         } else if (anomalia.equals("cambiomedidor")) {
             campos = new int[2];
