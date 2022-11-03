@@ -1,107 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="enruta.sistole_gen"
+    package="enruta.sistole_engie"
     android:installLocation="preferExternal"
-    android:versionCode="39"
-    android:versionName="ENGIE CPL (1.0.8)"
-    android:versionCodeMajor="10007">
+    android:versionCode="42"
+    android:versionName="ENGIE CPL (1.1.11)">
 
     <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="15" />
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" />
+        android:targetSdkVersion="31" />
 
     <uses-feature
         android:name="android.hardware.camera.autofocus"
         android:required="false" />
 
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name="enruta.sistole_gen.Globales"
+        android:name="enruta.sistole_engie.Globales"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name="enruta.sistole_gen.Main"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:name="enruta.sistole_engie.ScanActivity"
+            android:exported="false" />
         <activity
-            android:name="enruta.sistole_gen.TomaDeLecturas"
+            android:name="enruta.sistole_engie.Main"
+            android:label="@string/app_name"
+            android:exported="true"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="enruta.sistole_engie.TomaDeLecturas"
             android:configChanges="keyboardHidden|navigation|orientation|screenSize"
             android:label="@string/title_activity_toma_de_lecturas"
+            android:exported="false"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden" >
-        </activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="enruta.sistole_gen.CamaraActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:name="enruta.sistole_engie.CamaraActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="enruta.sistole_gen.trasmisionDatos"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:name="enruta.sistole_engie.trasmisionDatos"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="enruta.sistole_gen.VerFotos"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:name="enruta.sistole_engie.VerFotos"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="enruta.sistole_gen.Filtrado"
+            android:name="enruta.sistole_engie.Filtrado"
             android:label="@string/title_activity_filtrado"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" >
-        </activity>
+            android:exported="false"
+            android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name="enruta.sistole_gen.Input"
+            android:name="enruta.sistole_engie.Input"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible" >
-        </activity>
+            android:exported="false"
+            android:windowSoftInputMode="stateVisible" />
         <activity
-            android:name="enruta.sistole_gen.PantallaAnomalias"
+            android:name="enruta.sistole_engie.PantallaAnomalias"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" >
-        </activity>
+            android:exported="false"
+            android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name="enruta.sistole_gen.BuscarMedidor"
+            android:name="enruta.sistole_engie.BuscarMedidor"
             android:label="@string/title_activity_buscar_medidor"
+            android:exported="false"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible|adjustResize" >
-        </activity>
+            android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity
-            android:name="enruta.sistole_gen.Configuracion"
+            android:name="enruta.sistole_engie.Configuracion"
             android:label="@string/title_activity_configuracion"
+            android:exported="false"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustPan" >
-        </activity>
+            android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
-            android:name="enruta.sistole_gen.Informacion"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:name="enruta.sistole_engie.Informacion"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="enruta.sistole_gen.NoRegistrados"
+            android:name="enruta.sistole_engie.NoRegistrados"
             android:label="@string/title_activity_no_registrados"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="enruta.sistole_gen.trasmisionDatosBt"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:name="enruta.sistole_engie.trasmisionDatosBt"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="enruta.sistole_gen.CPL"
+            android:name="enruta.sistole_engie.CPL"
             android:configChanges="keyboardHidden|orientation|screenLayout|screenSize"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan" >
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -109,14 +111,21 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="enruta.sistole_gen.InputCamposGenerico"
+            android:name="enruta.sistole_engie.InputCamposGenerico"
+            android:exported="false"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" >
-        </activity>
+            android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name="enruta.sistole_gen.PantallaCodigos"
-            android:label="@string/title_activity_pantalla_codigos" >
-        </activity>
+            android:name="enruta.sistole_engie.PantallaCodigos"
+            android:exported="false"
+            android:label="@string/title_activity_pantalla_codigos" />
+        <activity
+            android:name="enruta.sistole_engie.SupervisorLoginActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="enruta.sistole_engie.SignaturePadActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -35,6 +35,7 @@
             android:layout_marginTop="14dp"
             android:adjustViewBounds="true"
             android:baselineAlignBottom="false"
+            android:contentDescription="@string/str_logo_empresa"
             android:src="@drawable/logo_engie" />
 
         <ImageView
@@ -46,6 +47,7 @@
             android:layout_alignRight="@+id/iv_logo"
             android:layout_marginTop="14dp"
             android:adjustViewBounds="true"
+            android:contentDescription="@string/str_logo_enruta"
             android:src="@drawable/enruta" />
 
         <TextView
@@ -110,9 +112,10 @@
             android:layout_height="wrap_content"
             android:onClick="entrarAdministrador"
             android:layout_weight=".5"
-            android:text="@string/lbl_admon" 
-              android:layout_marginLeft="-3dip"
-            android:layout_marginRight="-3dip"/>
+            android:text="@string/lbl_admon"
+            style="@style/AppTheme.RoundedCornerMaterialButton"
+              android:layout_marginLeft="3dip"
+            android:layout_marginRight="3dip"/>
 
         <Button
             android:id="@+id/b_lecturista"
@@ -120,9 +123,10 @@
             android:layout_height="wrap_content"
             android:onClick="entrarLecturista"
             android:layout_weight=".5"
-            android:text="@string/lbl_lecturista" 
-            android:layout_marginLeft="-3dip"
-            android:layout_marginRight="-3dip" />
+            android:text="@string/lbl_lecturista"
+            style="@style/AppTheme.RoundedCornerMaterialButton"
+            android:layout_marginLeft="3dip"
+            android:layout_marginRight="3dip" />
     </LinearLayout>
 
     <TextView

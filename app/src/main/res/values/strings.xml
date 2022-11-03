@@ -58,7 +58,7 @@
     <string name="str_importar_lowercase">importar</string>
     <string name="info_centro">Unicom</string>
     <string name="info_lote">Lote</string>
-    <string name="info_CPL">CPL</string>
+    <string name="info_CPL">Unidad</string>
     <string name="info_Pais">Pais</string>
     <string name="info_numBluetooth">Número de Bluetooth</string>
     <string name="info_macBluetooth">MAC Bluetooth</string>
@@ -121,7 +121,7 @@
     <string name="lbl_regresar">Regresar</string>
     <string name="lbl_seleccionar">Selecc.</string>
     <string name="m_str_borrarAnom">Borrar Anomalia</string>
-    <string name="m_str_desendente">Desendente</string>
+    <string name="m_str_descendente">Descendente</string>
     <string name="m_str_ascendente">Ascendente</string>
     <string name="title_activity_configuracion">Configuracion</string>
     <string name="msj_warning_pendientes">Hay lecturas pendientes. Confirme que desea hacer un cierre forzado.</string>
@@ -276,5 +276,28 @@
     <string name="str_pregunta_guardar_cambios_anomalia_ausente">La anomalia es ausente,Se borrará la lectura ¿Desea continuar?</string>
     <string name="str_m_borrarEstadisticas">Borrar Estadísticas</string>
     <string name="title_activity_pantalla_codigos">Codigos</string>
-
+    <string name="str_lbl_supervisor">Supervisor</string>
+    <string name="str_lbl_emergencia">Emergencia</string>
+    <string name="str_lbl_autenticar">Autenticar</string>
+    <string name="str_lbl_validar_sms">Validar SMS</string>
+    <string name="str_lbl_enviar_informe">Enviar informe</string>
+    <string name="str_lbl_mensaje_supervisor">Escriba su usuario y contraseña de supervisor</string>
+    <string name="str_lbl_mensaje_supervisor2">Se enviará la siguiente información como parte de la supervisión</string>
+    <string name="str_lbl_usuario_supervisor">Usuario del supervisor:</string>
+    <string name="str_lbl_codigo_sms">Código SMS:</string>
+    <string name="str_lbl_escaner">Escáner</string>
+    <string name="str_lbl_instruccion_escaner">Acerque la cámara de manera que el código esté dentro del recuadro</string>
+    <string name="title_activity_supervisor">Supervisor</string>
+    <string name="str_title_medidor_encontrado">Medidor encontrado</string>
+    <string name="str_num_serie_medidor">Número de serie</string>
+    <string name="str_unidad">Unidad</string>
+    <string name="str_reporte_de_oim">Reporte por O Y M</string>
+    <string name="str_lbl_codigo_barras">Código de barras</string>
+    <string name="str_lbl_revisar_conectividad">Conectividad</string>
+    <string name="str_lbl_ruta_finalizada">Ya no hay lecturas pendientes por realizar. Ruta finalizada.</string>
+    <string name="str_lbl_sincronizar_avance">Sincronizar avance</string>
+    <string name="str_operacion">Operacion genérica</string>
+    <string name="str_mensaje_lecturista">Cuida tu seguridad</string>
+    <string name="str_logo_empresa">Logo de cliente</string>
+    <string name="str_logo_enruta">Logo de Enruta</string>
 </resources>

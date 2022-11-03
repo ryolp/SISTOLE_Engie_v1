@@ -58,12 +58,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight=".3333"
+                android:layout_marginRight="2dp"
+                style="@style/AppTheme.RoundedCornerMaterialButton"
                 android:text="@string/str_captura" />
 
             <Button
                 android:id="@+id/camara_b_otra"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                style="@style/AppTheme.RoundedCornerMaterialButton"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
                 android:layout_weight=".3333"
                 android:text="@string/lbl_camara_otra" />
 
@@ -71,6 +76,8 @@
                 android:id="@+id/camara_b_regresa"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                style="@style/AppTheme.RoundedCornerMaterialButton"
+                android:layout_marginLeft="2dp"
                 android:layout_weight=".3333"
                 android:text="@string/lbl_regresar"
                 android:visibility="visible" />
@@ -110,5 +117,51 @@
         android:padding="5dp"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_con_flash" />
+
+    <ImageButton
+        android:id="@+id/ib_firmar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentRight="true"
+        android:adjustViewBounds="true"
+        android:onClick="flashMode"
+        android:padding="5dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_lecturas" />
+
+    <ImageButton
+        android:id="@+id/ib_cambiarCamara"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentLeft="true"
+        android:adjustViewBounds="true"
+        android:onClick="flashMode"
+        android:padding="5dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_cambiar_camara" />
+
+    <ImageButton
+        android:id="@+id/ib_subirResolucion"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_above="@+id/controles"
+        android:layout_alignParentRight="true"
+        android:adjustViewBounds="true"
+        android:onClick="flashMode"
+        android:padding="5dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_action_nuevo" />
+
+    <ImageButton
+        android:id="@+id/ib_bajarResolucion"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_above="@+id/controles"
+        android:layout_toLeftOf="@id/ib_subirResolucion"
+        android:adjustViewBounds="true"
+        android:onClick="flashMode"
+        android:padding="5dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_disminuir_24" />
 
 </RelativeLayout>

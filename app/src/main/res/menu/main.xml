@@ -12,22 +12,23 @@
         android:icon="@drawable/ic_action_exportar"
         android:orderInCategory="2"
         android:showAsAction="always"
-        android:title="@string/m_str_exportar"></item>
+        android:title="@string/m_str_exportar"/>
     <item
         android:id="@+id/m_lecturas"
         android:icon="@drawable/ic_lecturas"
         android:orderInCategory="3"
         android:showAsAction="always"
-        android:title="@string/m_str_lecturas"></item>
+        android:title="@string/m_str_lecturas"/>
     <item
         android:id="@+id/m_filtrar"
         android:orderInCategory="3"
         android:title="@string/m_str_filtrar"
-        android:visible="false"></item>
+        android:visible="false"/>
+
     <item
         android:id="@+id/m_exportarTodo"
         android:title="@string/m_str_exportarTodo"
-        android:visible="false"></item>
+        android:visible="false"/>
 
 
     <item
@@ -35,38 +36,66 @@
         android:icon="@drawable/ic_action_configuracion"
         android:orderInCategory="4"
         android:showAsAction="always"
-        android:title="@string/str_configuracion"></item>
+        android:title="@string/str_configuracion"/>
     <item
         android:id="@+id/m_borrarruta"
-        android:orderInCategory="5"
+        android:orderInCategory="6"
         android:title="@string/m_str_borrarRuta"
-        android:visible="true"></item>
+        android:visible="true"/>
+
+    <item
+        android:id="@+id/m_ayuda"
+        android:orderInCategory="7"
+        android:title="Ayuda..."
+        android:visible="true"/>
+
     <item
         android:id="@+id/m_salir"
-        android:orderInCategory="6"
-        android:title="@string/Salir"></item>
+        android:orderInCategory="8"
+        android:title="@string/Salir"/>
+
     <item
         android:id="@+id/probar_bt"
         android:title="Probar bt"
-        android:visible="false"></item>
+        android:visible="false"/>
     <item
         android:id="@+id/m_cambiarUsuario"
         android:icon="@drawable/ic_action_cambiausr"
         android:showAsAction="always"
-        android:title="@string/lbl_cambiarUsuario"></item>
+        android:title="@string/lbl_cambiarUsuario"/>
     <item
         android:id="@+id/m_acercaDe"
-        android:title="@string/m_str_acercade"></item>
+        android:title="@string/m_str_acercade"/>
     <item
         android:id="@+id/m_verTamanosLetra"
-        android:title="Tamaños de Fuente"></item>
+        android:title="Tamaños de Fuente"/>
     <item
         android:id="@+id/m_grabarEnSD"
-        android:title="Grabar en SDCard"></item>
+        android:title="Grabar en SDCard"/>
     <item
         android:id="@+id/m_escaneo"
+        android:icon="@drawable/ic_scanner_24"
         android:title="Escaneo"
-        android:visible="false"></item>
+        android:orderInCategory="4"
+        android:showAsAction="always"
+        android:visible="false"/>
+    <item
+        android:id="@+id/m_EntrarSupervisor"
+        android:title="@string/str_lbl_supervisor"
+        android:visible="true"/>
+    <item
+        android:id="@+id/m_VerificarConectividad"
+        android:title="@string/str_lbl_revisar_conectividad"
+        android:visible="true"/>
+    <item
+        android:id="@+id/m_ActualizarAvance"
+        android:title="@string/str_lbl_sincronizar_avance"
+        android:visible="true"/>
+    <item
+        android:id="@+id/m_OperacionGenerica"
+        android:title="@string/str_operacion"
+        android:visible="false"/>
+
 
 
 </menu>

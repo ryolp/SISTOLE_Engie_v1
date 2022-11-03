@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/relativeLayoutm"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -57,39 +58,43 @@
                 android:id="@+id/button1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight=".3333"
-                android:layout_marginLeft="-3dip"
-           		android:layout_marginRight="-3dip"
-           		android:layout_marginTop="-3dip"
-            	android:layout_marginBottom="-3dip"
+                android:layout_weight="1"
+				android:layout_marginLeft="0dip"
+				android:layout_marginRight="2dip"
+				android:layout_marginTop="0dip"
+				android:layout_marginBottom="0dip"
                 android:text="@string/str_lectura"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+				style="@style/AppTheme.RoundedCornerMaterialButton.Green"
+				/>
 
             <Button
                 android:id="@+id/button2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight=".3333"
-                android:layout_marginLeft="-3dip"
-           		android:layout_marginRight="-3dip"
-           		android:layout_marginTop="-3dip"
-            	android:layout_marginBottom="-3dip"
+                android:layout_weight="1"
+				android:layout_marginLeft="2dip"
+				android:layout_marginRight="2dip"
+				android:layout_marginTop="0dip"
+				android:layout_marginBottom="2dip"
                 android:text="@string/str_buscar"
                 android:textStyle="bold"
-                android:visibility="visible" />
+                android:visibility="visible"
+				style="@style/AppTheme.RoundedCornerMaterialButton"/>
 
             <Button
                 android:id="@+id/button3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight=".3333"
-                android:layout_marginLeft="-3dip"
-           		android:layout_marginRight="-3dip"
-           		android:layout_marginTop="-3dip"
-            	android:layout_marginBottom="-3dip"
+                android:layout_weight="1"
+                android:layout_marginLeft="2dip"
+           		android:layout_marginRight="0dip"
+           		android:layout_marginTop="0dip"
+            	android:layout_marginBottom="2dip"
                 android:enabled="true"
                 android:text="@string/str_anomalia"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+				style="@style/AppTheme.RoundedCornerMaterialButton.Red" />
 
         </LinearLayout>
 
@@ -104,37 +109,40 @@
                 android:id="@+id/button4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight=".3333"
-                android:layout_marginLeft="-3dip"
-           		android:layout_marginRight="-3dip"
-           		android:layout_marginTop="-3dip"
-            	android:layout_marginBottom="-3dip"
+                android:layout_weight="1"
+				android:layout_marginLeft="0dip"
+				android:layout_marginRight="2dip"
+				android:layout_marginTop="0dip"
+				android:layout_marginBottom="0dip"
                 android:text="@string/m_str_anterior"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+				style="@style/AppTheme.RoundedCornerMaterialButton"/>
 
             <Button
                 android:id="@+id/button5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="-3dip"
-                android:layout_marginLeft="-3dip"
-                android:layout_marginRight="-3dip"
-                android:layout_marginTop="-3dip"
-                android:layout_weight="0.3333"
+				android:layout_marginLeft="2dip"
+				android:layout_marginRight="2dip"
+				android:layout_marginTop="0dip"
+				android:layout_marginBottom="0dip"
+				android:layout_weight="1"
                 android:onClick="verFotos"
                 android:textStyle="bold"
+				style="@style/AppTheme.RoundedCornerMaterialButton"
                 android:text="@string/str_fotos" />
 
             <Button
                 android:id="@+id/button6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight=".3333"
-                android:layout_marginLeft="-3dip"
-           		android:layout_marginRight="-3dip"
-           		android:layout_marginTop="-3dip"
-            	android:layout_marginBottom="-3dip"
+                android:layout_weight="1"
+                android:layout_marginLeft="2dip"
+           		android:layout_marginRight="0dip"
+           		android:layout_marginTop="0dip"
+            	android:layout_marginBottom="0dip"
                 android:text="@string/m_str_siguiente"
+				style="@style/AppTheme.RoundedCornerMaterialButton"
                 android:textStyle="bold" />
 
         </LinearLayout>
@@ -389,132 +397,129 @@
 	    
 
     </LinearLayout>
-    
-    <ScrollView
-        android:id="@+id/scrollView1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/linearLayout1"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:fillViewport="true" >
 
-        <LinearLayout
-            android:id="@+id/RelativeLay"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" >
-	        
-            <LinearLayout
-                android:id="@+id/ll_limites"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:visibility="gone" >
-                
-                 <TextView
-                       android:id="@+id/textView9"
-		                android:layout_width="wrap_content"
-		                android:layout_height="wrap_content"
-		                android:layout_alignBaseline="@+id/tv_min"
-		                android:layout_alignBottom="@+id/tv_min"
-		                android:layout_toRightOf="@+id/tv_min"
-		                
-		                android:text="@string/str_lecturaAnterior" />
-                   
-                   <TextView
-		                android:id="@+id/tv_lecturaAnterior"
-		                android:layout_width="wrap_content"
-		                android:layout_height="wrap_content"
-		                android:layout_alignBottom="@+id/textView9"
-		                android:layout_alignParentRight="true"
-		                android:layout_toRightOf="@+id/textView9"
-		                android:paddingLeft="5dp"
-		                android:text="Large Text"
-		                android:textAppearance="?android:attr/textAppearanceLarge" />
-		        
-                   <TextView
-		                android:id="@+id/textView6"
-		                android:layout_width="wrap_content"
-		                android:layout_height="wrap_content"
-		                 android:paddingLeft="20dp"
-		                android:text="@string/str_min" />
-                   
-                   <TextView
-		                android:id="@+id/tv_min"
-		                android:layout_width="wrap_content"
-		                android:layout_height="wrap_content"
-		                android:layout_toRightOf="@+id/textView6"
-		                android:paddingLeft="20dp"
-		                android:text="Large Text"
-		                android:textAppearance="?android:attr/textAppearanceLarge" />
-                   
-                   <TextView
-		                android:id="@+id/textView8"
-		                android:layout_width="wrap_content"
-		                android:layout_height="wrap_content"
-		                android:layout_alignBaseline="@+id/tv_min"
-		                android:layout_alignBottom="@+id/tv_min"
-		                android:layout_toRightOf="@+id/tv_min"
-		                android:paddingLeft="20dp"
-		                android:text="@string/str_max" />
-                   
-                   <TextView
-		                android:id="@+id/tv_max"
-		                android:layout_width="wrap_content"
-		                android:layout_height="wrap_content"
-		                android:layout_alignBottom="@+id/textView8"
-		                android:layout_alignParentRight="true"
-		                android:layout_toRightOf="@+id/textView8"
-		                android:paddingLeft="5dp"
-		                android:text="Large Text"
-		                android:textAppearance="?android:attr/textAppearanceLarge" />
-                   
-                  
-            </LinearLayout>
+	<ScrollView
+		android:id="@+id/scrollView1"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_above="@+id/linearLayout1"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentTop="true"
+		android:fillViewport="true">
 
-            <TextView
-                android:id="@+id/tv_advertencia"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@color/Yellow"
-                android:gravity="center"
-                android:text="Large Text"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/Black"
-                android:visibility="gone" />
+		<LinearLayout
+			android:id="@+id/RelativeLay"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/ll_generica"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" >
-            </LinearLayout>
+			<LinearLayout
+				android:id="@+id/ll_limites"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:visibility="gone">
 
-            
+				<TextView
+					android:id="@+id/textView9"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_alignBaseline="@+id/tv_min"
+					android:layout_alignBottom="@+id/tv_min"
+					android:layout_toRightOf="@+id/tv_min"
 
-            <TextView
-                android:id="@+id/tv_comentarios"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="Large Text"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-            
-            <TextView
-                android:id="@+id/tv_contadorOpcional"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="Large Text"
-                android:gravity="center"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+					android:text="@string/str_lecturaAnterior" />
 
-            
+				<TextView
+					android:id="@+id/tv_lecturaAnterior"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_alignBottom="@+id/textView9"
+					android:layout_alignParentRight="true"
+					android:layout_toRightOf="@+id/textView9"
+					android:paddingLeft="5dp"
+					android:text="Large Text"
+					android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        </LinearLayout>
-    </ScrollView>
+				<TextView
+					android:id="@+id/textView6"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingLeft="20dp"
+					android:text="@string/str_min" />
+
+				<TextView
+					android:id="@+id/tv_min"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_toRightOf="@+id/textView6"
+					android:paddingLeft="20dp"
+					android:text="Large Text"
+					android:textAppearance="?android:attr/textAppearanceLarge" />
+
+				<TextView
+					android:id="@+id/textView8"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_alignBaseline="@+id/tv_min"
+					android:layout_alignBottom="@+id/tv_min"
+					android:layout_toRightOf="@+id/tv_min"
+					android:paddingLeft="20dp"
+					android:text="@string/str_max" />
+
+				<TextView
+					android:id="@+id/tv_max"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_alignBottom="@+id/textView8"
+					android:layout_alignParentRight="true"
+					android:layout_toRightOf="@+id/textView8"
+					android:paddingLeft="5dp"
+					android:text="Large Text"
+					android:textAppearance="?android:attr/textAppearanceLarge" />
+
+
+			</LinearLayout>
+
+			<TextView
+				android:id="@+id/tv_advertencia"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:background="@color/Yellow"
+				android:gravity="center"
+				android:text="Large Text"
+				android:textAppearance="?android:attr/textAppearanceLarge"
+				android:textColor="@color/Black"
+				android:visibility="gone" />
+
+			<LinearLayout
+				android:id="@+id/ll_generica"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"></LinearLayout>
+
+
+			<TextView
+				android:id="@+id/tv_comentarios"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="14dp"
+				android:text="Large Text"
+				android:textAppearance="?android:attr/textAppearanceLarge" />
+
+			<TextView
+				android:id="@+id/tv_contadorOpcional"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="14dp"
+				android:gravity="center"
+				android:text="Large Text"
+				android:textAppearance="?android:attr/textAppearanceLarge" />
+
+
+		</LinearLayout>
+	</ScrollView>
 
     <Button
         android:id="@+id/b_repetir_anom"
