@@ -24,9 +24,14 @@ public class EmergenciaMgr {
     public final int ERROR_ENVIAR_3 = 5;
     public final int ERROR_ENVIAR_4 = 6;
 
+    // Peticiones de emergencia
+    public static final int EMERGENCIA_PRELIMINAR = 0;
+    public static final int EMERGENCIA_CONFIRMADA = 1;
+    public static final int EMERGENCIA_CANCELADA = 2;
+
     private OperacionResponse mResp = null;
     private OperacionRequest mRequest = null;
-    private boolean mEmergenciaConfirmada = false;
+    private int mSolicitudEmergencia = EMERGENCIA_PRELIMINAR;
 
     public EmergenciaMgr(Context context) {
         mContext = context;
@@ -36,7 +41,7 @@ public class EmergenciaMgr {
         this.mCallback = callback;
     }
 
-    public void enviarSolicitudEmergencia(SesionEntity sesionEntity, Location location, boolean emergenciaConfirmada) {
+    public void enviarSolicitudEmergencia(SesionEntity sesionEntity, Location location, int solicitudEmergencia) {
         OperacionRequest req;
         OperacionResponse resp;
 
@@ -44,12 +49,24 @@ public class EmergenciaMgr {
             mResp = new OperacionResponse();
             mRequest= new OperacionRequest();
 
-            mEmergenciaConfirmada = emergenciaConfirmada;
+            mSolicitudEmergencia = solicitudEmergencia;
 
             req = new OperacionRequest();
             req.idEmpleado = sesionEntity.empleado.idEmpleado;
             req.FechaOperacion = Utils.getDateTime();
-            req.ValorBoolean = emergenciaConfirmada;
+
+            switch(solicitudEmergencia) {
+                case EMERGENCIA_PRELIMINAR:
+                    req.ValorBoolean = false;
+                    break;
+                case EMERGENCIA_CONFIRMADA:
+                    req.ValorBoolean = true;
+                    break;
+                case EMERGENCIA_CANCELADA:
+                    req.ValorBoolean = false;
+                    break;
+            }
+            req.ValorLong = (long)solicitudEmergencia;
 
             if (location != null) {
                 req.LongitudGPS = String.valueOf(location.getLongitude());
@@ -90,7 +107,7 @@ public class EmergenciaMgr {
         }
 
         if (mCallback != null)
-            mCallback.enExito(resp, mEmergenciaConfirmada);
+            mCallback.enExito(resp, mSolicitudEmergencia);
     }
 
     private void fallo(OperacionResponse resp, int codigo, String mensaje) {

@@ -138,6 +138,8 @@ public class ArchivosLectMgr {
             resp.NumError = 0;
         }
 
+        marcarUsuarioRequiereCheckSeguridad();
+
         if (mListadoArchivosLect.size() == 0){
             if (mCallback != null)
                 mCallback.enExitoComunicacion(req, resp);
@@ -147,7 +149,23 @@ public class ArchivosLectMgr {
             mIdArchivo =mListadoArchivosLect.get(0);
             mListadoArchivosLect.remove(0);
             marcarArchivoDescargado(mIdArchivo);
+
         }
+    }
+
+    private void marcarUsuarioRequiereCheckSeguridad()
+    {
+        if (mGlobales == null)
+            return;
+
+        if (mGlobales.sesionEntity == null)
+            return;
+
+        if (mGlobales.sesionEntity.empleado == null)
+            return;
+
+        mGlobales.sesionEntity.empleado.RequiereCheckIn = true;
+        mGlobales.sesionEntity.empleado.RequiereCheckSeguridad = true;
     }
 
     private void fallo(ArchivosLectRequest req, ArchivosLectResponse resp, int numError, String mensajeError) {

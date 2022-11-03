@@ -89,7 +89,7 @@
         android:visible="true"/>
     <item
         android:id="@+id/m_ActualizarAvance"
-        android:title="@string/str_lbl_actualizar_avance"
+        android:title="@string/str_lbl_sincronizar_avance"
         android:visible="true"/>
     <item
         android:id="@+id/m_OperacionGenerica"

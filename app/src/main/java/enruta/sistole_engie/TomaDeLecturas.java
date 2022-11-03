@@ -1,6 +1,7 @@
 package enruta.sistole_engie;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
@@ -106,11 +107,13 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
     long secuencialAntesDeInput = 0;
     boolean modoLecturaObligatoria = false;
 
-    private boolean mDialogoConfirmarAyuda = false;
+
+
     private EmergenciaMgr mEmergenciaMgr = null;
 
     private IntentIntegrator scanIntent;
     private BuscarMedidorMgr mBuscarMedidorMgr = null;
+    private AlertDialog mAlertEmergencia = null;
 
     @SuppressLint("NewApi")
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
@@ -1296,6 +1299,8 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 
     @SuppressLint("NewApi")
     protected void setDatos(boolean reiniciaValores) {
+        String codigoBarras = "";
+        boolean intercambiarConCodigoBarras = false;
 
         if (reiniciaValores) {
             if (globales.tll.getNumRecords() > 0) {
@@ -1448,7 +1453,18 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 
         enciendeGPS();
 
-        tv_caseta.setText(getString(R.string.lbl_tdl_indica_medidor) + globales.is_caseta);
+        // RL, 2022-10-24, Se requiere que para las regionales de Tampico y Guadalajara
+        // En el campo donde se muestra la serie del medidor se muestre el código de barras.
+
+        intercambiarConCodigoBarras = globales.tll.getLecturaActual().getIntercambiarSerieMedidor();
+
+        if (!intercambiarConCodigoBarras)
+            tv_caseta.setText(getString(R.string.lbl_tdl_indica_medidor) + globales.is_caseta);
+        else {
+            codigoBarras = globales.tll.getLecturaActual().getCodigoBarras();
+            tv_caseta.setText(getString(R.string.lbl_tdl_indica_medidor) + codigoBarras);
+        }
+
         //tv_nombre.setText(globales.tll.getLecturaActual().getNombreCliente());
         //globales.tdlg.getInformacionDelMedidor(ll_generica, globales.tll.getLecturaActual(), sizeGenerico);
         preparaDatosGenericos();
@@ -3412,22 +3428,29 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
     }
 
     private void solicitarEmergencia() {
-        enviarSolicitudEmergencia(false);
+        enviarSolicitudEmergencia(EmergenciaMgr.EMERGENCIA_PRELIMINAR);
     }
 
+//    private boolean requiereConfirmarEmergencia(){
+//        if (!mDialogoConfirmarAyuda)
+//            return true;
+//
+//
+//    }
+
     protected void confirmarEmergencia() {
-        if (!mDialogoConfirmarAyuda) {
+        if (mAlertEmergencia == null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
             builder.setTitle("Confirmar ayuda");
             builder.setMessage("¿Está seguro de la ayuda?");
+            builder.setCancelable(false);
 
             builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
                 public void onClick(DialogInterface dialog, int which) {
-                    enviarSolicitudEmergencia(true);
+                    enviarSolicitudEmergencia(EmergenciaMgr.EMERGENCIA_CONFIRMADA);
                     dialog.dismiss();
-                    mDialogoConfirmarAyuda = false;
                 }
             });
 
@@ -3435,19 +3458,18 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    enviarSolicitudEmergencia(EmergenciaMgr.EMERGENCIA_CANCELADA);
                     dialog.dismiss();
                     mEmergenciaMgr = null;
-                    mDialogoConfirmarAyuda = false;
                 }
             });
 
-            AlertDialog alert = builder.create();
-            alert.show();
-            mDialogoConfirmarAyuda = true;
+            mAlertEmergencia = builder.create();
         }
+        mAlertEmergencia.show();
     }
 
-    protected void enviarSolicitudEmergencia(boolean emergenciaConfirmada) {
+    protected void enviarSolicitudEmergencia(int solicitudEmergencia) {
         if (globales == null) {
             Utils.showMessageLong(this, "Error al solicitar ayuda. Contacte soporte técnico.");
             return;
@@ -3468,8 +3490,8 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 
             mEmergenciaMgr.setEmergenciaCallback(new EmergenciaCallback() {
                 @Override
-                public void enExito(OperacionResponse resp, boolean emergenciaConfirmada) {
-                    if (!emergenciaConfirmada)
+                public void enExito(OperacionResponse resp, int solicitudEmergenciaResultado) {
+                    if (solicitudEmergenciaResultado == EmergenciaMgr.EMERGENCIA_PRELIMINAR)
                         confirmarEmergencia();
                 }
 
@@ -3480,11 +3502,19 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
             });
         }
 
-        if (!emergenciaConfirmada)
-            Utils.showMessageLong(TomaDeLecturas.this, "Fue enviada la solicitud de emergencia");
-        else
-            Utils.showMessageLong(TomaDeLecturas.this, "Fue enviada la confirmación de emergencia");
-        mEmergenciaMgr.enviarSolicitudEmergencia(globales.sesionEntity, globales.location, emergenciaConfirmada);
+        switch(solicitudEmergencia){
+            case EmergenciaMgr.EMERGENCIA_PRELIMINAR:
+                Utils.showMessageLong(TomaDeLecturas.this, "Fue enviada la solicitud de emergencia");
+                break;
+            case EmergenciaMgr.EMERGENCIA_CONFIRMADA:
+                Utils.showMessageLong(TomaDeLecturas.this, "Fue enviada la confirmación de emergencia");
+                break;
+            case EmergenciaMgr.EMERGENCIA_CANCELADA:
+                Utils.showMessageLong(TomaDeLecturas.this, "Fue enviada la cancelación de emergencia");
+                break;
+        }
+
+        mEmergenciaMgr.enviarSolicitudEmergencia(globales.sesionEntity, globales.location, solicitudEmergencia);
     }
 
     protected void entrarSupervisor() {
@@ -3518,13 +3548,16 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
         if (codigo.equals(""))
             return;
 
-        Utils.mostrarAlerta(this, "Medidor escaneado", "Se buscará el medidor con código: " + codigo,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        buscarMedidorEscaneado(codigo);
-                    }
-                });
+//        Utils.mostrarAlerta(this, "Medidor escaneado", "Se buscará el medidor con código: " + codigo,
+//                new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        buscarMedidorEscaneado(codigo);
+//                    }
+//                });
+
+        Utils.showMessageShort(TomaDeLecturas.this, "Buscando medidor: " + codigo);
+        buscarMedidorEscaneado(codigo);
     }
 
     protected void buscarMedidorEscaneado(String codigo) {
@@ -3542,7 +3575,7 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
         mBuscarMedidorMgr.setOnBuscarMedidorListener(new BuscarMedidorCallback() {
             @Override
             public void enExito(String codigo, int secuencia) {
-                if (secuencia >= 0)
+                if (secuencia > 0)
                     seleccionarMedidor(secuencia);
                 else
                     Utils.showMessageLong(TomaDeLecturas.this, "No se encontró el medidor");

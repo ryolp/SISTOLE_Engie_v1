@@ -806,6 +806,8 @@ public class Main extends FragmentActivity implements TabListener {
                 bHabilitarImpresion = bu_params.getBoolean("bHabilitarImpresion");
                 break;
             case FOTO_CHECK_SEGURIDAD:
+                if (ttw != null)
+                    ttw.iniciaTarea(0);
                 break;
             case REQUEST_ENABLE_BT_IMP:
                 mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();

@@ -13,6 +13,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 
+import enruta.sistole_engie.clases.FotosMgr;
+
 public class ThreadTransmitirWifi extends TimerTask {
 	final static int TRANSMITIR_FOTOS = 1;
 	final static int TRANSMITIR_LECTURAS = 2;
@@ -52,6 +54,10 @@ public class ThreadTransmitirWifi extends TimerTask {
 	
 	
 	Timer tarea;
+
+	// RL, 2022-10, Se agrega clase que ayuda a manejar fotos mayores de 2MB
+
+	private FotosMgr fotoMgr = null;
 
 	ThreadTransmitirWifi(Serializacion serial, Globales globales,
 			String carpeta, String servidor/* , int tipoTransmision */) {
@@ -100,8 +106,10 @@ public class ThreadTransmitirWifi extends TimerTask {
 		serial = new Serializacion(Serializacion.WIFI);
 		String ls_cadena = "";
 		byte[] lby_registro, lby_cadenaEnBytes;
+		byte[] image;
 		String ls_nombre_final;
 		cancelarNotificacion(RESULTADO_TRANSMISION);
+		int numErrores = 0;
 		
 		mostrarNotificacion(MENSAJE_PROGRESO,R.drawable.ic_action_exportar,  "Iniciando el envio", "");
 
@@ -152,7 +160,10 @@ public class ThreadTransmitirWifi extends TimerTask {
 
 				openDatabase();
 
-				String ls_query = "select nombre, foto , rowid from fotos ";
+				if (fotoMgr == null)
+					fotoMgr = new FotosMgr();
+
+				String ls_query = "select nombre, rowid, length(foto) imageSize from fotos ";
 				if (globales.enviarSoloLoMarcado)
 					ls_query += " where envio= 1;";
 
@@ -187,60 +198,80 @@ public class ThreadTransmitirWifi extends TimerTask {
 						dt.stop();
 					}
 
-					String fecha= c.getString(c.getColumnIndex("nombre")).substring(c.getString(c.getColumnIndex("nombre")).length() - 18,c.getString(c.getColumnIndex("nombre")).length() - 10 );
-					String fechaAnio = fecha.substring(0, 4);
-					String fechaAnioMes =  fecha.substring(0, 6);
+					try {
+						String fecha = c.getString(c.getColumnIndex("nombre")).substring(c.getString(c.getColumnIndex("nombre")).length() - 18, c.getString(c.getColumnIndex("nombre")).length() - 10);
+						String fechaAnio = fecha.substring(0, 4);
+						String fechaAnioMes = fecha.substring(0, 6);
 
-					serial.open(ls_servidor, ls_capertaFotos + fechaAnio + "/" + fechaAnioMes+ "/" + fecha+"/", "",
-							Serializacion.ESCRITURA, 0, 0);
+						serial.open(ls_servidor, ls_capertaFotos + fechaAnio + "/" + fechaAnioMes + "/" + fecha + "/", "",
+								Serializacion.ESCRITURA, 0, 0);
 
-					String nombreFoto = c.getString(c.getColumnIndex("nombre"));
-					if (globales.quitarPrimerCaracterNombreFoto) {
-						nombreFoto = nombreFoto.substring(1);
+						String nombreFoto = c.getString(c.getColumnIndex("nombre"));
+						if (globales.quitarPrimerCaracterNombreFoto) {
+							nombreFoto = nombreFoto.substring(1);
+						}
+
+						// RL, 2022-10-27, Se obtendrá la foto a través de una clase que hará que si la foto es menor a 2MB.
+						// ... la regrese tal cual, y si es mayor a 2MB la obtendrá en partes, debido a que el SQLLite al usar...
+						// ... getBlob marca error para datos mayores a 2MB
+
+						long imageSize = c.getLong(c.getColumnIndex("imageSize"));
+
+
+						// ls_cadena=generaCadenaAEnviar(c);
+
+						image = fotoMgr.obtenerFoto(db, nombreFoto, imageSize);
+						serial.write(nombreFoto, image);
+
+						String bufferLenght;
+						int porcentaje = ((i + 1) * 100) / c.getCount();
+						bufferLenght = String.valueOf(c.getCount());
+						serial.close();
+						openDatabase();
+
+						String whereClause = "rowid=?";
+						String[] whereArgs = {c.getString(c.getColumnIndex("rowid"))};
+						ContentValues cv_datos = new ContentValues(1);
+
+						// if (!transmitirTodo) {
+						cv_datos.put("envio", TomaDeLecturas.ENVIADA);
+
+						int j = db
+								.update("fotos", cv_datos, whereClause, whereArgs);
+						// }
+						// closeDatabase();
+						// Marcar como enviada
+						c.moveToNext();
+						if (mostrarMensajes) {
+							dt.mostrarMensaje(
+									dt.MENSAJE,
+									(i + 1) + " " + dt.getString(R.string.de) + " "
+											+ bufferLenght + " "
+											+ dt.getString(R.string.str_fotos)
+											+ ".\n" + String.valueOf(porcentaje)
+											+ "%");
+							dt.mostrarMensaje(dt.BARRA, String.valueOf(1));
+						} else {
+							mostrarNotificacion(MENSAJE_PROGRESO, R.drawable.ic_action_exportar, "Enviando Fotos", (i + 1) + " " + globales.getString(R.string.de) + " "
+									+ bufferLenght + " "
+									+ globales.getString(R.string.str_fotos)
+									+ ".\n" + String.valueOf(porcentaje)
+									+ "%");
+						}
+					} catch (Throwable e) {
+						e.printStackTrace();
+						numErrores++;
+						serial = null;
+						serial = new Serializacion(Serializacion.WIFI);
+
+						try{
+							c.moveToNext();
+						}
+						catch (Throwable e2){
+							numErrores++;
+						}
 					}
-					// ls_cadena=generaCadenaAEnviar(c);
-					serial.write(nombreFoto,
-							c.getBlob(c.getColumnIndex("foto")));
-
-					String bufferLenght;
-					int porcentaje = ((i + 1) * 100) / c.getCount();
-					bufferLenght = String.valueOf(c.getCount());
-					serial.close();
-					openDatabase();
-
-					String whereClause = "rowid=?";
-					String[] whereArgs = { c.getString(c
-							.getColumnIndex("rowid")) };
-					ContentValues cv_datos = new ContentValues(1);
-
-					// if (!transmitirTodo) {
-					cv_datos.put("envio", TomaDeLecturas.ENVIADA);
-
-					int j = db
-							.update("fotos", cv_datos, whereClause, whereArgs);
-					// }
-					// closeDatabase();
-					// Marcar como enviada
-					c.moveToNext();
-					if (mostrarMensajes) {
-						dt.mostrarMensaje(
-								dt.MENSAJE,
-								(i + 1) + " " + dt.getString(R.string.de) + " "
-										+ bufferLenght + " "
-										+ dt.getString(R.string.str_fotos)
-										+ ".\n" + String.valueOf(porcentaje)
-										+ "%");
-						dt.mostrarMensaje(dt.BARRA, String.valueOf(1));
-					}else{
-						mostrarNotificacion(MENSAJE_PROGRESO,R.drawable.ic_action_exportar,"Enviando Fotos",(i + 1) + " " + globales.getString(R.string.de) + " "
-								+ bufferLenght + " "
-								+ globales.getString(R.string.str_fotos)
-								+ ".\n" + String.valueOf(porcentaje)
-								+ "%");
-					}
-
 				}
-				
 			}
 
 //			// Actualizamos las ordenes, ya que ya se enviaron

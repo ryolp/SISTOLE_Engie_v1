@@ -799,13 +799,17 @@ public class Serializacion {
                     params.put("carpeta", "/" + is_carpeta);
 
                     //Creamos una instancia del objeto que se conectara con el archivo en PHP
-                    HttpMultipartRequest http = new HttpMultipartRequest(is_servidor + "/upload_imagebytes.php", params, "upload_field", nombre, "image/jpg", foto);
+                    //HttpMultipartRequest http = new HttpMultipartRequest(is_servidor + "/upload_imagebytes.php", params, "upload_field", nombre, "image/jpg", foto);
+
+                    //Prueba para ver la forma de sustituir el código PHP por llamadas a WebApis.
+                    HttpMultipartRequest http = new HttpMultipartRequest(is_servidor + "/api/operaciones/SubirFoto", params, "upload_field", nombre, "image/jpg", foto);
+
                     //Mandamos el archivo y esa variable response nos ayudara a obtener el estado de la carga del archivo
                     response = http.send();
 
                     msg = new String(response).trim();
 
-                    if (!msg.equals("0")) {
+                    if (!(msg.equals("0") || msg.equals("\"0\""))) {
                         throw new Throwable(new String(response));
                     }
                 }

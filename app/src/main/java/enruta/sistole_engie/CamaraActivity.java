@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -335,7 +336,8 @@ public class CamaraActivity extends Activity {
                 c.moveToFirst();
                 n = c.getColumnIndex("value");
                 m = c.getInt(n);
-                if (tieneCamaraFrontal) m = 1;
+                if (tieneCamaraFrontal)
+                    m = seleccionarResolucionModerada(cp, 640, 480);
                 Size size = cp.getSupportedPictureSizes().get(m);
                 cp.setPictureSize(size.width, size.height);
                 //cp.setJpegQuality(70);
@@ -353,8 +355,8 @@ public class CamaraActivity extends Activity {
                     cp.setZoom(globales.zoom);
                 }
                 //cp.setPictureSize(1633, 1225);
-                mCamera.setParameters(cp);
             }
+            mCamera.setParameters(cp);
         } else {
             try {
                 if (!tieneCamaraFrontal) {
@@ -388,6 +390,42 @@ public class CamaraActivity extends Activity {
         preview.removeAllViews();
         preview.addView(mPreview);
         ca.alert.dismiss();
+    }
+
+    protected int seleccionarResolucionModerada(Camera.Parameters cp, int width, int height)
+    {
+        List<Size> resolutions = cp.getSupportedPictureSizes();
+        long resolution;
+        Camera.Size size;
+        long resDeseada = (long)width * (long)height;
+        int count;
+        long resMin = -1;
+        int idxMin = -1;
+
+        count = resolutions.size();
+
+        for (int i = 0; i < count; i++) {
+
+            size = resolutions.get(i);
+
+            if (size.width == 640 && size.height == 480) {
+                return i;
+            }
+
+            resolution = (long)size.height * (long)size.width;
+
+            if (resMin == -1) {
+                resMin = resolution;
+                idxMin = i;
+            }
+            else if (resolution < resMin)
+            {
+                resMin = resolution;
+                idxMin = i;
+            }
+        }
+
+        return idxMin;
     }
 
     protected void setDisplayOrientation(Camera camera, int angle) {

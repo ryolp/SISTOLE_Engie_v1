@@ -399,11 +399,20 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         datos.add(lectura.getNombreCliente().trim());
 
 // CE, 10/10/22, Vamos a mostrar las Nuevas Columnas
-        datos.add("Codigo de Barras: " + lectura.getCodigoBarras().trim());
-        datos.add("Nota 1: " + lectura.getNota1().trim());
-        datos.add("Nota 2: " + lectura.getNota2().trim());
-        datos.add("miLatitud: " + lectura.getMiLatitud().trim());
-        datos.add("miLongitud: " + lectura.getMiLongitud().trim());
+
+        // If Unidad = Tampico mostrar Serie Medidor else mostrar código de barras.
+
+        if (!lectura.getIntercambiarSerieMedidor())
+            datos.add("Codigo de Barras: " + lectura.getCodigoBarras().trim());
+        else
+            datos.add("Codigo de Barras: " + lectura.getSerieMedidor().trim());
+
+        datos.add(lectura.getNota1().trim());
+        datos.add(lectura.getNota2().trim());
+
+//RL, 10/10/24, Se deshabilitan termporalmente. Obligado por ya saben quién...
+//        datos.add("miLatitud: " + lectura.getMiLatitud().trim());
+//        datos.add("miLongitud: " + lectura.getMiLongitud().trim());
 
         //Vamos a agregar los campos que se van llenando mientras se agregan anomalias
         String ls_anom = lectura.getAnomaliasCapturadas();
@@ -1244,6 +1253,16 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         otherSymbols.setDecimalSeparator('.');
         otherSymbols.setGroupingSeparator(',');
         DecimalFormat formatter = new DecimalFormat("##0.00", otherSymbols);
+
+        // RLR, 2022-10-23, Se agregan información de la unidad.
+        try {
+            resumenOut.add(new EstructuraResumen(DbLecturasMgr.getInstance().getUnidad(this.context), "Unidad:"));
+        } catch (Exception e)
+        {
+            resumenOut.add(new EstructuraResumen("---", "Unidad:"));
+        }
+
+        resumenOut.add(new EstructuraResumen("", ""));
 
         resumenOut.add(new EstructuraResumen("Lecturas en la Ruta", String.valueOf(resumenIn.totalRegistros)));
         resumenOut.add(new EstructuraResumen(context.getString(R.string.msj_main_fotos_tomadas), String.valueOf(resumenIn.cantFotos)));

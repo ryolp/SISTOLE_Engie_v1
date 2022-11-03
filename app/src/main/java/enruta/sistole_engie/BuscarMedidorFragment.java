@@ -249,6 +249,8 @@ public class BuscarMedidorFragment extends Fragment {
 
         Thread busqueda = new Thread() {
             public void run() {
+                String query;
+
                 tll = new TodasLasLecturas(bm_papa, 0);// Se buscaran las lecturas desde el principio
 
                 vLecturas = new Vector<Lectura>();
@@ -258,7 +260,9 @@ public class BuscarMedidorFragment extends Fragment {
 
                 switch (tipo) {
                     case BuscarMedidorTabsPagerAdapter.MEDIDOR:
-                        tll.setFiltro( /*" and "+bm_papa.globales.filtroGlobalBusqueda+*/" and serieMedidor like '%" + et_medidor.getText().toString().trim() + "%'");
+                        query = " and (serieMedidor like '%" + et_medidor.getText().toString().trim() + "%' ";
+                        query += "  OR codigoBarras like '%" + et_medidor.getText().toString().trim() + "%')";
+                        tll.setFiltro( /*" and "+bm_papa.globales.filtroGlobalBusqueda+*/query);
                         break;
 
                     case BuscarMedidorTabsPagerAdapter.DIRECCION:
@@ -460,8 +464,10 @@ public class BuscarMedidorFragment extends Fragment {
     }
 
     protected void buscarMedidorEnWeb(String numMedidor) {
-        if (mBuscarMedidorMgr == null)
-        {
+        if (numMedidor.trim().length() < 8)
+            return;
+
+        if (mBuscarMedidorMgr == null) {
             mBuscarMedidorMgr = new BuscarMedidorMgr(this.getContext());
 
             mBuscarMedidorMgr.setOnBuscarMedidorListener(new BuscarMedidorEnWebCallback() {
@@ -472,7 +478,7 @@ public class BuscarMedidorFragment extends Fragment {
 
                 @Override
                 public void enFallo(BuscarMedidorRequest req, BuscarMedidorResponse resp, int codigo, String mensaje) {
-                    Utils.showMessageLong(BuscarMedidorFragment.this.getContext(),"Hubo un error al consultar el medidor en Sistole Web : "+mensaje);
+                    Utils.showMessageLong(BuscarMedidorFragment.this.getContext(), "Hubo un error al consultar el medidor en Sistole Web : " + mensaje);
                 }
             });
         }
@@ -480,7 +486,7 @@ public class BuscarMedidorFragment extends Fragment {
         mBuscarMedidorMgr.buscarMedidorEnWeb(this.bm_papa.globales, numMedidor, "");
     }
 
-    protected void mostrarResultadosBuscarMedidorWeb(BuscarMedidorResponse resp){
+    protected void mostrarResultadosBuscarMedidorWeb(BuscarMedidorResponse resp) {
         if (resp.Cliente != null || resp.EsMedidorRobado == true) {
             if (mDialogoMostrarMedidor == null) {
                 mDialogoMostrarMedidor = new DialogoDatosMedidor(BuscarMedidorFragment.this.getActivity());
@@ -492,9 +498,8 @@ public class BuscarMedidorFragment extends Fragment {
                 });
             }
             mDialogoMostrarMedidor.mostrarResultadoBusquedaWeb(resp);
-        }
-        else
-            Utils.showMessageLong(BuscarMedidorFragment.this.getContext(),"Tampoco se encontraron medidores en Sistole Web con el número");
+        } else
+            Utils.showMessageLong(BuscarMedidorFragment.this.getContext(), "Tampoco se encontraron medidores en Sistole Web con el número");
 
     }
 

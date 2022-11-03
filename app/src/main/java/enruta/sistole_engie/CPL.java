@@ -138,19 +138,19 @@ public class CPL extends Activity {
         tv_version = (TextView) findViewById(R.id.tv_version_lbl);
         lblMensaje = (TextView) findViewById(R.id.txtMensaje);
 
-        iv_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                activarModoAyuda(0);
-            }
-        });
-
-        iv_nosotros.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                activarModoAyuda(1);
-            }
-        });
+//        iv_logo.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                activarModoAyuda(0);
+//            }
+//        });
+//
+//        iv_nosotros.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                activarModoAyuda(1);
+//            }
+//        });
     }
 
     /*
@@ -1084,149 +1084,149 @@ public class CPL extends Activity {
 //        return calendar.getTime();
 //    }
 
-    private void activarModoAyuda(int modo)
-    {
-        Date horaActual;
-
-        horaActual = Calendar.getInstance().getTime();
-
-        if (modo == 0) {
-            if (clicksModoAyuda0 == 0) {
-                fechaModoAyuda0 = getFechaAgregarSegundos(30);
-                clicksModoAyuda0++;
-            }
-            else {
-                if (horaActual.after(fechaModoAyuda0))
-                    clicksModoAyuda0 = 0;
-                else
-                    clicksModoAyuda0++;
-
-                if (clicksModoAyuda0 >= 2) {
-                    lastBackgroundColor = (ColorDrawable) iv_logo.getBackground();
-                    iv_logo.setPadding(2, 2, 2, 2);
-                    iv_logo.setBackgroundColor(Color.parseColor("red"));
-                }
-            }
-        }
-
-        if (modo == 1 && clicksModoAyuda0 > 2) {
-            if (clicksModoAyuda1 == 0){
-                fechaModoAyuda1 = getFechaAgregarSegundos(30);
-                clicksModoAyuda1++;
-            }
-            else {
-                if (horaActual.after(fechaModoAyuda1))
-                    clicksModoAyuda1 = 0;
-                else
-                    clicksModoAyuda1++;
-
-                if (clicksModoAyuda1 > 2) {
-                    iv_nosotros.setPadding(2, 2, 2, 2);
-                    iv_nosotros.setBackgroundColor(Color.parseColor("red"));
-
-                    dialogoConfirmarAyuda();
-                }
-            }
-        }
-    }
-
-    private void dialogoConfirmarAyuda() {
-        if (!dialogoConfirmarAyuda ) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-            builder.setTitle("Confirmar ayuda");
-            builder.setMessage("¿Está seguro de la ayuda?");
-
-            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-
-                public void onClick(DialogInterface dialog, int which) {
-                    iv_logo.setPadding(0, 0, 0, 0);
-                    iv_logo.setBackgroundColor(Color.parseColor("white"));
-
-                    iv_nosotros.setPadding(0, 0, 0, 0);
-                    iv_nosotros.setBackgroundColor(Color.parseColor("white"));
-
-                    solicitarAyuda();
-
-                    dialogoConfirmarAyuda = false;
-                    dialog.dismiss();
-                }
-            });
-
-            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                    iv_logo.setPadding(0, 0, 0, 0);
-                    iv_logo.setBackgroundColor(Color.parseColor("white"));
-
-                    iv_nosotros.setPadding(0, 0, 0, 0);
-                    iv_nosotros.setBackgroundColor(Color.parseColor("white"));
-
-                    dialogoConfirmarAyuda = false;
-                    dialog.dismiss();
-                }
-            });
-
-            AlertDialog alert = builder.create();
-            alert.show();
-            dialogoConfirmarAyuda = true;
-        }
-    }
-
-    protected void solicitarAyuda() {
-        OperacionRequest req;
-        OperacionResponse resp;
-
-        try {
-            if (globales == null) {
-                showMessageLong("Error al solicitar ayuda. Intente nuevamente");
-                return;
-            }
-
-            if (globales.sesionEntity == null) {
-                showMessageLong("No se ha autenticado en la aplicación");
-                return;
-            }
-
-            if (globales.sesionEntity.empleado == null) {
-                showMessageLong("No se ha autenticado en la aplicación");
-                return;
-            }
-
-            req = new OperacionRequest();
-            req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
-            req.FechaOperacion = getDateTime();
-
-            WebApiManager.getInstance(this).solicitarAyuda(req, new Callback<OperacionResponse>() {
-                        @Override
-                        public void onResponse(Call<OperacionResponse> call, Response<OperacionResponse> response) {
-                            String valor;
-                            OperacionResponse resp;
-
-                            if (response.isSuccessful()) {
-                                resp = response.body();
-                                if (resp.Exito) {
-                                    showMessageLong("Fue enviada la solicitud");
-                                } else {
-                                    showMessageLong("Error al solicitar ayuda (1). Intente nuevamente");
-                                }
-                            } else
-                                showMessageLong("Error al solicitar ayuda (2). Intente nuevamente");
-                        }
-
-                        @Override
-                        public void onFailure(Call<OperacionResponse> call, Throwable t) {
-                            showMessageLong("Error al solicitar ayuda (3). Intente nuevamente : " + t.getMessage());
-                            Log.d("CPL", "Error al solicitar ayuda (3). Intente nuevamente : " + t.getMessage());
-                        }
-                    }
-            );
-        } catch (Exception ex) {
-            showMessageLong("Error al solicitar ayuda (4). Intente nuevamente : " + ex.getMessage());
-            Log.d("CPL", "Error al solicitar ayuda (4). Intente nuevamente : " + ex.getMessage());
-        }
-    }
+//    private void activarModoAyuda(int modo)
+//    {
+//        Date horaActual;
+//
+//        horaActual = Calendar.getInstance().getTime();
+//
+//        if (modo == 0) {
+//            if (clicksModoAyuda0 == 0) {
+//                fechaModoAyuda0 = getFechaAgregarSegundos(30);
+//                clicksModoAyuda0++;
+//            }
+//            else {
+//                if (horaActual.after(fechaModoAyuda0))
+//                    clicksModoAyuda0 = 0;
+//                else
+//                    clicksModoAyuda0++;
+//
+//                if (clicksModoAyuda0 >= 2) {
+//                    lastBackgroundColor = (ColorDrawable) iv_logo.getBackground();
+//                    iv_logo.setPadding(2, 2, 2, 2);
+//                    iv_logo.setBackgroundColor(Color.parseColor("red"));
+//                }
+//            }
+//        }
+//
+//        if (modo == 1 && clicksModoAyuda0 > 2) {
+//            if (clicksModoAyuda1 == 0){
+//                fechaModoAyuda1 = getFechaAgregarSegundos(30);
+//                clicksModoAyuda1++;
+//            }
+//            else {
+//                if (horaActual.after(fechaModoAyuda1))
+//                    clicksModoAyuda1 = 0;
+//                else
+//                    clicksModoAyuda1++;
+//
+//                if (clicksModoAyuda1 > 2) {
+//                    iv_nosotros.setPadding(2, 2, 2, 2);
+//                    iv_nosotros.setBackgroundColor(Color.parseColor("red"));
+//
+//                    dialogoConfirmarAyuda();
+//                }
+//            }
+//        }
+//    }
+//
+//    private void dialogoConfirmarAyuda() {
+//        if (!dialogoConfirmarAyuda ) {
+//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//
+//            builder.setTitle("Confirmar ayuda");
+//            builder.setMessage("¿Está seguro de la ayuda?");
+//
+//            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+//
+//                public void onClick(DialogInterface dialog, int which) {
+//                    iv_logo.setPadding(0, 0, 0, 0);
+//                    iv_logo.setBackgroundColor(Color.parseColor("white"));
+//
+//                    iv_nosotros.setPadding(0, 0, 0, 0);
+//                    iv_nosotros.setBackgroundColor(Color.parseColor("white"));
+//
+//                    solicitarAyuda();
+//
+//                    dialogoConfirmarAyuda = false;
+//                    dialog.dismiss();
+//                }
+//            });
+//
+//            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+//
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//
+//                    iv_logo.setPadding(0, 0, 0, 0);
+//                    iv_logo.setBackgroundColor(Color.parseColor("white"));
+//
+//                    iv_nosotros.setPadding(0, 0, 0, 0);
+//                    iv_nosotros.setBackgroundColor(Color.parseColor("white"));
+//
+//                    dialogoConfirmarAyuda = false;
+//                    dialog.dismiss();
+//                }
+//            });
+//
+//            AlertDialog alert = builder.create();
+//            alert.show();
+//            dialogoConfirmarAyuda = true;
+//        }
+//    }
+//
+//    protected void solicitarAyuda() {
+//        OperacionRequest req;
+//        OperacionResponse resp;
+//
+//        try {
+//            if (globales == null) {
+//                showMessageLong("Error al solicitar ayuda. Intente nuevamente");
+//                return;
+//            }
+//
+//            if (globales.sesionEntity == null) {
+//                showMessageLong("No se ha autenticado en la aplicación");
+//                return;
+//            }
+//
+//            if (globales.sesionEntity.empleado == null) {
+//                showMessageLong("No se ha autenticado en la aplicación");
+//                return;
+//            }
+//
+//            req = new OperacionRequest();
+//            req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
+//            req.FechaOperacion = getDateTime();
+//
+//            WebApiManager.getInstance(this).solicitarAyuda(req, new Callback<OperacionResponse>() {
+//                        @Override
+//                        public void onResponse(Call<OperacionResponse> call, Response<OperacionResponse> response) {
+//                            String valor;
+//                            OperacionResponse resp;
+//
+//                            if (response.isSuccessful()) {
+//                                resp = response.body();
+//                                if (resp.Exito) {
+//                                    showMessageLong("Fue enviada la solicitud");
+//                                } else {
+//                                    showMessageLong("Error al solicitar ayuda (1). Intente nuevamente");
+//                                }
+//                            } else
+//                                showMessageLong("Error al solicitar ayuda (2). Intente nuevamente");
+//                        }
+//
+//                        @Override
+//                        public void onFailure(Call<OperacionResponse> call, Throwable t) {
+//                            showMessageLong("Error al solicitar ayuda (3). Intente nuevamente : " + t.getMessage());
+//                            Log.d("CPL", "Error al solicitar ayuda (3). Intente nuevamente : " + t.getMessage());
+//                        }
+//                    }
+//            );
+//        } catch (Exception ex) {
+//            showMessageLong("Error al solicitar ayuda (4). Intente nuevamente : " + ex.getMessage());
+//            Log.d("CPL", "Error al solicitar ayuda (4). Intente nuevamente : " + ex.getMessage());
+//        }
+//    }
 
 }

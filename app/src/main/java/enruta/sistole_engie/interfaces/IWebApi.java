@@ -46,7 +46,7 @@ public interface IWebApi {
     @POST("api/operaciones/CerrarArchivo")
     Call<OperacionResponse>cerrarArchivo(@Body OperacionRequest request);
 
-    @POST("api/operaciones/SolicitarAyuda")
+    @POST("api/operaciones/SolicitarAyuda2")
     Call<OperacionResponse>solicitarAyuda(@Body OperacionRequest request);
 
 //    @POST("api/operaciones/marcarArchivoDescargado")

@@ -61,9 +61,9 @@ public class Lectura {
 
     String unidad;          // RL, 2022-10-03, Código de la Unidad en Sistole Web
     long idArchivo;         // RL, 2022-10-03, id del archivo en Sistole Web
-    String codigoBarras;    // RL, 2022-10-03, id del archivo en Sistole Web
-    String nota1;    // RL, 2022-10-03, id del archivo en Sistole Web
-    String nota2;    // RL, 2022-10-03, id del archivo en Sistole Web
+    String codigoBarras;    // RL, 2022-10-03, código de barras del medidor en Sistole Web
+    String nota1;           // RL, 2022-10-03,
+    String nota2;           // RL, 2022-10-03,
 
     String miLatitud;            // CE, 10/10/22, Geolocalizacion del Medidor
     String miLongitud;           // CE, 10/10/22, Geolocalizacion del Medidor
@@ -1641,6 +1641,10 @@ public class Lectura {
         return codigoBarras;
     }
 
+    public String getSerieMedidor(){
+        return is_serieMedidor;
+    }
+
     public String getNota1(){
         return nota1;
     }
@@ -1667,5 +1671,25 @@ public class Lectura {
 
     public String getTipoDeAcuse(){
         return tipoDeAcuse;
+    }
+
+    public boolean getIntercambiarSerieMedidor() {
+        String valor;
+
+        if (unidad.length() >= 4)
+        {
+            valor = unidad.substring(3, 4).toUpperCase();
+            if (valor.equals("G"))
+                return true;
+            else {
+                valor = unidad.substring(2, 4).toUpperCase();
+                if (valor.equals("3T"))
+                    return true;
+                else
+                    return false;
+            }
+        }
+        else
+            return false;
     }
 }

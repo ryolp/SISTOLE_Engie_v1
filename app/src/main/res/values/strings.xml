@@ -295,7 +295,7 @@
     <string name="str_lbl_codigo_barras">Código de barras</string>
     <string name="str_lbl_revisar_conectividad">Conectividad</string>
     <string name="str_lbl_ruta_finalizada">Ya no hay lecturas pendientes por realizar. Ruta finalizada.</string>
-    <string name="str_lbl_actualizar_avance">Actualizar avance</string>
+    <string name="str_lbl_sincronizar_avance">Sincronizar avance</string>
     <string name="str_operacion">Operacion genérica</string>
     <string name="str_mensaje_lecturista">Cuida tu seguridad</string>
     <string name="str_logo_empresa">Logo de cliente</string>
