@@ -51,17 +51,17 @@ public class OperacionGenericaMgr {
                             if (response.isSuccessful())
                                 exito(mRequest, response.body());
                             else
-                                fallo(mRequest, null, ERROR_ENVIAR_1, "Error al enviar operación (1)");
+                                fallo(mRequest, null, ERROR_ENVIAR_1, "No hay conexión a internet. Intente nuevamente. (1)", null);
                         }
 
                         @Override
                         public void onFailure(Call<OperacionGenericaResponse> call, Throwable t) {
-                            fallo(mRequest, null, ERROR_ENVIAR_2, "Error al enviar operación (2) : " + t.getMessage());
+                            fallo(mRequest, null, ERROR_ENVIAR_2, "No hay conexión a internet. Intente nuevamente. (2)", t);
                         }
                     }
             );
         } catch (Exception ex) {
-            fallo(mRequest, null, ERROR_ENVIAR_3, "Error al enviar operación (3) : " + ex.getMessage());
+            fallo(mRequest, null, ERROR_ENVIAR_3, "No hay conexión a internet. Intente nuevamente. (3)", ex);
         }
     }
 
@@ -74,9 +74,14 @@ public class OperacionGenericaMgr {
             mCallback.enExito(req, resp);
     }
 
-    private void fallo(OperacionGenericaRequest req, OperacionGenericaResponse resp, int numError, String mensajeError) {
+    private void fallo(OperacionGenericaRequest req, OperacionGenericaResponse resp, int numError, String mensajeError, Throwable t) {
+        String msg = "";
+
         if (!mensajeError.trim().equals("") && numError >= ERROR_ENVIAR_1) {
-            Log.d("CPL", mensajeError);
+            if (t != null)
+                msg = t.getMessage();
+
+            Log.d("CPL", mensajeError + " : " + msg);
         }
 
         if (resp != null) {

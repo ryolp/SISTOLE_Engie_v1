@@ -811,13 +811,13 @@ public class CPL extends Activity {
                             if (response.isSuccessful())
                                 procesarAutenticacion(response.body(), finalEsSuperUsuario);
                             else
-                                showMessageLong("Error al autenticar (1)");
+                                showMessageLong("No hay conexión a internet. Intente nuevamente (1)");
                         }
 
                         @Override
                         public void onFailure(Call<LoginResponseEntity> call, Throwable t) {
-                            showMessageLong("Error al autenticar (2):" + t.getMessage());
-                            Log.d("CPL", "Error al autenticar (2):" + t.getMessage());
+                            showMessageLong("No hay conexión a internet. Intente nuevamente. (2)");
+                            Log.d("CPL", "No hay conexión a internet. Intente nuevamente. (2):" + t.getMessage());
 
                             if (finalEsSuperUsuario)
                                 entrarAdministrador2(null, true);
@@ -827,8 +827,8 @@ public class CPL extends Activity {
         } catch (Exception ex) {
             boolean finalEsSuperUsuario = esSuperUsuario;
 
-            showMessageLong("Error al autenticar (3):" + ex.getMessage());
-            Log.d("CPL", "Error al autenticar (3):" + ex.getMessage());
+            showMessageLong("No hay conexión a internet. Intente nuevamente. (3)");
+            Log.d("CPL", "No hay conexión a internet. Intente nuevamente. (3):" + ex.getMessage());
 
             if (finalEsSuperUsuario)
                 entrarAdministrador2(null, true);
@@ -840,7 +840,7 @@ public class CPL extends Activity {
         intentosCodigoSMS = 0;
 
         if (loginResponseEntity.Error) {
-            showMessageLong("Error al autenticar (3):" + loginResponseEntity.Mensaje);
+            showMessageLong("No hay conexión a internet. Intente nuevamente. (3):" + loginResponseEntity.Mensaje);
             if (esSuperUsuario)
                 entrarAdministrador2(null, true);
             return;
@@ -909,23 +909,23 @@ public class CPL extends Activity {
                                 procesarValidacionSMS(response.body());
                             else {
                                 globales.sesionEntity = null;
-                                showMessageLong("Error al validar SMS (1)");
-                                Log.d("CPL", "Error al validar SMS (1)");
+                                showMessageLong("No hay conexión a internet. Intente nuevamente. (1).");
+                                Log.d("CPL", "No hay conexión a internet. Intente nuevamente. (1).");
                             }
                         }
 
                         @Override
                         public void onFailure(Call<LoginResponseEntity> call, Throwable t) {
                             globales.sesionEntity = null;
-                            showMessageLong("Error al validar SMS (2):" + t.getMessage());
-                            Log.d("CPL", "Error al validar SMS (2):" + t.getMessage());
+                            showMessageLong("No hay conexión a internet. Intente nuevamente. (2).");
+                            Log.d("CPL", "No hay conexión a internet. Intente nuevamente. (2) :" + t.getMessage());
                         }
                     }
             );
         } catch (Exception ex) {
             globales.sesionEntity = null;
-            showMessageLong("Error al validar SMS (3):" + ex.getMessage());
-            Log.d("CPL", "Error al validar SMS (3):" + ex.getMessage());
+            showMessageLong("No hay conexión a internet. Intente nuevamente. (3).");
+            Log.d("CPL", "No hay conexión a internet. Intente nuevamente. (3) : " + ex.getMessage());
         }
     }
 
@@ -933,7 +933,7 @@ public class CPL extends Activity {
     private void procesarValidacionSMS(LoginResponseEntity loginResponseEntity) {
         if (loginResponseEntity.Error) {
             globales.sesionEntity = null;
-            showMessageLong("Error al validar SMS (3):" + loginResponseEntity.Mensaje);
+            showMessageLong("No hay conexión a internet. Intente nuevamente. (4) : " + loginResponseEntity.Mensaje);
             return;
         }
 

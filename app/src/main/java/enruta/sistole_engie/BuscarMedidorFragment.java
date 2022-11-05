@@ -478,7 +478,7 @@ public class BuscarMedidorFragment extends Fragment {
 
                 @Override
                 public void enFallo(BuscarMedidorRequest req, BuscarMedidorResponse resp, int codigo, String mensaje) {
-                    Utils.showMessageLong(BuscarMedidorFragment.this.getContext(), "Hubo un error al consultar el medidor en Sistole Web : " + mensaje);
+                    Utils.showMessageLong(BuscarMedidorFragment.this.getContext(), "No hay conexión a Internet para buscar este medidor en el servidor : " + mensaje);
                 }
             });
         }

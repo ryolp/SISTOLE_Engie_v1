@@ -2,6 +2,7 @@ package enruta.sistole_engie;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -34,7 +35,7 @@ public class DialogoVerificadorConectividad {
 
     public void verificarConectividad()
     {
-        Utils.showMessageLong(mActivity, "Verificando conectividad");
+        Utils.showMessageShort(mActivity, "Verificando conectividad");
 
         if (mVerificadorConectividadMgr == null) {
             mVerificadorConectividadMgr = new VerificadorConectividadMgr(mActivity, mGlobales);
@@ -47,7 +48,6 @@ public class DialogoVerificadorConectividad {
 
                 @Override
                 public void enFallo(int numError, String mensaje) {
-                    Utils.showMessageLong(mActivity, "Hubo un error al verificar la conectividad : " + mensaje);
                     mostrarEstatusConectividad(false, false);
                 }
             });

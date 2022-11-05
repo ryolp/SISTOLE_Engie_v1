@@ -86,17 +86,17 @@ public class ArchivosLectMgr {
                                 resp = response.body();
                                 exito(mRequest, resp);
                             } else
-                                fallo(mRequest, null, ERROR_ENVIAR_2, "Error al marcar archivo descargado (2). Intente nuevamente.");
+                                fallo(mRequest, null, ERROR_ENVIAR_2, "No hay conexión a internet (1). Intente nuevamente.", null);
                         }
 
                         @Override
                         public void onFailure(Call<ArchivosLectResponse> call, Throwable t) {
-                            fallo(mRequest, null, ERROR_ENVIAR_3, "Error al marcar archivo descargado (3). Intente nuevamente.");
+                            fallo(mRequest, null, ERROR_ENVIAR_3, "No hay conexión a internet (2). Intente nuevamente.", t);
                         }
                     }
             );
         } catch (Exception ex) {
-            fallo(mRequest, null, ERROR_ENVIAR_4, "Error al marcar archivo descargado (4). Intente nuevamente.");
+            fallo(mRequest, null, ERROR_ENVIAR_4, "No hay conexión a internet (3). Intente nuevamente.", ex);
         }
     }
 
@@ -117,19 +117,19 @@ public class ArchivosLectMgr {
                                 if (resp.Exito) {
                                     exitoTerminado(mRequest, resp);
                                 } else
-                                    falloTerminado(mRequest, null, ERROR_ENVIAR_1, "Error al marcar archivo descargado (1). Intente nuevamente.");
+                                    falloTerminado(mRequest, null, ERROR_ENVIAR_1, "No hay conexión a internet. Intente nuevamente. (1)", null);
                             } else
-                                falloTerminado(mRequest, null, ERROR_ENVIAR_2, "Error al marcar archivo descargado (2). Intente nuevamente.");
+                                falloTerminado(mRequest, null, ERROR_ENVIAR_2, "No hay conexión a internet. Intente nuevamente. (2)", null);
                         }
 
                         @Override
                         public void onFailure(Call<ArchivosLectResponse> call, Throwable t) {
-                            falloTerminado(mRequest, null, ERROR_ENVIAR_3, "Error al marcar archivo descargado (3). Intente nuevamente.");
+                            falloTerminado(mRequest, null, ERROR_ENVIAR_3, "No hay conexión a internet. Intente nuevamente. (3)", t);
                         }
                     }
             );
         } catch (Exception ex) {
-            falloTerminado(mRequest, null, ERROR_ENVIAR_4, "Error al marcar archivo descargado (4). Intente nuevamente.");
+            falloTerminado(mRequest, null, ERROR_ENVIAR_4, "No hay conexión a internet. Intente nuevamente. (4)", ex);
         }
     }
 
@@ -168,9 +168,14 @@ public class ArchivosLectMgr {
         mGlobales.sesionEntity.empleado.RequiereCheckSeguridad = true;
     }
 
-    private void fallo(ArchivosLectRequest req, ArchivosLectResponse resp, int numError, String mensajeError) {
+    private void fallo(ArchivosLectRequest req, ArchivosLectResponse resp, int numError, String mensajeError, Throwable t) {
+        String msg = "";
+
         if (!mensajeError.trim().equals("") && numError >= ERROR_ENVIAR_1) {
-            Log.d("CPL", mensajeError);
+            if (t != null)
+                msg = t.getMessage();
+
+            Log.d("CPL", mensajeError + " : " + msg);
         }
 
         if (resp != null) {
@@ -203,9 +208,14 @@ public class ArchivosLectMgr {
         }
     }
 
-    private void falloTerminado(ArchivosLectRequest req, ArchivosLectResponse resp, int numError, String mensajeError) {
+    private void falloTerminado(ArchivosLectRequest req, ArchivosLectResponse resp, int numError, String mensajeError, Throwable t) {
+        String msg = "";
+
         if (!mensajeError.trim().equals("") && numError >= ERROR_ENVIAR_1) {
-            Log.d("CPL", mensajeError);
+            if (t != null)
+                msg = t.getMessage();
+
+            Log.d("CPL", mensajeError + " : " + msg);
         }
 
         if (resp != null) {
