@@ -464,9 +464,6 @@ public class BuscarMedidorFragment extends Fragment {
     }
 
     protected void buscarMedidorEnWeb(String numMedidor) {
-        if (numMedidor.trim().length() < 8)
-            return;
-
         if (mBuscarMedidorMgr == null) {
             mBuscarMedidorMgr = new BuscarMedidorMgr(this.getContext());
 

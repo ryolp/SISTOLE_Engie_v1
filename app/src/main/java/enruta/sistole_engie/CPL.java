@@ -63,9 +63,9 @@ public class CPL extends Activity {
 
     String is_nombre_Lect = "";
 
-    TextView tv_msj_login, tv_usuario, tv_contrasena, tv_version;
-    EditText et_usuario, et_contrasena;
-    Button btnEntrar;
+    private TextView tv_msj_login, tv_usuario, tv_contrasena, tv_version;
+    private EditText et_usuario, et_contrasena;
+    private Button btnEntrar;
 
     DBHelper dbHelper;
     SQLiteDatabase db;
@@ -79,25 +79,32 @@ public class CPL extends Activity {
 
     // RL, 2022-07-14, Campos para validación SMS
 
-    TextView lblMensaje;
-    TextView lblCodigoSMS;
-    EditText txtCodigoSMS;
-    Button btnAutenticar;
-    Button btnValidarSMS;
-    int intentosAutenticacion = 0;
-    int intentosCodigoSMS = 0;
+    private TextView lblMensaje;
+    private TextView lblCodigoSMS;
+    private EditText txtCodigoSMS;
+    private Button btnAutenticar;
+    private Button btnValidarSMS;
+    private int intentosAutenticacion = 0;
+    private int intentosCodigoSMS = 0;
 
     // RL, 2022-09-13, Se agrega referencia al logo de Enruta
-    ImageView iv_nosotros;
+    private ImageView iv_nosotros;
 
     // RL, 2022-09-13, Variables para activar el modo de ayuda
 
-    int clicksModoAyuda0 = 0;
-    int clicksModoAyuda1 = 0;
-    Date fechaModoAyuda0= null;
-    Date fechaModoAyuda1= null;
-    ColorDrawable lastBackgroundColor;
-    boolean dialogoConfirmarAyuda = false;
+    private int clicksModoAyuda0 = 0;
+    private int clicksModoAyuda1 = 0;
+    private Date fechaModoAyuda0 = null;
+    private Date fechaModoAyuda1 = null;
+    private ColorDrawable lastBackgroundColor;
+    private boolean dialogoConfirmarAyuda = false;
+
+    // RL. 2022-11-08, quitar la referencia de eventos de los botones del layout...
+    // ... y ponerlos en código como sugiere Android.
+
+    private Button btnAdministrador;
+    private Button btnLecturista;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +116,7 @@ public class CPL extends Activity {
         globales = ((Globales) getApplicationContext());
 
         inicializarControles();
+        inicializarEventosControles();
 
         try {
             tv_version.setText(getPackageManager().getPackageInfo(getPackageName(), 0).versionCode + ", " + getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
@@ -137,20 +145,46 @@ public class CPL extends Activity {
         iv_nosotros = (ImageView) findViewById(R.id.iv_nosotros);
         tv_version = (TextView) findViewById(R.id.tv_version_lbl);
         lblMensaje = (TextView) findViewById(R.id.txtMensaje);
+        btnAdministrador = (Button) findViewById(R.id.b_admon);
+        btnLecturista = (Button) findViewById(R.id.b_lecturista);
 
-//        iv_logo.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                activarModoAyuda(0);
-//            }
-//        });
-//
-//        iv_nosotros.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                activarModoAyuda(1);
-//            }
-//        });
+        if (btnAdministrador != null)
+            btnAdministrador.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    entrarAdministrador(view);
+                }
+            });
+
+        if (btnLecturista != null)
+            btnLecturista.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    entrarLecturista(view);
+                }
+            });
+    }
+
+        /*
+        Inicializar los eventos de los botones principales del activity
+     */
+
+    private void inicializarEventosControles() {
+        if (btnAdministrador != null)
+            btnAdministrador.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    entrarAdministrador(view);
+                }
+            });
+
+        if (btnLecturista != null)
+            btnLecturista.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    entrarLecturista(view);
+                }
+            });
     }
 
     /*
@@ -161,40 +195,40 @@ public class CPL extends Activity {
         boolean tienePermisos = true;
         String msg = "";
 
-        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
-            tienePermisos=false;
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            tienePermisos = false;
         }
 
-        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.INTERNET)!= PackageManager.PERMISSION_GRANTED){
-            tienePermisos=false;
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
+            tienePermisos = false;
         }
 
-        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
-            tienePermisos=false;
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            tienePermisos = false;
         }
 
-        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.BLUETOOTH)!= PackageManager.PERMISSION_GRANTED){
-            tienePermisos=false;
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+            tienePermisos = false;
         }
 
-        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.BLUETOOTH_ADMIN)!= PackageManager.PERMISSION_GRANTED){
-            tienePermisos=false;
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) {
+            tienePermisos = false;
         }
 
-        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
-            tienePermisos=false;
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            tienePermisos = false;
         }
 
-        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_NETWORK_STATE)!= PackageManager.PERMISSION_GRANTED){
-            tienePermisos=false;
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
+            tienePermisos = false;
         }
 
-        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_WIFI_STATE)!= PackageManager.PERMISSION_GRANTED){
-            tienePermisos=false;
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED) {
+            tienePermisos = false;
         }
 
-        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
-            tienePermisos=false;
+        if (ActivityCompat.checkSelfPermission(CPL.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            tienePermisos = false;
         }
 
         if (!tienePermisos) {
@@ -234,7 +268,7 @@ public class CPL extends Activity {
 
     }
 
-    protected boolean esSesionActiva(){
+    protected boolean esSesionActiva() {
         if (globales.sesionEntity == null)
             return false;
 
@@ -285,8 +319,7 @@ public class CPL extends Activity {
             intentosAutenticacion = 0;
 
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-        }
-        else
+        } else
             irActivityMain();
     }
 
@@ -359,8 +392,7 @@ public class CPL extends Activity {
             intentosAutenticacion = 0;
 
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-        }
-        else
+        } else
             irActivityMain();
     }
 
@@ -620,6 +652,8 @@ public class CPL extends Activity {
         globales.subAnomaliaARepetir = "";
 
         globales.tdlg.procesosAlEntrar();
+        inicializarControles();
+        inicializarEventosControles();
     }
 
     public void getObjetosLogin() {
@@ -657,8 +691,6 @@ public class CPL extends Activity {
         if (globales.tipoDeValidacion == Globales.USUARIO) {
             et_usuario.setOnEditorActionListener(oeal);
             et_contrasena.setOnEditorActionListener(oeal);
-        } else {
-            et_contrasena.setOnEditorActionListener(oeal);
         }
 
 //et_contrasena.setOnEditorActionListener(new OnEditorActionListener() {
@@ -675,7 +707,7 @@ public class CPL extends Activity {
 //	       });
     }
 
-    private void inicializarEventosControlesLogin(){
+    private void inicializarEventosControlesLogin() {
         btnAutenticar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -689,6 +721,53 @@ public class CPL extends Activity {
                 validarSMS(view);
             }
         });
+
+        et_usuario.setOnEditorActionListener(new OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                String valor;
+
+                valor = et_usuario.getText().toString().trim();
+
+                if (valor.equals(""))
+                    showMessageShort("Falta capturar el usuario");
+                else if (esSuperUsuario())
+                    autenticar(btnAutenticar);
+                else
+                    et_contrasena.requestFocus();
+                return false;
+            }
+        });
+
+        et_contrasena.setOnEditorActionListener(new OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                String valor;
+
+                valor = et_contrasena.getText().toString().trim();
+
+                if (valor.equals(""))
+                    showMessageShort("Falta capturar la contraseña");
+                else
+                    autenticar(btnValidarSMS);
+                return false;
+            }
+        });
+
+        txtCodigoSMS.setOnEditorActionListener(new OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                String valor;
+
+                valor = txtCodigoSMS.getText().toString().trim();
+
+                if (valor.equals(""))
+                    showMessageShort("Falta capturar el código SMS");
+                else
+                    validarSMS(txtCodigoSMS);
+                return false;
+            }
+        });
     }
 
     private void mostrarAutenticacionSuperusuario() {
@@ -696,20 +775,19 @@ public class CPL extends Activity {
     }
 
 
-    private String getVersionName(){
+    private String getVersionName() {
         String versionName;
 
         try {
             versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             versionName = "";
         }
 
         return versionName;
     }
 
-    private String getVersionCode(){
+    private String getVersionCode() {
         long versionCodeMajor;
 
         try {
@@ -717,8 +795,7 @@ public class CPL extends Activity {
                 versionCodeMajor = getPackageManager().getPackageInfo(getPackageName(), 0).getLongVersionCode();
             else
                 versionCodeMajor = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             versionCodeMajor = 0;
         }
 
@@ -770,10 +847,21 @@ public class CPL extends Activity {
 //        }
 //    }
 
+    private boolean esSuperUsuario() {
+        String usuario = "";
+
+        usuario = et_usuario.getText().toString().trim();
+
+        if (usuario.contains("*9776"))
+            return true;
+        else
+            return false;
+    }
+
     private void autenticar(View view) {
         String usuario = "";
         String password = "";
-        boolean esSuperUsuario = false;
+        boolean superUsuario = false;
 
         usuario = "";
         password = "";
@@ -781,8 +869,8 @@ public class CPL extends Activity {
             usuario = et_usuario.getText().toString().trim();
             password = et_contrasena.getText().toString().trim();
 
-            if (usuario.contains("*9776")) {
-                esSuperUsuario = true;
+            if (esSuperUsuario()) {
+                superUsuario = true;
 
                 entrarAdministrador2(null, true);
                 return;
@@ -791,8 +879,7 @@ public class CPL extends Activity {
                 return;
             }
 
-
-            boolean finalEsSuperUsuario = esSuperUsuario;
+            boolean finalEsSuperUsuario = superUsuario;
 
             LoginRequestEntity loginRequestEntity = new LoginRequestEntity();
             loginRequestEntity.Usuario = usuario;
@@ -825,7 +912,7 @@ public class CPL extends Activity {
                     }
             );
         } catch (Exception ex) {
-            boolean finalEsSuperUsuario = esSuperUsuario;
+            boolean finalEsSuperUsuario = superUsuario;
 
             showMessageLong("No hay conexión a internet. Intente nuevamente. (3)");
             Log.d("CPL", "No hay conexión a internet. Intente nuevamente. (3):" + ex.getMessage());
@@ -885,11 +972,11 @@ public class CPL extends Activity {
         try {
             usuario = et_usuario.getText().toString().trim();
             codigoSMS = txtCodigoSMS.getText().toString().trim();
-            
+
             if (usuario.equals("") || codigoSMS.equals("")) {
                 showMessageLong("Falta capturar elcódigo SMS");
                 return;
-            }            
+            }
 
             LoginRequestEntity loginRequestEntity = new LoginRequestEntity();
 
@@ -941,8 +1028,7 @@ public class CPL extends Activity {
             globales.sesionEntity = new SesionEntity(loginResponseEntity);
             globales.sesionEntity.Autenticado = true;
             irActivityMain();
-        }
-        else {
+        } else {
             intentosCodigoSMS++;
 
             if (intentosCodigoSMS >= 5) {
@@ -1012,14 +1098,14 @@ public class CPL extends Activity {
     }
 
     public void salir() {
-        if (globales != null ) {
+        if (globales != null) {
             globales.sesionEntity = null;
         }
         finish();
     }
 
-    protected void limpiarVariables(){
-        if (globales != null ) {
+    protected void limpiarVariables() {
+        if (globales != null) {
             globales.sesionEntity = null;
         }
     }
@@ -1031,8 +1117,11 @@ public class CPL extends Activity {
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
+
+        inicializarControles();
+        inicializarEventosControles();
 
         if (globales == null)
             return;
@@ -1071,7 +1160,7 @@ public class CPL extends Activity {
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
     }
 
-    private Date getFechaAgregarSegundos(int segundos){
+    private Date getFechaAgregarSegundos(int segundos) {
         Calendar calendar = Calendar.getInstance();
 
         calendar.add(Calendar.SECOND, segundos);

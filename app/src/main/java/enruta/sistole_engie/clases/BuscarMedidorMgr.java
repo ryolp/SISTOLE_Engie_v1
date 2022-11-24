@@ -39,6 +39,8 @@ public class BuscarMedidorMgr {
     public final int ERROR_ENVIAR_3 = 4;
     public final int ERROR_ENVIAR_4 = 5;
 
+    private final int CANT_MIN_DIGITOS_MEDIDOR = 6;
+
     public BuscarMedidorMgr(Context context) {
         mContext = context;
     }
@@ -111,6 +113,9 @@ public class BuscarMedidorMgr {
 
     public void buscarMedidorEnWeb(Globales globales, String serieMedidor, String codigoBarrasMedidor)
     {
+        if (serieMedidor.trim().length() < CANT_MIN_DIGITOS_MEDIDOR)
+            return;
+
         mRequest = new BuscarMedidorRequest();
         mRequest.SerieMedidor = serieMedidor;
         mRequest.CodigoBarras = codigoBarrasMedidor;

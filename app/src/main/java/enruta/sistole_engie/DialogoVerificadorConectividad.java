@@ -1,7 +1,15 @@
 package enruta.sistole_engie;
 
+import static android.content.Context.BATTERY_SERVICE;
+
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.location.LocationManager;
+import android.os.BatteryManager;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +24,8 @@ public class DialogoVerificadorConectividad {
     private TextView mTxtConectividad;
     private TextView mTxtSistoleDisponible;
     private TextView mTxtSesion;
+    private TextView mTxtGPS;
+    private TextView mTxtNivelBateria;
     private Activity mActivity;
     private Button mBtnAceptar;
     private Dialog mDialogo;
@@ -57,6 +67,8 @@ public class DialogoVerificadorConectividad {
     }
 
     private void mostrarEstatusConectividad(boolean exitoConexion, boolean exitoSesion) {
+        boolean estatusGPS;
+
         if (mDialogo == null) {
 //            AlertDialog.Builder builder = new Dialog(mActivity);
 
@@ -78,6 +90,8 @@ public class DialogoVerificadorConectividad {
             mTxtConectividad = (TextView) mDialogo.findViewById(R.id.txtConectividad);
             mTxtSistoleDisponible = (TextView) mDialogo.findViewById(R.id.txtSistoleDisponible);
             mTxtSesion = (TextView) mDialogo.findViewById(R.id.txtSesion);
+            mTxtGPS = (TextView)mDialogo.findViewById(R.id.txtGPS);
+            mTxtNivelBateria = (TextView)mDialogo.findViewById(R.id.txtNivelBateria);
             mBtnAceptar = (Button) mDialogo.findViewById(R.id.btnAceptar);
 
             mBtnAceptar.setOnClickListener(new View.OnClickListener() {
@@ -100,7 +114,51 @@ public class DialogoVerificadorConectividad {
         cambiarEstatusControl(mTxtSistoleDisponible, exitoConexion ? 1:2);
         cambiarEstatusControl(mTxtSesion, exitoSesion ? 1:2);
 
+        estatusGPS = obtenerStatusGPS();
+
+        cambiarEstatusControl(mTxtGPS, estatusGPS ? 1:2);
+
+        if (estatusGPS)
+            mTxtGPS.setText(mActivity.getString(R.string.m_str_gpsOn));
+        else
+            mTxtGPS.setText(mActivity.getString(R.string.m_str_gpsOff));
+
+        int nNivelBateria =  getBatteryPercentage(mActivity);
+
+        mTxtNivelBateria.setText(mActivity.getString(R.string.str_nivel_bateria) + String.valueOf(nNivelBateria) + " %");
+
         mDialogo.show();
+    }
+
+    private boolean obtenerStatusGPS()
+    {
+        final LocationManager manager = (LocationManager) mActivity.getSystemService( Context.LOCATION_SERVICE );
+
+        if ( manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) )
+            return true;
+        else
+            return false;
+    }
+
+    private int getBatteryPercentage(Context context) {
+
+        if (Build.VERSION.SDK_INT >= 21) {
+
+            BatteryManager bm = (BatteryManager) context.getSystemService(BATTERY_SERVICE);
+            return bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+
+        } else {
+
+            IntentFilter iFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+            Intent batteryStatus = context.registerReceiver(null, iFilter);
+
+            int level = batteryStatus != null ? batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) : -1;
+            int scale = batteryStatus != null ? batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1) : -1;
+
+            double batteryPct = level / (double) scale;
+
+            return (int) (batteryPct * 100);
+        }
     }
 
     private void cambiarEstatusControl(TextView txt, int estatus) {
