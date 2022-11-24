@@ -467,4 +467,18 @@ public class DBHelper extends SQLiteOpenHelper {
 			if (mCursor != null) mCursor.close();
 		}
 	}
+
+	public static int getInt(Cursor c, String columnName, int defaultValue) {
+		int idx;
+
+		if (c == null)
+			return defaultValue;
+
+		idx = c.getColumnIndex("secuencia");
+
+		if (idx < 0)
+			return defaultValue;
+
+		return c.getInt(idx);
+	}
 }

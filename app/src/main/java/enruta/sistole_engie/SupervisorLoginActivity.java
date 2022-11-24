@@ -368,6 +368,7 @@ public class SupervisorLoginActivity extends BaseActivity {
                 });
             }
 
+            showMessageShort("Enviando informe");
             mSupervisorMgr.enviarInforme(globales.sesionEntity, globales.tll, globales.location, mIdEmpleadoSupervisor, mResumen);
         } catch (Exception e) {
             logMessageLong("Error al enviar el informe", e);

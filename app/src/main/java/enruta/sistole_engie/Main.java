@@ -2306,6 +2306,8 @@ public class Main extends FragmentActivity implements TabListener {
             req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
             req.FechaOperacion = Utils.getDateTime();
 
+            Utils.showMessageShort(getApplicationContext(), "Enviada solicitud de check-in");
+
             getWebApiManager().checkIn(req, new Callback<OperacionResponse>() {
                         @Override
                         public void onResponse(Call<OperacionResponse> call, Response<OperacionResponse> response) {
@@ -2320,19 +2322,21 @@ public class Main extends FragmentActivity implements TabListener {
                                     globales.sesionEntity.empleado.RequiereCheckSeguridad = resp.RequiereCheckSeguridad;
                                     inicializarActualizarControles();
                                 } else
-                                    Utils.showMessageLong(getApplicationContext(), "Error al hacer checkIn (1). Intente nuevamente");
+                                    Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente. (1)");
                             } else
-                                Utils.showMessageLong(getApplicationContext(), "Error al hacer checkIn (2). Intente nuevamente");
+                                Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente. (2)");
                         }
 
                         @Override
                         public void onFailure(Call<OperacionResponse> call, Throwable t) {
-                            Utils.logMessageLong(getApplicationContext(), "Error al hacer checkIn (3). Intente nuevamente", t);
+                            Utils.logMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente. (3)", t);
+                            Log.d(TAG, "No hay conexión a internet. Intente nuevamente. (3) :" + t.getMessage());
                         }
                     }
             );
         } catch (Exception ex) {
-            Utils.logMessageLong(getApplicationContext(), "Error al hacer checkIn (4). Intente nuevamente", ex);
+            Utils.logMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente. (4)", ex);
+            Log.d(TAG, "No hay conexión a internet. Intente nuevamente. (3) :" + ex.getMessage());
         }
     }
 
@@ -2364,6 +2368,8 @@ public class Main extends FragmentActivity implements TabListener {
             btnOperacion = (Button) this.findViewById(R.id.btnOperacion);
             FotoDeSeguridad(btnOperacion);
 
+            Utils.showMessageShort(getApplicationContext(), "Enviada solicitud de check seguridad");
+
             getWebApiManager().checkSeguridad(req, new Callback<OperacionResponse>() {
                         @Override
                         public void onResponse(Call<OperacionResponse> call, Response<OperacionResponse> response) {
@@ -2378,20 +2384,22 @@ public class Main extends FragmentActivity implements TabListener {
                                     globales.sesionEntity.empleado.RequiereCheckSeguridad = resp.RequiereCheckSeguridad;
                                     inicializarActualizarControles();
                                 } else {
-                                    Utils.showMessageLong(getApplicationContext(), "Error al hacer check de seguridad  (1). Intente nuevamente");
+                                    Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente (1).");
                                 }
                             } else
-                                Utils.showMessageLong(getApplicationContext(), "Error al hacer check de seguridad (2). Intente nuevamente");
+                                Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente (2).");
                         }
 
                         @Override
                         public void onFailure(Call<OperacionResponse> call, Throwable t) {
-                            Utils.logMessageLong(getApplicationContext(), "Error al hacer check de seguridad (3). Intente nuevamente", t);
+                            Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente (3).");
+                            Log.d(TAG, "No hay conexión a internet. Intente nuevamente. (3) :" + t.getMessage());
                         }
                     }
             );
         } catch (Exception ex) {
-            Utils.logMessageLong(getApplicationContext(), "Error al hacer check de seguridad (4). Intente nuevamente", ex);
+            Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente (4).");
+            Log.d(TAG, "No hay conexión a internet. Intente nuevamente. (4) :" + ex.getMessage());
         }
     }
 
@@ -2419,6 +2427,8 @@ public class Main extends FragmentActivity implements TabListener {
             req.idEmpleado = globales.sesionEntity.empleado.idEmpleado;
             req.FechaOperacion = Utils.getDateTime();
 
+            Utils.showMessageShort(getApplicationContext(), "Enviada solicitud de check-out");
+
             getWebApiManager().checkOut(req, new Callback<OperacionResponse>() {
                         @Override
                         public void onResponse(Call<OperacionResponse> call, Response<OperacionResponse> response) {
@@ -2433,20 +2443,22 @@ public class Main extends FragmentActivity implements TabListener {
                                     globales.sesionEntity.empleado.RequiereCheckSeguridad = resp.RequiereCheckSeguridad;
                                     inicializarActualizarControles();
                                 } else {
-                                    Utils.showMessageLong(getApplicationContext(), "Error al hacer Check Out (1). Intente nuevamente");
+                                    Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente. (1)");
                                 }
                             } else
-                                Utils.showMessageLong(getApplicationContext(), "Error al hacer Check Out (2). Intente nuevamente");
+                                Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente. (2)");
                         }
 
                         @Override
                         public void onFailure(Call<OperacionResponse> call, Throwable t) {
-                            Utils.logMessageLong(getApplicationContext(), "Error al hacer Check Out (3). Intente nuevamente", t);
+                            Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente. (3)");
+                            Log.d(TAG, "No hay conexión a internet. Intente nuevamente. (3) :" + t.getMessage());
                         }
                     }
             );
         } catch (Exception ex) {
-            Utils.logMessageLong(getApplicationContext(), "Error al hacer Check Out (4). Intente nuevamente", ex);
+            Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente. (4) Intente nuevamente");
+            Log.d(TAG, "No hay conexión a internet. Intente nuevamente. (4) :" + ex.getMessage());
         }
     }
 
@@ -2456,7 +2468,7 @@ public class Main extends FragmentActivity implements TabListener {
 
             startActivityForResult(entrarSupervisor, MENU_ENTRAR_SUPERVISOR);
         } catch (Exception e) {
-            Log.e(TAG, "entrarSupervisor: ", e);
+            Log.e(TAG, "entrarSupervisor: " + e.getMessage());
             Utils.showMessageLong(this, "Hubo un error al iniciar la pantalla :" + e.getMessage());
         }
     }
@@ -2494,7 +2506,7 @@ public class Main extends FragmentActivity implements TabListener {
 
                     @Override
                     public void enFalloComunicacion(ArchivosLectRequest request, ArchivosLectResponse resp, int numError, String mensajeError) {
-                        Utils.mostrarAlerta(Main.this, "Error", "Hubo un error :" + mensajeError);
+                        Utils.mostrarAlerta(Main.this, "Error", mensajeError);
                     }
 
                     @Override
@@ -2551,7 +2563,7 @@ public class Main extends FragmentActivity implements TabListener {
 
                 @Override
                 public void enFallo(OperacionGenericaRequest request, OperacionGenericaResponse resp, int numError, String mensajeError) {
-                    Utils.mostrarAlerta(Main.this, "Operacion con fallo", mensajeError);
+                    Utils.mostrarAlerta(Main.this, "No hay conexión a internet", mensajeError);
                 }
             });
         }

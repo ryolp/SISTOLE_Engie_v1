@@ -36,6 +36,22 @@
             android:theme="@style/Estilo_Texto_Estatus_Conectividad"
             android:text="Sesión"
             />
+        <TextView
+            android:id="@+id/txtGPS"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_checkmark_green"
+            android:theme="@style/Estilo_Texto_Estatus_Conectividad"
+            android:text="@string/m_str_gpsOn"
+            />
+        <TextView
+            android:id="@+id/txtNivelBateria"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_checkmark_green"
+            android:theme="@style/Estilo_Texto_Estatus_Conectividad"
+            android:text="@string/str_nivel_bateria"
+            />
     </LinearLayout>
 
 

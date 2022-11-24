@@ -12,8 +12,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import enruta.sistole_engie.clases.FotosMgr;
+import enruta.sistole_engie.services.DbLecturasMgr;
 
 public class ThreadTransmitirWifi extends TimerTask {
 	final static int TRANSMITIR_FOTOS = 1;
@@ -110,6 +112,20 @@ public class ThreadTransmitirWifi extends TimerTask {
 		String ls_nombre_final;
 		cancelarNotificacion(RESULTADO_TRANSMISION);
 		int numErrores = 0;
+		String unidad = "";
+		String regional = "";
+		String subCarpeta = "";
+
+		try {
+			if (activity != null)
+				unidad = DbLecturasMgr.getInstance().getUnidad(activity);
+
+			regional = globales.getRegional();
+		} catch (Exception e)
+		{
+			Log.e("ThreadTransmitirWiFi", e.getMessage());
+		}
+
 		
 		mostrarNotificacion(MENSAJE_PROGRESO,R.drawable.ic_action_exportar,  "Iniciando el envio", "");
 
@@ -203,13 +219,19 @@ public class ThreadTransmitirWifi extends TimerTask {
 						String fechaAnio = fecha.substring(0, 4);
 						String fechaAnioMes = fecha.substring(0, 6);
 
-						serial.open(ls_servidor, ls_capertaFotos + fechaAnio + "/" + fechaAnioMes + "/" + fecha + "/", "",
-								Serializacion.ESCRITURA, 0, 0);
-
 						String nombreFoto = c.getString(c.getColumnIndex("nombre"));
 						if (globales.quitarPrimerCaracterNombreFoto) {
 							nombreFoto = nombreFoto.substring(1);
 						}
+
+						if (unidad.equals("") || regional.equals("") || nombreFoto.toLowerCase().contains("xxxxxcheck"))
+							subCarpeta = fechaAnio + "/" + fechaAnioMes + "/" + fecha + "/";
+						else
+							subCarpeta = "Ciclo/" + regional + "/" + unidad + "/";
+
+						serial.open(ls_servidor, ls_capertaFotos + subCarpeta, "",
+								Serializacion.ESCRITURA, 0, 0);
+
 
 						// RL, 2022-10-27, Se obtendrá la foto a través de una clase que hará que si la foto es menor a 2MB.
 						// ... la regrese tal cual, y si es mayor a 2MB la obtendrá en partes, debido a que el SQLLite al usar...

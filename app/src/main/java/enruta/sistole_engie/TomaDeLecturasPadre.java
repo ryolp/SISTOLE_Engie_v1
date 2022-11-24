@@ -69,7 +69,7 @@ public abstract class TomaDeLecturasPadre extends Activity {
 	/**
 	 * Tiempo en segundo que se tardar﷿ el GPS
 	 */
-	final static int TIME_OUT_GPS = 10; 
+	final static int TIME_OUT_GPS = 5;
 	
 	/**
 	 * Tiempo limite ente puntos GPS
@@ -1139,6 +1139,11 @@ public abstract class TomaDeLecturasPadre extends Activity {
 			public void run(){
 				while (globales.location==null && !timeOutAlcanzado){
 					//Esperamos...
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 				
 				timeOutAlcanzado=false;

@@ -1679,7 +1679,7 @@ public class Lectura {
         if (unidad.length() >= 4)
         {
             valor = unidad.substring(3, 4).toUpperCase();
-            if (valor.equals("G"))
+            if (valor.equals("G") || valor.equals("Q") )
                 return true;
             else {
                 valor = unidad.substring(2, 4).toUpperCase();

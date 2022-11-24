@@ -79,17 +79,17 @@ public class SupervisorMgr {
                             if (response.isSuccessful())
                                 exito(mRequest, response.body());
                             else
-                                fallo(mRequest, null, ERROR_ENVIAR_1, "Error al enviar informe (1)");
+                                fallo(mRequest, null, ERROR_ENVIAR_1, "No hay conexión a internet. Intente nuevamente. (1)", null);
                         }
 
                         @Override
                         public void onFailure(Call<SupervisorLogResponse> call, Throwable t) {
-                            fallo(mRequest, null, ERROR_ENVIAR_2, "Error al enviar informe (2) : " + t.getMessage());
+                            fallo(mRequest, null, ERROR_ENVIAR_2, "No hay conexión a internet. Intente nuevamente. (2)", t);
                         }
                     }
             );
         } catch (Exception ex) {
-            fallo(mRequest, mResp, ERROR_ENVIAR_3, "Error al enviar informe (3) : " + ex.getMessage());
+            fallo(mRequest, mResp, ERROR_ENVIAR_3, "No hay conexión a internet. Intente nuevamente. (3)", ex);
         }
     }
 
@@ -102,15 +102,22 @@ public class SupervisorMgr {
             mCallback.enExito(req, resp);
     }
 
-    private void fallo(SupervisorLogRequest req, SupervisorLogResponse resp, int codigo, String mensaje) {
-        if (!mensaje.trim().equals("") && codigo >= ERROR_ENVIAR_1) {
-            Log.d("CPL", mensaje);
+    private void fallo(SupervisorLogRequest req, SupervisorLogResponse resp, int codigo, String mensajeError, Throwable t) {
+        String msg = "";
+
+        if (!mensajeError.trim().equals("") && codigo >= ERROR_ENVIAR_1) {
+            if (t != null)
+                msg = t.getMessage();
+
+            Log.d("CPL", mensajeError + " : " + msg);
         }
 
-        if (resp != null) {
-            resp.NumError = codigo;
-            resp.MensajeError = mensaje;
-        }
+        if (resp == null)
+            resp = new SupervisorLogResponse();
+
+        resp.NumError = codigo;
+        resp.MensajeError = mensajeError;
+
         if (mCallback != null)
             mCallback.enFallo(req, resp);
     }

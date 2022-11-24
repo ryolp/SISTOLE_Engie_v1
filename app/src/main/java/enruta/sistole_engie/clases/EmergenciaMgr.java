@@ -84,20 +84,20 @@ public class EmergenciaMgr {
                                 if (resp.Exito) {
                                     exito(mResp);
                                 } else {
-                                    fallo(mResp, ERROR_ENVIAR_1, "Error al solicitar ayuda (1). Intente nuevamente");
+                                    fallo(mResp, ERROR_ENVIAR_1, "No hay conexión a internet. Intente nuevamente (1)", null);
                                 }
                             } else
-                                fallo(mResp, ERROR_ENVIAR_2, "Error al solicitar ayuda (2). Intente nuevamente");
+                                fallo(mResp, ERROR_ENVIAR_2, "No hay conexión a internet. Intente nuevamente (2)", null);
                         }
 
                         @Override
                         public void onFailure(Call<OperacionResponse> call, Throwable t) {
-                            fallo(mResp, ERROR_ENVIAR_3, "Error al solicitar ayuda (3). Intente nuevamente :" + t.getMessage());
+                            fallo(mResp, ERROR_ENVIAR_3, "No hay conexión a internet. Intente nuevamente (3)", t);
                         }
                     }
             );
         } catch (Exception ex) {
-            fallo(mResp, ERROR_ENVIAR_4, "Error al solicitar ayuda (4). Intente nuevamente :" + ex.getMessage());
+            fallo(mResp, ERROR_ENVIAR_4, "No hay conexión a internet. Intente nuevamente (4)", ex);
         }
     }
 
@@ -110,15 +110,21 @@ public class EmergenciaMgr {
             mCallback.enExito(resp, mSolicitudEmergencia);
     }
 
-    private void fallo(OperacionResponse resp, int codigo, String mensaje) {
+    private void fallo(OperacionResponse resp, int codigo, String mensaje, Throwable t) {
+        String msg = "";
+
         if (!mensaje.trim().equals("") && codigo >= ERROR_ENVIAR_1) {
-            Log.d("CPL", mensaje);
+            if (t != null)
+                msg = t.getMessage();
+            Log.d("CPL", mensaje + " : " + msg);
         }
 
-        if (resp != null) {
-            resp.NumError = codigo;
-            resp.MensajeError = mensaje;
-        }
+        if (resp == null)
+            resp = new OperacionResponse();
+
+        resp.NumError = codigo;
+        resp.MensajeError = mensaje;
+
         if (mCallback != null)
             mCallback.enFallo(resp);
     }

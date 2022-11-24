@@ -39,6 +39,8 @@ public class BuscarMedidorMgr {
     public final int ERROR_ENVIAR_3 = 4;
     public final int ERROR_ENVIAR_4 = 5;
 
+    private final int CANT_MIN_DIGITOS_MEDIDOR = 6;
+
     public BuscarMedidorMgr(Context context) {
         mContext = context;
     }
@@ -55,6 +57,7 @@ public class BuscarMedidorMgr {
         Cursor c = null;
         int secuencia;
         String codigoAux;
+        int nCol;
 
         try {
             codigoAux = "'%" + codigo + "%'";
@@ -66,7 +69,7 @@ public class BuscarMedidorMgr {
             c = mDb.rawQuery(mQuery, null);
 
             if (c.moveToFirst())
-                secuencia = c.getInt(c.getColumnIndex("secuencia"));
+                secuencia = DBHelper.getInt(c, "secuencia", -1);
             else
                 secuencia = -1;
             if (mCallback != null)
@@ -110,6 +113,9 @@ public class BuscarMedidorMgr {
 
     public void buscarMedidorEnWeb(Globales globales, String serieMedidor, String codigoBarrasMedidor)
     {
+        if (serieMedidor.trim().length() < CANT_MIN_DIGITOS_MEDIDOR)
+            return;
+
         mRequest = new BuscarMedidorRequest();
         mRequest.SerieMedidor = serieMedidor;
         mRequest.CodigoBarras = codigoBarrasMedidor;
@@ -139,17 +145,17 @@ public class BuscarMedidorMgr {
                             if (response.isSuccessful())
                                 exito(mRequest, response.body());
                             else
-                                fallo(mRequest, null, ERROR_ENVIAR_1, "Error al enviar informe (1)");
+                                fallo(mRequest, null, ERROR_ENVIAR_1, "No hay conexión a internet. Intente nuevamente (1)", null);
                         }
 
                         @Override
                         public void onFailure(Call<BuscarMedidorResponse> call, Throwable t) {
-                            fallo(mRequest, null, ERROR_ENVIAR_2, "Error al enviar informe (2) : " + t.getMessage());
+                            fallo(mRequest, null, ERROR_ENVIAR_2, "No hay conexión a internet. Intente nuevamente (2). ", t);
                         }
                     }
             );
         } catch (Exception ex) {
-            fallo(mRequest, mResp, ERROR_ENVIAR_3, "Error al enviar informe (3) : " + ex.getMessage());
+            fallo(mRequest, mResp, ERROR_ENVIAR_3, "No hay conexión a internet. Intente nuevamente (3)", ex);
         }
     }
 
@@ -162,17 +168,22 @@ public class BuscarMedidorMgr {
             mCallbackEnWeb.enExito(resp);
     }
 
-    private void fallo(BuscarMedidorRequest req, BuscarMedidorResponse resp, int codigo, String mensaje) {
-        if (!mensaje.trim().equals("") && codigo >= ERROR_ENVIAR_1) {
-            Log.d("CPL", mensaje);
+    private void fallo(BuscarMedidorRequest req, BuscarMedidorResponse resp, int codigo, String mensajeError, Throwable t) {
+        String msg = "";
+
+        if (!mensajeError.trim().equals("") && codigo >= ERROR_ENVIAR_1) {
+            if (t != null)
+                msg = t.getMessage();
+
+            Log.d("CPL", mensajeError + " : " + msg);
         }
 
         if (resp != null) {
             resp.NumError = codigo;
-            resp.MensajeError = mensaje;
+            resp.MensajeError = mensajeError;
         }
         if (mCallbackEnWeb != null)
-            mCallbackEnWeb.enFallo(req, resp, codigo, mensaje);
+            mCallbackEnWeb.enFallo(req, resp, codigo, mensajeError);
     }
 
 }

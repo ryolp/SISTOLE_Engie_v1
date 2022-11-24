@@ -54,21 +54,21 @@ public class VerificadorConectividadMgr {
                                 if (resp.Exito) {
                                     exito(true, resp.SesionOk);
                                 } else {
-                                    fallo(ERROR_ENVIAR_1, "Error al verificar conexión (1)");
+                                    fallo(ERROR_ENVIAR_1, "No hay conexión a internet. Intente nuevamente. (1)", null);
                                 }
                             } else
-                                fallo(ERROR_ENVIAR_2, "Error al verificar conexión (2)");
+                                fallo(ERROR_ENVIAR_2, "No hay conexión a internet. Intente nuevamente. (2)", null);
 
                         }
 
                         @Override
                         public void onFailure(Call<LoginResponseEntity> call, Throwable t) {
-                            fallo(ERROR_ENVIAR_3, "Error al verificar conexión (3)");
+                            fallo(ERROR_ENVIAR_3, "No hay conexión a internet. Intente nuevamente. (3)", t);
                         }
                     }
             );
         } catch (Exception ex) {
-            fallo(ERROR_ENVIAR_4, "Error al verificar conexión (4)");
+            fallo(ERROR_ENVIAR_4, "No hay conexión a internet. Intente nuevamente. (4)", ex);
         }
     }
     private void exito(boolean exitoConectividad, boolean exitoSesion){
@@ -76,12 +76,17 @@ public class VerificadorConectividadMgr {
             mCallback.enExito(exitoConectividad, exitoSesion);
     }
 
-    private void fallo(int numError, String mensaje) {
-        if (!mensaje.trim().equals("") && numError >= ERROR_ENVIAR_1) {
-            Log.d("CPL", mensaje);
+    private void fallo(int numError, String mensajeError, Throwable t) {
+        String msg = "";
+
+        if (!mensajeError.trim().equals("") && numError >= ERROR_ENVIAR_1) {
+            if (t != null)
+                msg = t.getMessage();
+
+            Log.d("CPL", mensajeError + " : " + msg);
         }
 
         if (mCallback != null)
-            mCallback.enFallo(numError, mensaje);
+            mCallback.enFallo(numError, mensajeError);
     }
 }

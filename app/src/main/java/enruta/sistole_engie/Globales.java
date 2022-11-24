@@ -419,6 +419,16 @@ public class Globales extends Application {
         return sesionEntity.Token;
     }
 
+    public String getRegional() {
+        if (sesionEntity == null)
+            return "";
+
+        if (sesionEntity.empleado == null)
+            return "";
+
+        return sesionEntity.empleado.Regional;
+    }
+
     public void setUsuario(String s) {
         usuario = s;
 
