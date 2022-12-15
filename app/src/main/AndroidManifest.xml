@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="enruta.sistole_engie"
     android:installLocation="preferExternal"
-    android:versionCode="43"
-    android:versionName="ENGIE CPL (1.1.12)">
+    android:versionCode="44"
+    android:versionName="ENGIE CPL (1.1.13)">
 
     <uses-sdk
         android:targetSdkVersion="31" />
