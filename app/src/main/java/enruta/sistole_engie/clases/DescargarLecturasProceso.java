@@ -167,12 +167,8 @@ public class DescargarLecturasProceso implements Runnable {
             cantRegistros = lineas.length;
 
             for (String ls_linea : lineas) {
-                if (ls_linea.length() == 0) {
-                    mDb.execSQL("delete from Lecturas ");
-                    closeDatabase();
-
+                if (ls_linea.length() == 0)
                     throw new AppException("El archivo recibido tiene un formato incorrecto");
-                }
 
                 if (i != 0 && !ls_linea.startsWith("#")
                         && !ls_linea.startsWith("!")
@@ -181,11 +177,8 @@ public class DescargarLecturasProceso implements Runnable {
                     secuenciaReal++;
                     idArchivo = mGlobales.tlc.strToBD(mDb, ls_linea, secuenciaReal);// Esta
 
-                    if (idArchivo == 0) {     // Si es cero significa que el renglón no trae el mínimo de columnas
-                        mDb.execSQL("delete from Lecturas ");
-                        closeDatabase();
+                    if (idArchivo == 0)    // Si es cero significa que el renglón no trae el mínimo de columnas
                         throw new AppException(mContext.getString(R.string.msj_trans_file_doesnt_match));
-                    }
 //                    else
 //                        mArchivosLectMgr.agregarArchivoLect(idArchivo);
 
@@ -231,8 +224,16 @@ public class DescargarLecturasProceso implements Runnable {
 
             notificarMensaje("Descarga finalizada");
         } catch (AppException e1) {
+            mDb.execSQL("delete from Lecturas ");
+            mDb.setTransactionSuccessful();
+            mDb.endTransaction();
+            closeDatabase();
             throw new AppException(e1.getMessage());
         } catch (Exception e2) {
+            mDb.execSQL("delete from Lecturas ");
+            mDb.setTransactionSuccessful();
+            mDb.endTransaction();
+            closeDatabase();
             throw e2;
         }
     }

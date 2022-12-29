@@ -110,10 +110,10 @@ public class TodosLosCampos {
 				i++;
 			}
 			cv_params.put("secuenciaReal", secuenciaReal);
-			db.insert(is_tabla, null, cv_params);
+			db.insertOrThrow(is_tabla, null, cv_params);
             return idArchivo;
 		} catch (Exception exp) {
-			throw exp;
+			throw new Exception(exp);
 		}
 	}
 

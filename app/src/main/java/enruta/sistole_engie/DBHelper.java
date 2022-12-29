@@ -27,7 +27,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	
 	private static DBHelper mInstance = null;
 	
-	private static int version=36;
+	private static int version=44;
 
 	/**
 	 * Constructor Toma referencia hacia el contexto de la aplicación que lo
@@ -457,7 +457,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			db.execSQL("ALTER TABLE ruta add column idRegionalLect default 0 " );
 
 		if (!existsColumnInTable(db, "ruta", "Regional"))
-			db.execSQL("ALTER TABLE ruta add column idRegionalLect default '' " );
+			db.execSQL("ALTER TABLE ruta add column Regional default '' " );
 
 		if (!existsColumnInTable(db, "fotos", "idLectura"))
 			db.execSQL("ALTER TABLE ruta add column idLectura default 0 " );
