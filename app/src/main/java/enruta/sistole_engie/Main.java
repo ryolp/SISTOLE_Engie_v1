@@ -494,16 +494,17 @@ public class Main extends FragmentActivity implements TabListener {
                         break;
                     case 1: //GPRS
                     case 3: //WIFI
-                        lrs = new Intent(main, trasmisionDatos.class);
-                        lrs.putExtra("tipo", trasmisionDatos.RECEPCION);
-                        if (tipoDeTransmisionPredeterminada() == 3) {
-                            //Es por wifi y tenemos que hacer la diferencia
-                            lrs.putExtra("metodo", TransmisionesPadre.WIFI);
-                        } else {
-                            lrs.putExtra("metodo", TransmisionesPadre.GPRS);
-                        }
-
-                        startActivityForResult(lrs, IMPORTAR);
+                        descargarLecturas();
+//                        lrs = new Intent(main, trasmisionDatos.class);
+//                        lrs.putExtra("tipo", trasmisionDatos.RECEPCION);
+//                        if (tipoDeTransmisionPredeterminada() == 3) {
+//                            //Es por wifi y tenemos que hacer la diferencia
+//                            lrs.putExtra("metodo", TransmisionesPadre.WIFI);
+//                        } else {
+//                            lrs.putExtra("metodo", TransmisionesPadre.GPRS);
+//                        }
+//
+//                        startActivityForResult(lrs, IMPORTAR);
                         break;
                     case 2: //bt
                         if (bluetoothDisponible(REQUEST_ENABLE_BT_IMP)) {
@@ -867,8 +868,11 @@ public class Main extends FragmentActivity implements TabListener {
 
         AlertDialog alert = builder.create();
         alert.show();
+    }
 
-
+    private void descargarLecturas() {
+        Intent intent = new Intent(Main.this, DescargarLecturasActivity.class);
+        startActivityForResult(intent, IMPORTAR);
     }
 
     public void actualizaResumen() {
@@ -2260,23 +2264,12 @@ public class Main extends FragmentActivity implements TabListener {
             TomaDeLecturasGenerica tdlg;
             String servidor = "";
 
-            tdlg = globales.tdlg;
-
-            if (tdlg != null) {
-                if (!tdlg.getEstructuras(to, trasmisionDatos.TRANSMISION, TransmisionesPadre.WIFI).equals("")) {
-                    //throw new Exception("Error al leer configuración");
-                    servidor = to.ls_servidor.trim();
-                }
-            }
-
-            if (servidor.trim().equals(""))
-                servidor = DbConfigMgr.getInstance().getServidor(this);
+            servidor = DbConfigMgr.getInstance().getServidor(this);
 
             if (servidor.trim().equals(""))
                 servidor = globales.defaultServidorGPRS;
 
-
-            return WebApiManager.getInstance(servidor);
+            return WebApiManager.getInstance(this);
         } catch (Exception ex) {
             throw ex;
         }

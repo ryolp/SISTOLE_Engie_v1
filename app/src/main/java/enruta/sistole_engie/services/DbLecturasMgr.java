@@ -7,9 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 
 import enruta.sistole_engie.DBHelper;
+import enruta.sistole_engie.clases.Utils;
 import enruta.sistole_engie.entities.ResumenEntity;
 
-public class DbLecturasMgr {
+public class DbLecturasMgr extends DbBaseMgr {
     private static DbLecturasMgr lecturasMgr;
     private DBHelper dbHelper;
     private SQLiteDatabase db;
@@ -18,7 +19,7 @@ public class DbLecturasMgr {
 
     }
 
-    public static DbLecturasMgr getInstance(){
+    public static DbLecturasMgr getInstance() {
         lecturasMgr = new DbLecturasMgr();
         return lecturasMgr;
     }
@@ -34,7 +35,7 @@ public class DbLecturasMgr {
         dbHelper.close();
     }
 
-    public ResumenEntity getResumen(Context context){
+    public ResumenEntity getResumen(Context context) {
         try {
             ResumenEntity resumen = new ResumenEntity();
             Cursor c;
@@ -43,15 +44,15 @@ public class DbLecturasMgr {
 
             c = db.rawQuery("Select count(*) canti from Ruta", null);
             c.moveToFirst();
-            resumen.totalRegistros = c.getLong(c.getColumnIndex("canti"));
+            resumen.totalRegistros = getLong(c, "canti", 0);
 
             c = db.rawQuery("Select count(*) canti from ruta where tipoLectura='0'", null);
             c.moveToFirst();
-            resumen.cantLecturasRealizadas = c.getLong(c.getColumnIndex("canti"));
+            resumen.cantLecturasRealizadas = getLong(c, "canti", 0);
 
             c = db.rawQuery("Select count(*) canti from ruta where trim(tipoLectura)=''", null);
             c.moveToFirst();
-            resumen.cantLecturasPendientes = c.getLong(c.getColumnIndex("canti"));
+            resumen.cantLecturasPendientes = getLong(c, "canti", 0);
 
             return resumen;
         } catch (Exception e) {
@@ -61,8 +62,7 @@ public class DbLecturasMgr {
         }
     }
 
-    public long getCantidadPendientes(Context context)
-    {
+    public long getCantidadPendientes(Context context) {
         try {
             ResumenEntity resumen = new ResumenEntity();
             Cursor c;
@@ -72,7 +72,7 @@ public class DbLecturasMgr {
 
             c = db.rawQuery("Select count(*) canti from ruta where trim(tipoLectura)=''", null);
             c.moveToFirst();
-            n = c.getLong(c.getColumnIndex("canti"));
+            n = getLong(c, "canti", 0);
 
             return n;
         } catch (Exception e) {
@@ -82,18 +82,17 @@ public class DbLecturasMgr {
         }
     }
 
-    public String getUnidad(Context context)
-    {
+    public String getUnidad(Context context) {
         try {
             ResumenEntity resumen = new ResumenEntity();
             Cursor c;
-            String s="";
+            String s = "";
 
             openDatabase(context);
 
             c = db.rawQuery("SELECT  sectorCorto FROM ruta LIMIT 1", null);
             if (c.moveToFirst())
-                s = c.getString(c.getColumnIndex("sectorCorto"));
+                s = getString(c, "sectorCorto", "");
 
             return s;
         } catch (Exception e) {
@@ -103,8 +102,33 @@ public class DbLecturasMgr {
         }
     }
 
-    public ArrayList<Long> getIdsArchivo(Context context)
-    {
+    public String getUnidades(Context context) {
+        try {
+            ResumenEntity resumen = new ResumenEntity();
+            Cursor c;
+            String s = "";
+            String v = "";
+            int i = 0;
+
+            openDatabase(context);
+
+            c = db.rawQuery("SELECT sectorCorto FROM ruta GROUP BY sectorCorto ORDER BY sectorCorto", null);
+
+            while (c.moveToNext() && i < 3) {
+                v = getString(c, "sectorCorto", "");
+                s = Utils.concatenar(", ", s, v);
+                i++;
+            }
+
+            return s;
+        } catch (Exception e) {
+            return "";
+        } finally {
+            closeDatabase();
+        }
+    }
+
+    public ArrayList<Long> getIdsArchivo(Context context) {
         try {
             ResumenEntity resumen = new ResumenEntity();
             ArrayList<Long> lista = new ArrayList<Long>();
@@ -115,8 +139,8 @@ public class DbLecturasMgr {
 
             c = db.rawQuery("Select idArchivo from ruta GROUP BY idArchivo", null);
 
-            while(c.moveToNext()) {
-                n = c.getLong(c.getColumnIndex("idArchivo"));
+            while (c.moveToNext()) {
+                n = getLong(c, "idArchivo", 0);
                 lista.add(n);
             }
 

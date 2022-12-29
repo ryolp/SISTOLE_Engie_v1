@@ -193,11 +193,12 @@ public class DBHelper extends SQLiteOpenHelper {
 				"indicadorGPS default '', satelites default '', unicom default '', ruta default '', itinerario default '', ciclo default '', tabulador default '', " +
 				"selloRetNumero default '', selloRetEstado default '', selloRetColor default '', selloRetModelo default '', " +
 				"selloInstNumero default '', selloInstColor default '', selloInstModelo default '', codigoObservacion default '', observacion default '', datosCampana default '', toma default '', giro default '', envio default 0, " +
-				"idArchivo default 0, codigoBarras default '', nota1 default '', nota2 default '', miLatitud default '', miLongitud default '', EstimacionesEngie default '', TipoDeCliente default '', TipoDeAcuse default '')");
+				"idArchivo default 0, codigoBarras default '', nota1 default '', nota2 default '', miLatitud default '', miLongitud default '', EstimacionesEngie default '', TipoDeCliente default '', TipoDeAcuse default '', " +
+				"Porcion default '', idUnidadLect default 0, idRegionalLect default 0, Regional default '') ");
 		//Usuarios
 		db.execSQL("CREATE TABLE usuarios (usuario , contrasena , nombre, rol default 1, fotosControlCalidad default 1, baremo default 75)");
 		//fotos
-		db.execSQL("CREATE TABLE fotos (secuencial, nombre , foto, envio default 0, temporal)");
+		db.execSQL("CREATE TABLE fotos (secuencial, nombre , foto, envio default 0, temporal, idLectura)");
 		//Encabezado
 		db.execSQL("CREATE TABLE encabezado (cpl , centro , lote , descargada, lecturista, registro, ultimoSeleccionado default 0)");
 		//Configuraciones globales y extras
@@ -444,7 +445,22 @@ public class DBHelper extends SQLiteOpenHelper {
 		if (!existsColumnInTable(db, "ruta", "TipoDeAcuse"))
 			db.execSQL("ALTER TABLE ruta add column TipoDeAcuse default '' " );
 
+		// RL, 15/12/22, Vamos a agregar las Nuevas Columnas que se necesitan
 
+		if (!existsColumnInTable(db, "ruta", "Porcion"))
+			db.execSQL("ALTER TABLE ruta add column Porcion default '' " );
+
+		if (!existsColumnInTable(db, "ruta", "idUnidadLect"))
+			db.execSQL("ALTER TABLE ruta add column idUnidadLect default 0 " );
+
+		if (!existsColumnInTable(db, "ruta", "idRegionalLect"))
+			db.execSQL("ALTER TABLE ruta add column idRegionalLect default 0 " );
+
+		if (!existsColumnInTable(db, "ruta", "Regional"))
+			db.execSQL("ALTER TABLE ruta add column idRegionalLect default '' " );
+
+		if (!existsColumnInTable(db, "fotos", "idLectura"))
+			db.execSQL("ALTER TABLE ruta add column idLectura default 0 " );
 	}
 
 	private boolean existsColumnInTable(SQLiteDatabase inDatabase, String inTable, String columnToCheck) {

@@ -18,15 +18,15 @@ public class Usuario {
 	
 	String usuario, contrasena, nombre;
 	long index;
-	
-	Usuario(Context context, int index){
+
+	public Usuario(Context context, int index){
 		this.context=context;
 		this.index=index;
 		llenarCampos();
 	}
 
-	
-	Usuario(Context context, byte[] medidor,SQLiteDatabase db ){
+
+	public Usuario(Context context, byte[] medidor,SQLiteDatabase db ){
 		this.context=context;
 		Resources res=context.getResources();
 		
@@ -46,8 +46,8 @@ public class Usuario {
 		index=db.insert("usuarios", null, cv_params);
 
 	}
-	
-	Usuario(Context context, String medidor,SQLiteDatabase db ){
+
+	public Usuario(Context context, String medidor,SQLiteDatabase db ){
 		this.context=context;
 		Resources res=context.getResources();
 		

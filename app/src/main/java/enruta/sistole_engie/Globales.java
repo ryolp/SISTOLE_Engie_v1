@@ -213,7 +213,7 @@ public class Globales extends Application {
      * Fin de Variables de toma de lecturas
      **/
 
-    TodosLosCampos tlc /*=new TodosLosCampos()*/;
+    public TodosLosCampos tlc /*=new TodosLosCampos()*/;
     public TomaDeLecturasGenerica tdlg;
 
     //TomaDeLecturasGenerica tdlGenerica= new TomaDeLecturasGenerica(this);

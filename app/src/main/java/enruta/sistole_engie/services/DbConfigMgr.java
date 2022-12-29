@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import enruta.sistole_engie.DBHelper;
 
-public class DbConfigMgr {
+public class DbConfigMgr extends  DbBaseMgr {
     private static DbConfigMgr config;
     private DBHelper dbHelper;
     private SQLiteDatabase db;
@@ -44,7 +44,7 @@ public class DbConfigMgr {
             if (c.getCount() == 0)
                 return "";
 
-            servidor = c.getString(c.getColumnIndex("value"));
+            servidor = getString(c,"value", "");
 
         } catch (Exception e) {
             String error;
@@ -54,6 +54,31 @@ public class DbConfigMgr {
         finally {
             closeDatabase();
             return servidor;
+        }
+    }
+
+    public String getArchivo(Context context){
+        String archivo="";
+
+        try {
+            openDatabase(context);
+
+            Cursor c = db.rawQuery("Select value from config where key='cpl'", null);
+            c.moveToFirst();
+
+            if (c.getCount() == 0)
+                return "";
+
+            archivo = getString(c,"value", "");
+
+        } catch (Exception e) {
+            String error;
+            archivo = "";
+            error = e.getMessage();
+        }
+        finally {
+            closeDatabase();
+            return archivo;
         }
     }
 }

@@ -798,7 +798,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
         globales.tlc.add(new Campo(18, "idArchivo", 344, 10, Campo.I, " "));
         globales.tlc.add(new Campo(19, "codigoBarras", 354, 50, Campo.I, " "));
-        globales.tlc.add(new Campo(26, "nota1", 404, 10, Campo.I, " "));
+        globales.tlc.add(new Campo(20, "TipoDeAcuse", 454, 10, Campo.I, " "));
         globales.tlc.add(new Campo(21, "nota2", 414, 10, Campo.I, " "));
 
         // CE, 10/10/22, Vamos a agregar unas Columnas Nuevas
@@ -806,7 +806,14 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         globales.tlc.add(new Campo(23, "miLongitud", 429, 5, Campo.I, " "));
         globales.tlc.add(new Campo(24, "Estimaciones", 434, 10, Campo.I, " "));
         globales.tlc.add(new Campo(25, "TipoDeCliente", 444, 10, Campo.I, " "));
-        globales.tlc.add(new Campo(20, "TipoDeAcuse", 454, 10, Campo.I, " "));
+        globales.tlc.add(new Campo(26, "nota1", 404, 10, Campo.I, " "));
+
+        // RL, 13/12/22, Vamos a agregar unas Columnas Nuevas
+
+        globales.tlc.add(new Campo(27, "Porcion", 464, 10, Campo.I, " "));
+        globales.tlc.add(new Campo(28, "idUnidadLect", 474, 10, Campo.I, " "));
+        globales.tlc.add(new Campo(29, "idRegionalLect", 484, 10, Campo.I, " "));
+        globales.tlc.add(new Campo(30, "Regional", 494, 10, Campo.I, " "));
 
         // Columnas que ya existían estaban en este código de la versión 1.0.11 y anteriores
 
@@ -1256,7 +1263,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
         // RLR, 2022-10-23, Se agregan información de la unidad.
         try {
-            resumenOut.add(new EstructuraResumen(DbLecturasMgr.getInstance().getUnidad(this.context), "Unidad:"));
+            resumenOut.add(new EstructuraResumen(DbLecturasMgr.getInstance().getUnidades(this.context), "Unidad:"));
         } catch (Exception e)
         {
             resumenOut.add(new EstructuraResumen("---", "Unidad:"));
@@ -1580,7 +1587,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
             emp = globales.sesionEntity.empleado;
             if (emp != null) {
                 try {
-                    resumen.add(new EstructuraResumen(DbLecturasMgr.getInstance().getUnidad(this.context), "Unidad:"));
+                    resumen.add(new EstructuraResumen(DbLecturasMgr.getInstance().getUnidades(this.context), "Unidad:"));
                 } catch (Exception e)
                 {
                     resumen.add(new EstructuraResumen("---", "Unidad:"));

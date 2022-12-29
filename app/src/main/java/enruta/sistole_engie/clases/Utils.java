@@ -165,4 +165,17 @@ public final class Utils {
         AlertDialog alert = builder.create();
         alert.show();
     }
+
+    public static String concatenar(String separador, String ... valores) {
+        String s = "";
+
+        for(String valor : valores ){
+            if (!s.equals("") && !valor.equals(""))
+                s = s + separador + valor;
+            else if(!valor.equals(""))
+                s = valor;
+        }
+
+        return s;
+    }
 }

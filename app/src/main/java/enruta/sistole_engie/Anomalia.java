@@ -43,7 +43,7 @@ public class Anomalia {
 	
 	//db.execSQL("CREATE TABLE Anomalia (desc , conv , capt , subanomalia , ausente , mens , lectura , foto , anomalia , activa , tipo , pais TEXT)");
 	
-	Anomalia(Context context, int index){
+	public Anomalia(Context context, int index){
 		this.context=context;
 		this.index=String.valueOf(index);
 		this.esCodigoAnomalia=false;
@@ -51,8 +51,8 @@ public class Anomalia {
 		campoAnomaliaTraducido=globales.traducirAnomalia();
 		llenarCampos();
 	}
-	
-	Anomalia(Context context, String index, String anomaliaPadre, boolean esSubAnomalia){
+
+	public Anomalia(Context context, String index, String anomaliaPadre, boolean esSubAnomalia){
 		this.context=context;
 		//this.index=Long.parseLong(index);
 		this.index=index;
@@ -63,11 +63,8 @@ public class Anomalia {
 		this.anomaliaPadre=anomaliaPadre;
 		llenarCampos();
 	}
-	
-	
 
-	
-	Anomalia(Context context, byte[] medidor,SQLiteDatabase db ){
+	public Anomalia(Context context, byte[] medidor,SQLiteDatabase db ){
 		this.context=context;
 		Resources res=context.getResources();
 		
@@ -94,8 +91,8 @@ public class Anomalia {
 		 esCodigoAnomalia=false;
 		 //llenarCampos();
 	}
-	
-	Anomalia(Context context, String medidor,SQLiteDatabase db ){
+
+	public Anomalia(Context context, String medidor,SQLiteDatabase db ){
 		this.context=context;
 		Resources res=context.getResources();
 		
