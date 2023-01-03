@@ -44,4 +44,18 @@ public class DbBaseMgr {
 
         return c.getString(idx);
     }
+
+    protected byte[] getBlob(Cursor c, String columnName) {
+        int idx;
+
+        if (c == null)
+            return null;
+
+        idx = c.getColumnIndex(columnName);
+
+        if (idx < 0)
+            return null;
+
+        return c.getBlob(idx);
+    }
 }

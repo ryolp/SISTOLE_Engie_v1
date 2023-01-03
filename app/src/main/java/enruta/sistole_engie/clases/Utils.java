@@ -3,6 +3,7 @@ package enruta.sistole_engie.clases;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
@@ -177,5 +178,61 @@ public final class Utils {
         }
 
         return s;
+    }
+
+    public static int getInt(Cursor c, String columnName, int defaultValue) {
+        int idx;
+
+        if (c == null)
+            return defaultValue;
+
+        idx = c.getColumnIndex(columnName);
+
+        if (idx < 0)
+            return defaultValue;
+
+        return c.getInt(idx);
+    }
+
+    public static long getLong(Cursor c, String columnName, long defaultValue) {
+        int idx;
+
+        if (c == null)
+            return defaultValue;
+
+        idx = c.getColumnIndex(columnName);
+
+        if (idx < 0)
+            return defaultValue;
+
+        return c.getLong(idx);
+    }
+
+    public static String getString(Cursor c, String columnName, String defaultValue) {
+        int idx;
+
+        if (c == null)
+            return defaultValue;
+
+        idx = c.getColumnIndex(columnName);
+
+        if (idx < 0)
+            return defaultValue;
+
+        return c.getString(idx);
+    }
+
+    public static byte[] getBlob(Cursor c, String columnName) {
+        int idx;
+
+        if (c == null)
+            return null;
+
+        idx = c.getColumnIndex(columnName);
+
+        if (idx < 0)
+            return null;
+
+        return c.getBlob(idx);
     }
 }

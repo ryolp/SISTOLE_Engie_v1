@@ -5,6 +5,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import enruta.sistole_engie.entities.InfoFotoEntity;
 import enruta.sistole_engie.entities.ResumenEntity;
 import enruta.sistole_engie.clases.Utils;
 import enruta.sistole_engie.entities.EmpleadoCplEntity;
@@ -333,6 +334,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
     }
 
     // CE, REVISAR
+
     public String getNombreFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia) {
         String ls_nombre = "", ls_unicom;
         Cursor c;
@@ -359,7 +361,54 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         ls_nombre += Main.obtieneFecha("ymd");
         ls_nombre += Main.obtieneFecha("his");
         ls_nombre += ".JPG";
+
         return ls_nombre;
+    }
+
+    /*
+        Función para regresar datos de la foto, incluyendo datos de nombre, unidad, porción, regional.
+     */
+
+    // RL, 2023-01-02, Regresar una estructura de datos, con la información suficiente para transmitir la foto con sus datos relacionados.
+
+    public InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia) {
+        String ls_nombre = "", ls_unicom;
+        Cursor c;
+        InfoFotoEntity infoFoto = new InfoFotoEntity();
+        Lectura lect;
+
+        /**
+         * Este es el fotmato del nombre de la foto
+         *
+         * NumMedidor a 10 posiciones,
+         * fecha	  a YYYYMMDD
+         * hora		  a HHMMSS
+         */
+
+        lect = globales.tll.getLecturaActual();
+
+        ls_nombre = Main.rellenaString(lect.sinUso3.trim(), "0", globales.tlc.getLongCampo("sinUso3"), true) + "-";
+        ls_nombre += Main.rellenaString(lect.is_serieMedidor, "0", globales.tlc.getLongCampo("serieMedidor"), true) + "-";
+//    	if (ls_anomalia.equals("")){
+//    		if (!globales.is_lectura.equals("")){
+//    			ls_nombre =Main.rellenaString(globales.is_lectura, "0", globales.tlc.getLongCampo("lectura"), true) + "-";
+//    		}
+//
+//    	}
+//    	else{
+//    		ls_nombre =Main.rellenaString(ls_anomalia, "0", globales.tlc.getLongCampo("anomalia"), true) + "-";
+//    	}
+        ls_nombre += Main.obtieneFecha("ymd");
+        ls_nombre += Main.obtieneFecha("his");
+        ls_nombre += ".JPG";
+
+        infoFoto.nombreFoto = ls_nombre;
+        infoFoto.idLectura = Utils.convToLong(lect.poliza);
+        infoFoto.Unidad = lect.unidad;
+        infoFoto.Regional = lect.Regional;
+        infoFoto.Porcion = lect.Porcion;
+
+        return infoFoto;
     }
 
     // CE, REVISAR

@@ -137,6 +137,7 @@ public class Main extends FragmentActivity implements TabListener {
     private DialogoVerificadorConectividad mDialogoVerificadorConectividad = null;
     private ArchivosLectMgr mArchivosLectMgr = null;
     private OperacionGenericaMgr operacionGenericaMgr = null;
+    private DialogoMensaje mDialogoMsg = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -851,7 +852,7 @@ public class Main extends FragmentActivity implements TabListener {
                 }
                 break;
             case MENU_ENTRAR_SUPERVISOR:
-                entrarSupervisorFinalizado(resultCode, data);
+                entrarSupervisor();
                 break;
         }
     }
@@ -2456,20 +2457,29 @@ public class Main extends FragmentActivity implements TabListener {
     }
 
     protected void entrarSupervisor() {
-        try {
-            Intent entrarSupervisor = new Intent(Main.this, SupervisorLoginActivity.class);
+        mostrarMensaje("Información", "Vaya a la pantalla de Toma de Lecturas y use el menú Supervisor.");
+    }
 
-            startActivityForResult(entrarSupervisor, MENU_ENTRAR_SUPERVISOR);
-        } catch (Exception e) {
-            Log.e(TAG, "entrarSupervisor: " + e.getMessage());
-            Utils.showMessageLong(this, "Hubo un error al iniciar la pantalla :" + e.getMessage());
+    /* -------------------------------------------------------------------------------------------
+    Muestra el diálogo o ventana para mostrar mensajes.
+    ------------------------------------------------------------------------------------------- */
+
+    private void mostrarMensaje(String titulo, String mensaje, String detalleError, DialogoMensaje.Resultado resultado) {
+        if (mDialogoMsg == null) {
+            mDialogoMsg = new DialogoMensaje(this);
         }
+
+        mDialogoMsg.setOnResultado(resultado);
+        mDialogoMsg.mostrarMensaje(titulo, mensaje, detalleError);
     }
 
-    protected void entrarSupervisorFinalizado(final int resultCode, final Intent data) {
-        if (resultCode == Activity.RESULT_OK)
-            Utils.showMessageLong(this, "Informe enviado");
+    private void mostrarMensaje(String titulo, String mensaje) {
+        mostrarMensaje(titulo, mensaje, "", null);
     }
+
+    /* -------------------------------------------------------------------------------------------
+    Muestra el diálogo del estatus de la conectividad
+    ------------------------------------------------------------------------------------------- */
 
     protected void verificarConectividad() {
         if (mDialogoVerificadorConectividad == null) {

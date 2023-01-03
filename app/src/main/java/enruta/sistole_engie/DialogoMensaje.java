@@ -28,7 +28,6 @@ public class DialogoMensaje {
     }
 
     public void mostrarMensaje(String titulo, String mensajeUsuario, String mensajeDetalle) {
-
         if (mDialogo == null) {
             mDialogo = new Dialog(mActivity);
 
@@ -38,14 +37,19 @@ public class DialogoMensaje {
             mDialogo.setContentView(dialogView);
 
             mDialogo.setCancelable(false);
-            mDialogo.setTitle(titulo);
 
             mTxtMensaje = (TextView) mDialogo.findViewById(R.id.txtMensaje);
             mTxtDetalle = (TextView) mDialogo.findViewById(R.id.txtDetalle);
             mBtnAceptar = (Button) mDialogo.findViewById(R.id.btnAceptar);
 
-            mTxtMensaje.setText(mensajeUsuario);
-            mTxtDetalle.setText(mensajeDetalle);
+            mTxtMensaje.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (!mensajeDetalle.equals(""))
+                        mTxtDetalle.setVisibility(View.VISIBLE);
+                }
+            });
+
 
             mBtnAceptar.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -56,6 +60,11 @@ public class DialogoMensaje {
                 }
             });
         }
+
+        mDialogo.setTitle(titulo);
+        mTxtMensaje.setText(mensajeUsuario);
+        mTxtDetalle.setText(mensajeDetalle);
+        mTxtDetalle.setVisibility(View.GONE);
         mDialogo.show();
     }
 }

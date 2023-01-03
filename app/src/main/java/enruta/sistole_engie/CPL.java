@@ -2,12 +2,9 @@ package enruta.sistole_engie;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -32,15 +29,10 @@ import android.graphics.drawable.ColorDrawable;
 import java.util.Calendar;
 import java.util.Date;
 
-import enruta.sistole_engie.entities.OperacionRequest;
-import enruta.sistole_engie.entities.OperacionResponse;
+import enruta.sistole_engie.clases.AutenticadorMgr;
 import enruta.sistole_engie.entities.LoginRequestEntity;
 import enruta.sistole_engie.entities.LoginResponseEntity;
 import enruta.sistole_engie.entities.SesionEntity;
-import enruta.sistole_engie.services.WebApiManager;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class CPL extends Activity {
 
@@ -84,8 +76,9 @@ public class CPL extends Activity {
     private EditText txtCodigoSMS;
     private Button btnAutenticar;
     private Button btnValidarSMS;
-    private int intentosAutenticacion = 0;
-    private int intentosCodigoSMS = 0;
+    private int mIntentosAutenticacion = 0;
+    private int mIntentosCodigoSMS = 0;
+    private boolean mRegresarPantallaInicial = false;
 
     // RL, 2022-09-13, Se agrega referencia al logo de Enruta
     private ImageView iv_nosotros;
@@ -105,6 +98,10 @@ public class CPL extends Activity {
     private Button btnAdministrador;
     private Button btnLecturista;
 
+    // RL, 2022-12-31, Diálogo para mostrar el detalle de un error.
+
+    private DialogoMensaje mDialogoMsg = null;
+    private AutenticadorMgr mAutenticadorMgr = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -316,7 +313,7 @@ public class CPL extends Activity {
             globales.secuenciaSuperUsuario = "A";
             mostrarTeclado();
 
-            intentosAutenticacion = 0;
+            mIntentosAutenticacion = 0;
 
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         } else
@@ -389,7 +386,7 @@ public class CPL extends Activity {
 
             mostrarTeclado();
 
-            intentosAutenticacion = 0;
+            mIntentosAutenticacion = 0;
 
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         } else
@@ -852,16 +849,54 @@ public class CPL extends Activity {
 
         usuario = et_usuario.getText().toString().trim();
 
-        if (usuario.contains("*9776"))
+        if (usuario.contains("*9776")) {
             return true;
+        }
         else
             return false;
+    }
+
+    private void inicializarAutenticador() {
+        if (mAutenticadorMgr == null) {
+            mAutenticadorMgr = new AutenticadorMgr(this);
+
+            mAutenticadorMgr.setAutenticadorCallback(new AutenticadorMgr.AutenticadorCallback() {
+                @Override
+                public void enExitoAutenticacion(LoginRequestEntity request, LoginResponseEntity resp) {
+                    procesarAutenticacion(resp);
+                }
+
+                @Override
+                public void enFalloAutenticacion(LoginRequestEntity request, LoginResponseEntity resp) {
+                    falloAutenticacion(request, resp);
+                }
+
+                @Override
+                public void enErrorAutenticacion(LoginRequestEntity request, LoginResponseEntity resp) {
+                    errorAutenticacion(request, resp);
+                }
+
+                @Override
+                public void enExitoValidarSMS(LoginRequestEntity request, LoginResponseEntity resp) {
+                    procesarValidacionSMS(resp);
+                }
+
+                @Override
+                public void enFalloValidarSMS(LoginRequestEntity request, LoginResponseEntity resp) {
+                    falloValidacionSMS(request, resp);
+                }
+
+                @Override
+                public void enErrorValidarSMS(LoginRequestEntity request, LoginResponseEntity resp) {
+                    errorValidacionSMS(request, resp);
+                }
+            });
+        }
     }
 
     private void autenticar(View view) {
         String usuario = "";
         String password = "";
-        boolean superUsuario = false;
 
         usuario = "";
         password = "";
@@ -870,68 +905,42 @@ public class CPL extends Activity {
             password = et_contrasena.getText().toString().trim();
 
             if (esSuperUsuario()) {
-                superUsuario = true;
-
+                globales.esSuperUsuario = true;
                 entrarAdministrador2(null, true);
                 return;
             } else if (usuario.equals("") || password.equals("")) {
-                showMessageLong("Falta capturar el usuario y/o contraseña");
+                mostrarMensaje("Alerta", "Falta capturar el usuario o la contraseña", "", null);
                 return;
             }
 
-            boolean finalEsSuperUsuario = superUsuario;
+            globales.esSuperUsuario = false;
+            mRegresarPantallaInicial = false;
 
-            LoginRequestEntity loginRequestEntity = new LoginRequestEntity();
-            loginRequestEntity.Usuario = usuario;
-            loginRequestEntity.Password = password;
-            loginRequestEntity.VersionName = getVersionName();
-            loginRequestEntity.VersionCode = getVersionCode();
+            inicializarAutenticador();
 
-            showMessageLong("Autenticando");
+            showMessageShort("Autenticando");
 
-            WebApiManager.getInstance(this).autenticarEmpleado(loginRequestEntity, new Callback<LoginResponseEntity>() {
-                        @Override
-                        public void onResponse(Call<LoginResponseEntity> call, Response<LoginResponseEntity> response) {
-                            String valor;
-                            LoginResponseEntity loginResponseEntity;
-
-                            if (response.isSuccessful())
-                                procesarAutenticacion(response.body(), finalEsSuperUsuario);
-                            else
-                                showMessageLong("No hay conexión a internet. Intente nuevamente (1)");
-                        }
-
-                        @Override
-                        public void onFailure(Call<LoginResponseEntity> call, Throwable t) {
-                            showMessageLong("No hay conexión a internet. Intente nuevamente. (2)");
-                            Log.d("CPL", "No hay conexión a internet. Intente nuevamente. (2):" + t.getMessage());
-
-                            if (finalEsSuperUsuario)
-                                entrarAdministrador2(null, true);
-                        }
-                    }
-            );
-        } catch (Exception ex) {
-            boolean finalEsSuperUsuario = superUsuario;
-
-            showMessageLong("No hay conexión a internet. Intente nuevamente. (3)");
-            Log.d("CPL", "No hay conexión a internet. Intente nuevamente. (3):" + ex.getMessage());
-
-            if (finalEsSuperUsuario)
-                entrarAdministrador2(null, true);
-
+            if (mAutenticadorMgr != null)
+                mAutenticadorMgr.autenticar(usuario, password);
+            else
+                errorAutenticacion("Error inesperado");
+        } catch (Throwable t) {
+            mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (3)", t.getMessage(), null);
+            Log.d("CPL", "No hay conexión a internet. Intente nuevamente. (3):" + t.getMessage());
         }
     }
 
-    private void procesarAutenticacion(LoginResponseEntity loginResponseEntity, boolean esSuperUsuario) {
-        intentosCodigoSMS = 0;
-
-        if (loginResponseEntity.Error) {
-            showMessageLong("No hay conexión a internet. Intente nuevamente. (3):" + loginResponseEntity.Mensaje);
-            if (esSuperUsuario)
-                entrarAdministrador2(null, true);
-            return;
+    private void mostrarMensaje(String titulo, String mensaje, String detalleError, DialogoMensaje.Resultado resultado) {
+        if (mDialogoMsg == null) {
+            mDialogoMsg = new DialogoMensaje(this);
         }
+
+        mDialogoMsg.setOnResultado(resultado);
+        mDialogoMsg.mostrarMensaje(titulo, mensaje, detalleError);
+    }
+
+    private void procesarAutenticacion(LoginResponseEntity loginResponseEntity) {
+        mIntentosCodigoSMS = 0;
 
         if (loginResponseEntity.Exito) {
             globales.sesionEntity = new SesionEntity(loginResponseEntity);
@@ -950,19 +959,56 @@ public class CPL extends Activity {
                 globales.sesionEntity.Autenticado = true;
                 irActivityMain();
             }
-        } else {
-            if (esSuperUsuario)
-                entrarAdministrador2(null, true);
-
-            globales.sesionEntity = null;
-            intentosAutenticacion++;
-
-            if (intentosAutenticacion >= 5) {
-                showMessageLong("Máximo de intentos");
-                deshabilitarAutenticacion();
-            } else
-                showMessageLong(loginResponseEntity.Mensaje + ". Intento " + intentosAutenticacion + " de 5");
         }
+    }
+
+    private void falloAutenticacion(LoginRequestEntity req, LoginResponseEntity resp) {
+        String msg;
+
+        if (esSuperUsuario) {
+            entrarAdministrador2(null, true);
+            return;
+        }
+
+        globales.sesionEntity = null;
+        mIntentosAutenticacion++;
+
+        if (mIntentosAutenticacion >= 5) {
+            msg = resp.Mensaje + ". Máximo de intentos.";
+            globales.sesionEntity = null;
+            deshabilitarAutenticacion();
+            mRegresarPantallaInicial = true;
+        }
+        else
+            msg = resp.Mensaje + ". Intento " + mIntentosAutenticacion + " de 5";
+
+        mostrarMensaje("Alerta", msg, "", new DialogoMensaje.Resultado() {
+            @Override
+            public void Aceptar(boolean EsOk) {
+                if (mRegresarPantallaInicial) {
+                    globales.sesionEntity = null;
+                    cambiarUsuario();
+                }
+            }
+        });
+    }
+
+    private void errorAutenticacion(String mensaje) {
+        mostrarMensaje("Alerta", mensaje, "", new DialogoMensaje.Resultado() {
+            @Override
+            public void Aceptar(boolean EsOk) {
+
+            }
+        });
+    }
+
+    private void errorAutenticacion(LoginRequestEntity req, LoginResponseEntity resp) {
+        mostrarMensaje("Alerta", resp.Mensaje, resp.MensajeError, new DialogoMensaje.Resultado() {
+            @Override
+            public void Aceptar(boolean EsOk) {
+
+            }
+        });
     }
 
     private void validarSMS(View view) {
@@ -974,46 +1020,65 @@ public class CPL extends Activity {
             codigoSMS = txtCodigoSMS.getText().toString().trim();
 
             if (usuario.equals("") || codigoSMS.equals("")) {
-                showMessageLong("Falta capturar elcódigo SMS");
+                mostrarMensaje("Alerta", "Falta capturar el código SMS", "", null);
                 return;
             }
 
-            LoginRequestEntity loginRequestEntity = new LoginRequestEntity();
+            mRegresarPantallaInicial = false;
+            inicializarAutenticador();
 
-            loginRequestEntity.Usuario = usuario;
-            loginRequestEntity.CodigoSMS = codigoSMS;
-            loginRequestEntity.VersionName = getVersionName();
-            loginRequestEntity.VersionCode = getVersionCode();
-
-            showMessageLong("Validando código SMS");
-            WebApiManager.getInstance(this).validarEmpleadoSMS(loginRequestEntity, new Callback<LoginResponseEntity>() {
-                        @Override
-                        public void onResponse(Call<LoginResponseEntity> call, Response<LoginResponseEntity> response) {
-                            String valor;
-                            LoginResponseEntity loginResponseEntity;
-
-                            if (response.isSuccessful())
-                                procesarValidacionSMS(response.body());
-                            else {
-                                globales.sesionEntity = null;
-                                showMessageLong("No hay conexión a internet. Intente nuevamente. (1).");
-                                Log.d("CPL", "No hay conexión a internet. Intente nuevamente. (1).");
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<LoginResponseEntity> call, Throwable t) {
-                            globales.sesionEntity = null;
-                            showMessageLong("No hay conexión a internet. Intente nuevamente. (2).");
-                            Log.d("CPL", "No hay conexión a internet. Intente nuevamente. (2) :" + t.getMessage());
-                        }
-                    }
-            );
+            if (mAutenticadorMgr != null)
+                mAutenticadorMgr.validarSMS(usuario, codigoSMS);
+            else
+                errorValidacionSMS("Error inesperado");
         } catch (Exception ex) {
             globales.sesionEntity = null;
-            showMessageLong("No hay conexión a internet. Intente nuevamente. (3).");
+            errorValidacionSMS("No hay conexión a internet. Intente nuevamente. (3).");
             Log.d("CPL", "No hay conexión a internet. Intente nuevamente. (3) : " + ex.getMessage());
         }
+    }
+
+    private void falloValidacionSMS(LoginRequestEntity req, LoginResponseEntity resp) {
+        String msg;
+
+        mIntentosCodigoSMS++;
+
+        if (mIntentosCodigoSMS >= 5) {
+            msg = "Se alcanzó el máximo de intentos de valicación del código SMS";
+            deshabilitarAutenticacionSMS();
+            globales.sesionEntity = null;
+            mRegresarPantallaInicial = true;
+        } else {
+            msg = resp.Mensaje + ". Intento " + mIntentosCodigoSMS + " de 5";
+        }
+
+        mostrarMensaje("Alerta", msg, "", new DialogoMensaje.Resultado() {
+            @Override
+            public void Aceptar(boolean EsOk) {
+                if (mRegresarPantallaInicial) {
+                    globales.sesionEntity = null;
+                    cambiarUsuario();
+                }
+            }
+        });
+    }
+
+    private void errorValidacionSMS(String mensaje) {
+        mostrarMensaje("Alerta", mensaje, "", new DialogoMensaje.Resultado() {
+            @Override
+            public void Aceptar(boolean EsOk) {
+
+            }
+        });
+    }
+
+    private void errorValidacionSMS(LoginRequestEntity req, LoginResponseEntity resp) {
+        mostrarMensaje("Alerta", resp.Mensaje, resp.MensajeError, new DialogoMensaje.Resultado() {
+            @Override
+            public void Aceptar(boolean EsOk) {
+
+            }
+        });
     }
 
 
@@ -1028,15 +1093,6 @@ public class CPL extends Activity {
             globales.sesionEntity = new SesionEntity(loginResponseEntity);
             globales.sesionEntity.Autenticado = true;
             irActivityMain();
-        } else {
-            intentosCodigoSMS++;
-
-            if (intentosCodigoSMS >= 5) {
-                showMessageLong("Se alcanzó el máximo de intentos");
-                deshabilitarAutenticacionSMS();
-                globales.sesionEntity = null;
-            } else
-                showMessageLong("Código SMS incorrecto. Intento " + intentosCodigoSMS + " de 5");
         }
     }
 

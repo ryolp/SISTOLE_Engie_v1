@@ -574,8 +574,6 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
                         capturar();
                     }
                     break;
-                case RESULTADO_ACTIVITY_ENTRAR_SUPERVISOR:
-                    entrarSupervisorFinalizado(resultCode, data);
             }
 
         }
@@ -3526,11 +3524,6 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
             Log.e("CPL", "entrarSupervisor: ", e);
             Utils.showMessageLong(this, "Hubo un error al iniciar la pantalla :" + e.getMessage());
         }
-    }
-
-    protected void entrarSupervisorFinalizado(final int resultCode, final Intent data) {
-        if (resultCode == Activity.RESULT_OK)
-            Utils.showMessageLong(this, "Informe enviado");
     }
 
     protected void usarEscaner() {

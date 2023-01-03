@@ -11,6 +11,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
+import enruta.sistole_engie.entities.InfoFotoEntity;
+
 /**
  * Esta clase crea las validaciones y los campos a mostrar
  **/
@@ -96,6 +98,8 @@ public abstract class TomaDeLecturasGenerica {
      * @return
      */
     public abstract String getNombreFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia);
+
+    public abstract InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia);
 
     public abstract Vector<String> getInformacionDelMedidor(Lectura lectura);
 

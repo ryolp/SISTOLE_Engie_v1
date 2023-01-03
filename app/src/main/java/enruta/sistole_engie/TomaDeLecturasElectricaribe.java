@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import enruta.sistole_engie.R;
+import enruta.sistole_engie.entities.InfoFotoEntity;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -448,6 +449,110 @@ public class TomaDeLecturasElectricaribe extends TomaDeLecturasGenerica {
     	ls_nombre+=/*(!ls_anomalia.equals("")?"-A":"") +*/is_terminacion+".JPG";
     	
     	return ls_nombre;
+	}
+
+	/*
+    Obtiene el nombre de la foto que se utilizará para guardarla
+    RL, 2023-01-02, Se agrega porque en la clase padre se define como un método abstracto que tiene que ser implementado.
+*/
+	public InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia ){
+		String ls_nombre="", ls_unicom;
+		Cursor c;
+		InfoFotoEntity infoFotoEntity = new InfoFotoEntity();
+
+		/**
+		 * Este es el fotmato del nombre de la foto
+		 *
+		 * Poliza a 8 posiciones,
+		 *
+		 * unicom del encabezado
+		 * ruta del encabezado
+		 * itinerario del encabezado
+		 * fecha
+		 * hora
+		 * terminacion
+		 */
+
+		c= db.rawQuery("Select poliza from ruta where cast(secuenciaReal as Integer) ="+secuencial, null);
+		c.moveToFirst();
+
+		ls_nombre+=Main.rellenaString(c.getString(c.getColumnIndex("poliza")), "0", 7, true);
+		ls_nombre+="_";
+
+
+		c.close();
+
+		//Obtenemos el encabezado
+
+		c= db.rawQuery("Select registro from encabezado", null);
+		c.moveToFirst();
+
+		String encabezado=new String(c.getBlob(c.getColumnIndex("registro")));
+
+
+		c.close();
+
+		if (is_terminacion.equals("-1")){
+			is_terminacion="LB";
+		}
+
+		if (!ls_anomalia.trim().equals("")){
+			is_terminacion="AN";
+		}
+
+		String unicom=encabezado.substring(200, 204).trim();
+		String ruta=encabezado.substring(204, 206).trim();
+		String itinerario=encabezado.substring(206, 210).trim();
+
+		if (unicom.equals("")){
+			try{
+				c=db.rawQuery("Select value from config where key='unicom'", null);
+				c.moveToFirst();
+				unicom=c.getString(c.getColumnIndex("value"));
+			}
+			catch(Throwable e){
+
+			}
+		}
+
+
+		if (ruta.equals("")){
+			try{
+				c=db.rawQuery("Select value from config where key='ruta'", null);
+				c.moveToFirst();
+				ruta=c.getString(c.getColumnIndex("value"));
+			}
+			catch(Throwable e){
+			}
+
+
+		}
+		if (itinerario.equals("")){
+			try{
+				c=db.rawQuery("Select value from config where key='itinerario'", null);
+				c.moveToFirst();
+				itinerario=c.getString(c.getColumnIndex("value"));
+			}
+			catch(Throwable e){
+
+			}
+		}
+
+		ls_nombre+=Main.rellenaString(unicom, "0", 4, true);
+		ls_nombre+="_";
+		ls_nombre+=Main.rellenaString(ruta, "0", 2, true);
+		ls_nombre+="_";
+		ls_nombre+=Main.rellenaString(itinerario, "0", 4, true);
+		ls_nombre+="_";
+		ls_nombre+=Main.obtieneFecha("ymd");
+		ls_nombre+="_";
+		ls_nombre+=Main.obtieneFecha("his");
+		//Hay que preguntar por la terminacion
+		ls_nombre+=/*(!ls_anomalia.equals("")?"-A":"") +*/is_terminacion+".JPG";
+
+		infoFotoEntity.nombreFoto = ls_nombre;
+
+		return infoFotoEntity;
 	}
 
 // CE, REVISAR

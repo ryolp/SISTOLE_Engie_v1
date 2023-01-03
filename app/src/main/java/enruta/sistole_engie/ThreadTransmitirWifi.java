@@ -15,6 +15,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import enruta.sistole_engie.clases.FotosMgr;
+import enruta.sistole_engie.clases.Utils;
 import enruta.sistole_engie.services.DbLecturasMgr;
 
 public class ThreadTransmitirWifi extends TimerTask {
@@ -115,18 +116,13 @@ public class ThreadTransmitirWifi extends TimerTask {
 		String unidad = "";
 		String regional = "";
 		String subCarpeta = "";
+		String ls_query = "";
+		String nombreFoto = "";
+		String fecha = "";
+		String fechaAnio = "";
+		String fechaAnioMes = "";
+		String fechaAnioMesDia = "";
 
-		try {
-			if (activity != null)
-				unidad = DbLecturasMgr.getInstance().getUnidad(activity);
-
-			regional = globales.getRegional();
-		} catch (Exception e)
-		{
-			Log.e("ThreadTransmitirWiFi", e.getMessage());
-		}
-
-		
 		mostrarNotificacion(MENSAJE_PROGRESO,R.drawable.ic_action_exportar,  "Iniciando el envio", "");
 
 		switch (globales.modoDeCierreDeLecturas) {
@@ -179,9 +175,11 @@ public class ThreadTransmitirWifi extends TimerTask {
 				if (fotoMgr == null)
 					fotoMgr = new FotosMgr();
 
-				String ls_query = "select nombre, rowid, length(foto) imageSize from fotos ";
+				ls_query = "SELECT F.nombre, F.rowid, length(F.foto) imageSize, L.sectorCorto Unidad, L.Regional ";
+				ls_query += "FROM fotos F";
+				ls_query += "   LEFT JOIN ruta L ON F.idLectura = cast(L.poliza as Long) ";
 				if (globales.enviarSoloLoMarcado)
-					ls_query += " where envio= 1;";
+					ls_query += " where F.envio= 1;";
 
 				c = db.rawQuery(ls_query, null);
 
@@ -215,14 +213,17 @@ public class ThreadTransmitirWifi extends TimerTask {
 					}
 
 					try {
-						String fecha = c.getString(c.getColumnIndex("nombre")).substring(c.getString(c.getColumnIndex("nombre")).length() - 18, c.getString(c.getColumnIndex("nombre")).length() - 10);
-						String fechaAnio = fecha.substring(0, 4);
-						String fechaAnioMes = fecha.substring(0, 6);
+						nombreFoto = Utils.getString(c, "nombre", "");
+						fecha = nombreFoto.substring(nombreFoto.length() - 18, nombreFoto.length() - 10);
+						fechaAnio = fecha.substring(0, 4);
+						fechaAnioMes = fecha.substring(0, 6);
 
-						String nombreFoto = c.getString(c.getColumnIndex("nombre"));
 						if (globales.quitarPrimerCaracterNombreFoto) {
 							nombreFoto = nombreFoto.substring(1);
 						}
+
+						regional =Utils.getString(c, "Regional", "");
+						unidad =Utils.getString(c, "Unidad", "");
 
 						if (unidad.equals("") || regional.equals("") || nombreFoto.toLowerCase().contains("xxxxxcheck"))
 							subCarpeta = fechaAnio + "/" + fechaAnioMes + "/" + fecha + "/";
@@ -863,5 +864,7 @@ public class ThreadTransmitirWifi extends TimerTask {
 			    (NotificationManager) globales.getSystemService(Context.NOTIFICATION_SERVICE);
 		mNotificationManager.cancel(id);
 	}
+
+
 
 }

@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import enruta.sistole_engie.R;
+import enruta.sistole_engie.entities.InfoFotoEntity;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -327,6 +328,43 @@ public class TomaDeLecturasColombia extends TomaDeLecturasGenerica {
     	ls_nombre+=(!ls_anomalia.equals("")?"-A":"") +".JPG";
     	
     	return ls_nombre;
+	}
+
+	/*
+		Obtiene el nombre de la foto que se utilizará para guardarla
+		RL, 2023-01-02, Se agrega porque en la clase padre se define como un método abstracto que tiene que ser implementado.
+	*/
+
+	public InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia ){
+		String ls_nombre="", ls_unicom;
+		Cursor c;
+		InfoFotoEntity infoFoto = new InfoFotoEntity();
+
+		/**
+		 * Este es el fotmato del nombre de la foto
+		 *
+		 * Poliza a 8 posiciones,
+		 *
+		 * la terminacion... -1 Regularmente
+		 * Si es de anomalia ... La anomalia ingresada
+		 *
+		 */
+
+		c= db.rawQuery("Select poliza from ruta where cast(secuenciaReal as Integer) ="+secuencial, null);
+		c.moveToFirst();
+
+		ls_nombre+=Main.rellenaString(c.getString(c.getColumnIndex("poliza")), "0", 8, true);
+
+		c.close();
+
+
+
+		//Hay que preguntar por la terminacion
+		ls_nombre+=(!ls_anomalia.equals("")?"-A":"") +".JPG";
+
+		infoFoto.nombreFoto = ls_nombre;
+
+		return infoFoto;
 	}
 
 // CE, REVISAR

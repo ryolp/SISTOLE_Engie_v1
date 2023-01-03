@@ -41,6 +41,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import enruta.sistole_engie.entities.InfoFotoEntity;
+
 public class CamaraActivity extends Activity {
 
     public static int TEMPORAL = 1;
@@ -57,19 +59,19 @@ public class CamaraActivity extends Activity {
 
     private Camera mCamera;
     private CamaraPreview mPreview;
-    TextView tv_indicador;
+    private TextView tv_indicador;
     private Button captureButton, backButton, otraButton;
     private FrameLayout fotoPreview, cPreview;
     long secuencial;
     String is_terminacion = "-A", is_anomalia = "";
-    ContentValues cv_datos;
+    private ContentValues cv_datos;
     boolean otraFoto = false;
-    String ls_nombre, caseta;
+    String caseta;
     byte[] foto;
     int temporal;
     static String mensajeDeErrorCamera = "";
-    Globales globales;
-    ImageButton ib_flash;
+    private Globales globales;
+    private ImageButton ib_flash;
     boolean tieneFlash = true;
     boolean tieneZoom = true;
     boolean tieneCamaraFrontal = false;
@@ -484,6 +486,8 @@ public class CamaraActivity extends Activity {
         DBHelper dbHelper = new DBHelper(this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         String ls_unicom, ls_nisrad;
+        String ls_nombre;
+        InfoFotoEntity infoFoto = new InfoFotoEntity();
 
 //    	Cursor c= db.rawQuery("Select registro from encabezado", null);
 //    	
@@ -515,8 +519,9 @@ public class CamaraActivity extends Activity {
             ls_nombre += Main.obtieneFecha("ymd");
             ls_nombre += Main.obtieneFecha("his");
             ls_nombre += ".JPG";
+            infoFoto.nombreFoto = ls_nombre;
         }else{
-            ls_nombre = globales.tdlg.getNombreFoto(globales, db, secuencial, is_terminacion, is_anomalia);
+            infoFoto = globales.tdlg.getInfoFoto(globales, db, secuencial, is_terminacion, is_anomalia);
         }
         db.close();
         dbHelper.close();
@@ -533,10 +538,11 @@ public class CamaraActivity extends Activity {
         byte[] fotoAGuardar = out.toByteArray();
 
         cv_datos.put("secuencial", secuencial);
-        cv_datos.put("nombre", ls_nombre);
+        cv_datos.put("nombre", infoFoto.nombreFoto);
         cv_datos.put("foto", fotoAGuardar);
         cv_datos.put("envio", TomaDeLecturas.NO_ENVIADA);
         cv_datos.put("temporal", temporal);
+        cv_datos.put("idLectura", infoFoto.idLectura);
         this.foto = foto;
     }
 
@@ -939,12 +945,20 @@ public class CamaraActivity extends Activity {
 //        Utils.showMessageLong(this, "Cambiar cámara");
     }
 
+    /*
+        Función para iniciar el activity para que el cliente firme.
+        RL, 2023-01-02, Se regresa estructura con información adicional de la foto.
+     */
+
     protected void hacerFirmar() {
+        InfoFotoEntity infoFoto;
+
         // Sustituir por el código que permita llamar el Activity para firmar
 
         DBHelper dbHelper = new DBHelper(this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        ls_nombre = globales.tdlg.getNombreFoto(globales, db, secuencial, is_terminacion, is_anomalia);
+
+        infoFoto = globales.tdlg.getInfoFoto(globales, db, secuencial, is_terminacion, is_anomalia);
         db.close();
         dbHelper.close();
 
@@ -955,7 +969,8 @@ public class CamaraActivity extends Activity {
         padParaFirmar.putExtra("temporal", temporal);
         padParaFirmar.putExtra("cantidad", cantidad);
         padParaFirmar.putExtra("anomalia", is_anomalia);
-        padParaFirmar.putExtra("ls_nombre", ls_nombre);
+        padParaFirmar.putExtra("ls_nombre", infoFoto.nombreFoto);
+        padParaFirmar.putExtra("idLectura", infoFoto.idLectura);
         // vengoDeFotos = true;
         startActivityForResult(padParaFirmar, 1);
 //        startActivity(padParaFirmar);
