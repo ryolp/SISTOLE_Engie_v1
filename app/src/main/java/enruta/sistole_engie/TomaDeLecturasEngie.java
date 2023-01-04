@@ -1360,7 +1360,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
     }
 
     public void activacionDesactivacionOpciones(boolean esSuperUsuario) {
-        if (esSuperUsuario) {
+        if (esSuperUsuario && globales != null) {
             globales.mostrarMetodoDeTransmision = false;
             globales.mostrarServidorGPRS = true;
             globales.mostrarBorrarRuta = true;

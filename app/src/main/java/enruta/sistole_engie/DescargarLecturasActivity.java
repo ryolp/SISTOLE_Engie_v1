@@ -70,6 +70,7 @@ public class DescargarLecturasActivity extends Activity {
         txtProgreso.setText("");
         txtIndicador.setText("");
         txtDetalle.setText("");
+        txtDetalle.setVisibility(View.GONE);
     }
 
     private void inicializarEventos()
@@ -100,6 +101,19 @@ public class DescargarLecturasActivity extends Activity {
                 @Override
                 public void onClick(View view) {
                     finalizarActivity();
+                }
+            });
+        }
+
+        if (txtIndicador != null) {
+            txtIndicador.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String detalle;
+
+                    detalle = txtDetalle.getText().toString();
+                    if (!detalle.trim().equals(""))
+                        txtDetalle.setVisibility(View.VISIBLE);
                 }
             });
         }
@@ -149,8 +163,15 @@ public class DescargarLecturasActivity extends Activity {
         alert.show();
     }
 
+    /*
+        Función que iniciará los procesos de:
+            Descargar el archivo de las lecturas de manera asíncrona
+            Procesar las lecturas recibidas en un thread para no bloquear el thread principal (UI = User Interface)
+     */
 
     private void continuarDescargarLecturas() {
+
+        // Inicializar el thread o proceso
         mProcesadorLecturas.setEnCallback(new DescargarLecturasProcesoMgr.EnCallback() {
             @Override
             public void enMensaje(String mensaje) {
@@ -177,7 +198,7 @@ public class DescargarLecturasActivity extends Activity {
                 if (txtIndicador != null)
                     txtIndicador.setText(mensaje);
 
-                setResultado(mensaje, false, btnCancelar);
+                setResultado(mensaje, false, btnRegresar);
             }
 
 

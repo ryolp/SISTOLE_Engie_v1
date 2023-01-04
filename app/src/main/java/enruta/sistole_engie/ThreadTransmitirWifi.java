@@ -238,7 +238,7 @@ public class ThreadTransmitirWifi extends TimerTask {
 						// ... la regrese tal cual, y si es mayor a 2MB la obtendrá en partes, debido a que el SQLLite al usar...
 						// ... getBlob marca error para datos mayores a 2MB
 
-						long imageSize = c.getLong(c.getColumnIndex("imageSize"));
+						long imageSize = Utils.getLong(c, "imageSize", 0);
 
 
 						// ls_cadena=generaCadenaAEnviar(c);

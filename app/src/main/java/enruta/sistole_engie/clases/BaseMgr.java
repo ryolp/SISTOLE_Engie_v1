@@ -62,6 +62,7 @@ public class BaseMgr {
 
     protected String getString(Cursor c, String columnName, String defaultValue) {
         int idx;
+        String value;
 
         if (c == null)
             return defaultValue;
@@ -71,7 +72,12 @@ public class BaseMgr {
         if (idx < 0)
             return defaultValue;
 
-        return c.getString(idx);
+        value = c.getString(idx);
+
+        if (value == null)
+            value = defaultValue;
+
+        return value;
     }
 
     protected byte[] getBlob(Cursor c, String columnName) {

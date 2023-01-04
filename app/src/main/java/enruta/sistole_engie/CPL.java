@@ -124,7 +124,7 @@ public class CPL extends Activity {
         }
 
         estableceVariablesDePaises();
-        validarPermisos();
+        //validarPermisos();
     }
 
 //    protected void onStart() {
@@ -160,6 +160,17 @@ public class CPL extends Activity {
                     entrarLecturista(view);
                 }
             });
+
+        if (lblMensaje != null) {
+            lblMensaje.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
+            lblMensaje.setText("");
+            lblMensaje.setVisibility(View.GONE);
+        }
     }
 
         /*
@@ -230,7 +241,28 @@ public class CPL extends Activity {
 
         if (!tienePermisos) {
             showMessageLong("Faltan permisos");
-            lblMensaje.setText("Faltan permisos");
+            if (lblMensaje != null) {
+                lblMensaje.setText("Faltan permisos");
+                lblMensaje.setVisibility(View.VISIBLE);
+            }
+            if (btnAdministrador != null)
+                btnAdministrador.setEnabled(false);
+
+            if (btnLecturista != null)
+                btnLecturista.setEnabled(false);
+        }
+        else
+        {
+            if (lblMensaje != null) {
+                lblMensaje.setText("");
+                lblMensaje.setVisibility(View.GONE);
+            }
+
+            if (btnAdministrador != null)
+                btnAdministrador.setEnabled(true);
+
+            if (btnLecturista != null)
+                btnLecturista.setEnabled(true);
         }
     }
 
@@ -1178,6 +1210,7 @@ public class CPL extends Activity {
 
         inicializarControles();
         inicializarEventosControles();
+        validarPermisos();
 
         if (globales == null)
             return;

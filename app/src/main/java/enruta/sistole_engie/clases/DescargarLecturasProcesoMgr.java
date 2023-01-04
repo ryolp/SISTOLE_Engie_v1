@@ -44,6 +44,9 @@ public class DescargarLecturasProcesoMgr extends BaseMgr {
 
         notificarMensaje("Solicitando lecturas...");
 
+        // Inicializar la clase que se encarga de descargar el archivo de lecturas...
+        // ... de manera asíncrona.
+
         archivo = DbConfigMgr.getInstance().getArchivo(mContext);
 
         if (mDescargarMgr == null) {
@@ -66,6 +69,9 @@ public class DescargarLecturasProcesoMgr extends BaseMgr {
         }
     }
 
+    /*
+        Función que se encarga de procesar el archivo de lecturas si se recibió
+     */
     private void exito(ArchivosLectResponse resp) {
         if (resp.Exito) {
             notificarMensaje("Procesando información recibida...");
@@ -75,17 +81,27 @@ public class DescargarLecturasProcesoMgr extends BaseMgr {
         }
     }
 
+    /*
+        Función que se encarga de notificar que hubo un fallo en la comunicación
+    */
     private void falloComunicacion(int numError, String mensajeError, String detalleError) {
         if (mCallBack != null)
             mCallBack.enError(numError, mensajeError, detalleError);
     }
 
+    /*
+        Función que se encarga de notificar que hubo un fallo en la comunicación
+    */
     private void notificarMensaje(String mensaje) {
         if (mCallBack != null)
             mCallBack.enMensaje(mensaje);
     }
 
-
+    /*
+        Función que se encarga de:
+            Inicializar el thread que procesará las lecturas.
+            Inicializar los eventos que se reciben del thread para notificarlos al thread principal.
+    */
     private void procesarLecturas(String contenido) {
         ExecutorService backgroundExecutor = Executors.newSingleThreadExecutor();
 

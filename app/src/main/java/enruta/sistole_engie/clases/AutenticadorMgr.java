@@ -150,7 +150,11 @@ public class AutenticadorMgr {
 
         resp.CodigoResultado = codigo;
         resp.Mensaje = mensajeError;
-        resp.MensajeError = t.getMessage();
+
+        if (t != null)
+            resp.MensajeError = t.getMessage();
+        else
+            resp.MensajeError = "";
         resp.Error = true;
 
         if (mCallback != null)
@@ -222,7 +226,10 @@ public class AutenticadorMgr {
         resp.Error = true;
         resp.CodigoResultado = codigo;
         resp.Mensaje = mensaje;
-        resp.MensajeError = t.getMessage();
+        if (t != null)
+            resp.MensajeError = t.getMessage();
+        else
+            resp.MensajeError = "";
 
         if (mCallback != null)
             mCallback.enErrorValidarSMS(req, resp);

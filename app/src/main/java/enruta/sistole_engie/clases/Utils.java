@@ -33,13 +33,15 @@ public final class Utils {
     }
 
     public static void logMessageLong(Context context, String msg, Throwable t) {
-        msg = msg + " : " + t.getMessage();
+        if (t != null)
+            msg = msg + " : " + t.getMessage();
         Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
         Log.d("CPL", msg);
     }
 
     public static void logMessageShort(Context context, String msg, Throwable t) {
-        msg = msg + " : " + t.getMessage();
+        if (t != null)
+            msg = msg + " : " + t.getMessage();
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
         Log.d("CPL", msg);
     }
@@ -196,6 +198,7 @@ public final class Utils {
 
     public static long getLong(Cursor c, String columnName, long defaultValue) {
         int idx;
+        long value;
 
         if (c == null)
             return defaultValue;
@@ -210,6 +213,7 @@ public final class Utils {
 
     public static String getString(Cursor c, String columnName, String defaultValue) {
         int idx;
+        String value;
 
         if (c == null)
             return defaultValue;
@@ -219,7 +223,12 @@ public final class Utils {
         if (idx < 0)
             return defaultValue;
 
-        return c.getString(idx);
+        value = c.getString(idx);
+
+        if (value == null)
+            value = defaultValue;
+
+        return value;
     }
 
     public static byte[] getBlob(Cursor c, String columnName) {

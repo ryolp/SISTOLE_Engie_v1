@@ -98,7 +98,7 @@ public class DescargarLecturasProceso implements Runnable {
                     else
                         porcentaje = 0;
 
-                    mensajeProgreso = (valorActual + 1) + " " + mContext.getString(R.string.de) + " " + cantidadTotal
+                    mensajeProgreso = valorActual + " " + mContext.getString(R.string.de) + " " + cantidadTotal
                             + " " + mContext.getString(R.string.registros) + "\n"
                             + String.valueOf(porcentaje) + "%";
 
@@ -157,7 +157,7 @@ public class DescargarLecturasProceso implements Runnable {
 
         vLecturas = new Vector<String>();
 
-        lineas = contenido.split("\\r?\\n");
+        lineas = contenido.split("\\r?\\n", -1);
 
         try {
             borrarRuta(mDb);
@@ -167,9 +167,6 @@ public class DescargarLecturasProceso implements Runnable {
             cantRegistros = lineas.length;
 
             for (String ls_linea : lineas) {
-                if (ls_linea.length() == 0)
-                    throw new AppException("El archivo recibido tiene un formato incorrecto");
-
                 if (i != 0 && !ls_linea.startsWith("#")
                         && !ls_linea.startsWith("!")
                         && !mGlobales.tdlg.esUnRegistroRaro(ls_linea)
@@ -203,12 +200,11 @@ public class DescargarLecturasProceso implements Runnable {
                     mDb.insert("encabezado", null, cv);
                 }
 
-                notificarProgreso(i + 1, cantRegistros);
-
                 i++;
+                notificarProgreso(i, cantRegistros);
             }
 
-            notificarProgreso(i + 1, cantRegistros);
+            notificarProgreso(i, cantRegistros);
 
             mGlobales.tdlg.AgregarAnomaliasManualmente(mDb);
 

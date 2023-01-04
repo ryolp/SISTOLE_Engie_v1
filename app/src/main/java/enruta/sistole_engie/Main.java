@@ -777,28 +777,14 @@ public class Main extends FragmentActivity implements TabListener {
                 }
                 break;
             case IMPORTAR:
-
-                //actualizaResumen();
-                actualizaTabs();
-                if (resultCode == Activity.RESULT_CANCELED) {
-                    mensajeOK(getString(R.string.msj_main_operacion_cancelada));
-
-                } else {
+                if (resultCode == Activity.RESULT_OK) {
                     bu_params = data.getExtras();
                     if (bu_params.getString("mensaje").trim().length() > 0) {
-                        //actualizaResumen();
+                        actualizaResumen();
                         actualizaTabs();
-                        mensajeOK(bu_params.getString("mensaje"));
-
                     }
-
                 }
-
-                //actualizaResumen();
-                actualizaTabs();
-
                 break;
-
             case LECTURAS:
                 //actualizaResumen();
                 actualizarEstatusArchivos();
