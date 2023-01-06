@@ -12,11 +12,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import enruta.sistole_engie.clases.FotosMgr;
+import enruta.sistole_engie.clases.GeneradorArchivoTPL;
 import enruta.sistole_engie.clases.Utils;
-import enruta.sistole_engie.services.DbLecturasMgr;
 
 public class ThreadTransmitirWifi extends TimerTask {
 	final static int TRANSMITIR_FOTOS = 1;
@@ -455,9 +454,11 @@ public class ThreadTransmitirWifi extends TimerTask {
 		// c = db.rawQuery("select " + globales.tlc.is_camposDeSalida +
 		// " as TextoSalida from Ruta ", null);
 		Cursor c = null;
-		byte[] lby_registro, lby_cadenaEnBytes;
+		byte[] lby_registro;
 		String ls_nombre_final;
-		
+		String ls_cadenaAEnviar = "";
+		GeneradorArchivoTPL genArchTPL = new GeneradorArchivoTPL();
+
 		c = globales.tdlg.lineasAEscribir(db);
 
 		cantidad = c.getCount();
@@ -488,30 +489,10 @@ public class ThreadTransmitirWifi extends TimerTask {
 				dt.stop();
 			c.moveToPosition(i);
 
-			// ls_cadena=generaCadenaAEnviar(c);
-			// lby_cadenaEnBytes=ls_cadena.getBytes();
+			//ls_cadenaAEnviar = Utils.getString(c, "TextoSalida", "");
 
-			// Ya tenemos los datos a enviar (que emocion!) asi que
-			// hay que agregarlos a la cadena final
+			ls_cadenaAEnviar =genArchTPL.generarInfoLectura(c);
 
-			lby_registro = c.getString(c.getColumnIndex("TextoSalida"))
-					.getBytes();
-
-			// for (int j=0; j<lby_cadenaEnBytes.length;j++)
-			// lby_registro[j+resources.getInteger(R.integer.POS_DATOS_TIPO_LECTURA)]=lby_cadenaEnBytes[j];
-
-			String ls_cadenaAEnviar = "";
-			// if (globales.tlc.is_CamposDeSalida.equals("")) {
-			// ls_cadenaAEnviar = new String(c.getBlob(c
-			// .getColumnIndex("registro")));
-			// if (ls_cadenaAEnviar.length() > globales.tlc
-			// .getLongCampo("registro"))
-			// ;
-			// ls_cadenaAEnviar = ls_cadenaAEnviar.substring(0,
-			// globales.tdlg.long_registro);
-			// }else{
-			ls_cadenaAEnviar = new String(c.getString(c
-					.getColumnIndex("TextoSalida")));
 			// }
 			// Escribimos los bytes en el archivo
 			serial.write(ls_cadenaAEnviar + "\r\n");

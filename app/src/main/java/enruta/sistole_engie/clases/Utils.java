@@ -182,6 +182,25 @@ public final class Utils {
         return s;
     }
 
+    public static String concatenarColumnas(String separador, String ... valores) {
+        String s = "";
+        int i = 0;
+
+        for(String valor : valores ){
+            if (valor == null)
+                valor = "";
+
+            if (i == 0)
+                s = valor;
+            else
+                s = s + separador + valor;
+
+            i++;
+        }
+
+        return s;
+    }
+
     public static int getInt(Cursor c, String columnName, int defaultValue) {
         int idx;
 

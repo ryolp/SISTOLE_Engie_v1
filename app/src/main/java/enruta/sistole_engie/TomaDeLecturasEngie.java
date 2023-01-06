@@ -1829,7 +1829,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         } else {
             argumentos = "where trim(tipoLectura)<>''";
         }
-        Cursor c = db.rawQuery("select " + globales.tlc.is_camposDeSalida + " as TextoSalida, secuenciaReal from Ruta " + argumentos, null);
+        Cursor c = db.rawQuery("select * from Ruta " + argumentos, null);
         return c;
 
     }

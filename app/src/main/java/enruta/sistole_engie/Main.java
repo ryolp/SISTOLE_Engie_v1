@@ -86,6 +86,7 @@ public class Main extends FragmentActivity implements TabListener {
     public static final int CHECK_IN = 2;
     public static final int CHECK_SEGURIDAD = 3;
     public static final int CHECK_OUT = 4;
+    public static final int EN_PROCESO_LECTURA = 14;
 
 
     private int[] tabs = {R.string.lbl_principal, R.string.lbl_resumen};
@@ -126,7 +127,7 @@ public class Main extends FragmentActivity implements TabListener {
 
     ThreadTransmitirWifi ttw;
     boolean cambiarDeUsuario = true;
-    
+
     protected int mNumErrores = 0;
 
     // RL, 2022-09, Nuevas funcionalidades de Check-In, Check-Out, Check-Seguridad y verificación datos
@@ -327,6 +328,7 @@ public class Main extends FragmentActivity implements TabListener {
         getMenuInflater().inflate(R.menu.main, menu);
 
         MenuItem mi_lecturas, mi_filtrado, mi_exportar, mi_importar, mi_borrarRuta, mi_tamanoDeFuente, mi_grabarEnSD;
+        MenuItem mi_supervisor, mi_conectividad, mi_sincronizarAvance;
 
         mi_lecturas = menu.findItem(R.id.m_lecturas);
         mi_filtrado = menu.findItem(R.id.m_filtrar);
@@ -335,16 +337,9 @@ public class Main extends FragmentActivity implements TabListener {
         mi_borrarRuta = menu.findItem(R.id.m_borrarruta);
         mi_tamanoDeFuente = menu.findItem(R.id.m_verTamanosLetra);
         mi_grabarEnSD = menu.findItem(R.id.m_grabarEnSD);
-
-        if (globales.esSuperUsuario) {
-            mi_grabarEnSD.setVisible(true);
-            mi_grabarEnSD.setEnabled(true);
-        }
-        else
-        {
-            mi_grabarEnSD.setVisible(false);
-            mi_grabarEnSD.setEnabled(false);
-        }
+        mi_supervisor = menu.findItem(R.id.m_EntrarSupervisor);
+        mi_conectividad = menu.findItem(R.id.m_VerificarConectividad);
+        mi_sincronizarAvance = menu.findItem(R.id.m_ActualizarAvance);
 
         //Vamos a establecer los roles encesarios
         switch (ii_rol) {
@@ -356,6 +351,29 @@ public class Main extends FragmentActivity implements TabListener {
 //			}
                 mi_borrarRuta.setVisible(globales.mostrarBorrarRuta);
                 mi_grabarEnSD.setVisible(globales.mostrarGrabarEnSD);
+
+                if (globales.esSuperUsuario) {
+                    mi_grabarEnSD.setVisible(true);
+                    mi_grabarEnSD.setEnabled(true);
+                } else {
+                    mi_grabarEnSD.setVisible(false);
+                    mi_grabarEnSD.setEnabled(false);
+                }
+
+                if (globales.sesionEntity == null) {
+                    mi_importar.setEnabled(false);
+                    mi_importar.setVisible(false);
+                    mi_exportar.setEnabled(false);
+                    mi_exportar.setVisible(false);
+                    mi_conectividad.setEnabled(false);
+                    mi_conectividad.setVisible(false);
+                }
+
+                mi_supervisor.setEnabled(false);
+                mi_supervisor.setVisible(false);
+                mi_sincronizarAvance.setEnabled(false);
+                mi_sincronizarAvance.setVisible(false);
+
                 break;
 
             case CPL.LECTURISTA:
@@ -746,6 +764,9 @@ public class Main extends FragmentActivity implements TabListener {
                 actualizarEstatusArchivos();
                 break;
             case R.id.m_OperacionGenerica:
+                break;
+            case R.id.m_cerrarSesion:
+                cerrarSesion();
                 break;
         }
 
@@ -1541,14 +1562,14 @@ public class Main extends FragmentActivity implements TabListener {
                 cFotoPadre = db.rawQuery("Select nombre, length(foto) imageSize from fotos", null);
 
 //                for (i = 1; i < mNumErrores; i++)
- //                   cFotoPadre.moveToNext();
+                //                   cFotoPadre.moveToNext();
 
                 while (cFotoPadre.moveToNext()) {
 
                     nombreFotoPadre = cFotoPadre.getString(cFotoPadre.getColumnIndex("nombre"));
                     imageSize = cFotoPadre.getLong(cFotoPadre.getColumnIndex("imageSize"));
 
-                    if (imageSize <= MAX_IMAGE_SIZE )
+                    if (imageSize <= MAX_IMAGE_SIZE)
                         guardarFoto1(nombreFotoPadre, path);        // Para guardar fotos menores a 2MB
                     else
                         guardarFoto2(nombreFotoPadre, path, imageSize);        // Para guardar fotos mayores a 2MB, hacerlo por bloques
@@ -1572,8 +1593,7 @@ public class Main extends FragmentActivity implements TabListener {
         }
     }
 
-    private void guardarFoto1(String nombreFotoPadre, String path)
-    {
+    private void guardarFoto1(String nombreFotoPadre, String path) {
         String query;
         Cursor cFoto = null;
         String nombreFoto;
@@ -1625,8 +1645,7 @@ public class Main extends FragmentActivity implements TabListener {
         }
     }
 
-    private void guardarFoto2(String nombreFoto, String path, long imageSize)
-    {
+    private void guardarFoto2(String nombreFoto, String path, long imageSize) {
         String query;
         Cursor cFoto = null;
         File archivoFoto = null;
@@ -1641,7 +1660,7 @@ public class Main extends FragmentActivity implements TabListener {
         try {
             actualImageSize = imageSize;
 
-            outputStream = new ByteArrayOutputStream( );
+            outputStream = new ByteArrayOutputStream();
 
             // Obtener la imagen del campo blob en bloques de 1MB
 
@@ -1651,7 +1670,7 @@ public class Main extends FragmentActivity implements TabListener {
                 else
                     sizeToCopy = actualImageSize;
 
-                query = "Select nombre, substr(foto," + String.valueOf(idx) + ","+ String.valueOf(sizeToCopy)+"  ) fotoParcial from fotos where nombre = '" + nombreFoto + "'";
+                query = "Select nombre, substr(foto," + String.valueOf(idx) + "," + String.valueOf(sizeToCopy) + "  ) fotoParcial from fotos where nombre = '" + nombreFoto + "'";
                 cFoto = db.rawQuery(query, null);
 
                 while (cFoto.moveToNext()) {
@@ -2194,18 +2213,21 @@ public class Main extends FragmentActivity implements TabListener {
             }
         });
 
-        if (globales == null) return;
-        if (globales.sesionEntity == null) return;
-        if (globales.sesionEntity.empleado == null) return;
-
         CambiarBotonesOperEstatus();
     }
 
     private void CambiarBotonesOperEstatus() {
         boolean habilitarLecturas = false;
+        boolean sesionActiva = false;
         ResumenEntity resumen;
 
-        if (ii_rol == CPL.LECTURISTA) {
+        if (globales != null) {
+            if (globales.sesionEntity != null)
+                if (globales.sesionEntity.empleado != null)
+                    sesionActiva = true;
+        }
+
+        if (ii_rol == CPL.LECTURISTA && sesionActiva) {
             resumen = DbLecturasMgr.getInstance().getResumen(this);
 
             if (resumen != null) {
@@ -2227,7 +2249,7 @@ public class Main extends FragmentActivity implements TabListener {
                 globales.sesionEntity.empleado.idOperacionTipo = CHECK_SEGURIDAD;
             } else if (globales.sesionEntity.empleado.idOperacionTipo == CHECK_IN) {
                 btnOperacion.setText("Hacer Check In");
-                b_lecturas.setEnabled(habilitarLecturas);
+                b_lecturas.setEnabled(false);
                 globales.sesionEntity.empleado.idOperacionTipo = CHECK_IN;
             } else if (globales.sesionEntity.empleado.idOperacionTipo == CHECK_OUT) {
                 btnOperacion.setText("Hacer Check Out");
@@ -2239,6 +2261,7 @@ public class Main extends FragmentActivity implements TabListener {
                 globales.sesionEntity.empleado.idOperacionTipo = CHECK_IN;
             }
         } else {
+            b_lecturas.setVisibility(View.GONE);
             b_lecturas.setEnabled(false);
             btnOperacion.setVisibility(View.GONE);
             btnOperacion.setEnabled(false);
@@ -2520,7 +2543,7 @@ public class Main extends FragmentActivity implements TabListener {
 
         globales.sesionEntity.hacerSincronizacion = true;
     }
-    
+
     protected boolean sincronizarAvanceActivado() {
         if (globales == null)
             return false;
@@ -2607,8 +2630,7 @@ public class Main extends FragmentActivity implements TabListener {
         }
     }
 
-    private void actualizarResumen()
-    {
+    private void actualizarResumen() {
         Fragment page;
 
         page = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + 1);
@@ -2617,6 +2639,11 @@ public class Main extends FragmentActivity implements TabListener {
         if (/*viewPager.getCurrentItem() == 0 &&*/ page != null) {
             ((Resumen) page).actualizaResumen();
         }
+    }
+
+    private void cerrarSesion() {
+        globales.sesionEntity = null;
+        cambiarDeUsuario();
     }
 
 }

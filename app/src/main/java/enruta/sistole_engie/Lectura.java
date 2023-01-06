@@ -11,6 +11,7 @@ import android.location.Location;
 import android.text.Html;
 import android.text.Spanned;
 
+import enruta.sistole_engie.clases.BateriaMgr;
 import enruta.sistole_engie.services.DbBaseMgr;
 
 public class Lectura extends DbBaseMgr {
@@ -361,9 +362,13 @@ public class Lectura extends DbBaseMgr {
         guardar(true, ordenDeLectura);
     }
 
+    /*
+        Guarda la lectura capturada con sus datos asociados.
+     */
     public void guardar(boolean agregarOrdenDeLectura, int ordenDeLectura) {
 
         ContentValues cv_params = new ContentValues();
+        int nivelBateria;
 
         //globales.tdlg.setConsumo();
 
@@ -458,6 +463,8 @@ public class Lectura extends DbBaseMgr {
 
         openDatabase();
 
+        nivelBateria = BateriaMgr.getBatteryPercentage(context);
+
         cv_params.put("lectura", is_lectura);
         cv_params.put("consumo", is_consumo);
         cv_params.put("anomalia", is_anomalia);
@@ -495,12 +502,14 @@ public class Lectura extends DbBaseMgr {
         cv_params.put("piso", is_piso);
         cv_params.put("puerta", is_puerta);
         cv_params.put("lecturista", globales.getUsuario());
+        cv_params.put("idEmpleado", globales.getIdEmpleado());
         cv_params.put("fechaAviso", is_fechaAviso);
         cv_params.put("aviso", is_aviso);
         cv_params.put("tipoLectura", is_tipoLectura);
         cv_params.put("estadoDelSuministroReal", is_estadoDelSuministroReal);
         cv_params.put("latitud", is_latitud);
         cv_params.put("longitud", is_longitud);
+        cv_params.put("nivelBateria", nivelBateria);
         cv_params.put("fix", is_fix);
         cv_params.put("codigoObservacion", ls_codigoObservacion);
         cv_params.put("envio", 1);

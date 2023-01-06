@@ -13,14 +13,14 @@
         android:id="@+id/m_correccion"
         android:icon="@drawable/ic_action_correccion"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:title="@string/m_str_correccion" />
 
     <item
         android:id="@+id/m_orden"
         android:icon="@drawable/ic_action_descendente"
         android:orderInCategory="4"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:title="@string/m_str_descendente"/>
 
     <item

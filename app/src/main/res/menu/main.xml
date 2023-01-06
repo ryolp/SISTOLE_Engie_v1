@@ -1,6 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-
+    <item
+        android:id="@+id/m_cambiarUsuario"
+        android:icon="@drawable/ic_action_cambiausr"
+        android:orderInCategory="0"
+        android:showAsAction="always"
+        android:title="@string/lbl_cambiarUsuario" />
     <item
         android:id="@+id/m_importar"
         android:icon="@drawable/ic_action_importar"
@@ -12,90 +17,105 @@
         android:icon="@drawable/ic_action_exportar"
         android:orderInCategory="2"
         android:showAsAction="always"
-        android:title="@string/m_str_exportar"/>
+        android:title="@string/m_str_exportar" />
     <item
         android:id="@+id/m_lecturas"
         android:icon="@drawable/ic_lecturas"
         android:orderInCategory="3"
         android:showAsAction="always"
-        android:title="@string/m_str_lecturas"/>
-    <item
-        android:id="@+id/m_filtrar"
-        android:orderInCategory="3"
-        android:title="@string/m_str_filtrar"
-        android:visible="false"/>
-
-    <item
-        android:id="@+id/m_exportarTodo"
-        android:title="@string/m_str_exportarTodo"
-        android:visible="false"/>
-
+        android:title="@string/m_str_lecturas" />
 
     <item
         android:id="@+id/m_configuracion"
         android:icon="@drawable/ic_action_configuracion"
         android:orderInCategory="4"
         android:showAsAction="always"
-        android:title="@string/str_configuracion"/>
-    <item
-        android:id="@+id/m_borrarruta"
-        android:orderInCategory="6"
-        android:title="@string/m_str_borrarRuta"
-        android:visible="true"/>
+        android:title="@string/str_configuracion" />
 
-    <item
-        android:id="@+id/m_ayuda"
-        android:orderInCategory="7"
-        android:title="Ayuda..."
-        android:visible="true"/>
-
-    <item
-        android:id="@+id/m_salir"
-        android:orderInCategory="8"
-        android:title="@string/Salir"/>
-
-    <item
-        android:id="@+id/probar_bt"
-        android:title="Probar bt"
-        android:visible="false"/>
-    <item
-        android:id="@+id/m_cambiarUsuario"
-        android:icon="@drawable/ic_action_cambiausr"
-        android:showAsAction="always"
-        android:title="@string/lbl_cambiarUsuario"/>
-    <item
-        android:id="@+id/m_acercaDe"
-        android:title="@string/m_str_acercade"/>
-    <item
-        android:id="@+id/m_verTamanosLetra"
-        android:title="Tamaños de Fuente"/>
-    <item
-        android:id="@+id/m_grabarEnSD"
-        android:title="Grabar en SDCard"/>
     <item
         android:id="@+id/m_escaneo"
         android:icon="@drawable/ic_scanner_24"
-        android:title="Escaneo"
-        android:orderInCategory="4"
+        android:orderInCategory="5"
         android:showAsAction="always"
-        android:visible="false"/>
+        android:title="Escaneo"
+        android:visible="false" />
+
+    <item
+        android:id="@+id/m_acercaDe"
+        android:orderInCategory="6"
+        android:title="@string/m_str_acercade" />
+
+    <item
+        android:id="@+id/m_verTamanosLetra"
+        android:orderInCategory="7"
+        android:title="Tamaños de Fuente" />
+
+    <item
+        android:id="@+id/m_grabarEnSD"
+        android:orderInCategory="8"
+        android:title="Grabar en SDCard" />
+
+    <item
+        android:id="@+id/m_filtrar"
+        android:orderInCategory="9"
+        android:title="@string/m_str_filtrar"
+        android:visible="false" />
+
+    <item
+        android:id="@+id/m_exportarTodo"
+        android:orderInCategory="10"
+        android:title="@string/m_str_exportarTodo"
+        android:visible="false" />
+
+    <item
+        android:id="@+id/probar_bt"
+        android:orderInCategory="11"
+        android:title="Probar bt"
+        android:visible="false" />
+
     <item
         android:id="@+id/m_EntrarSupervisor"
+        android:orderInCategory="12"
         android:title="@string/str_lbl_supervisor"
-        android:visible="true"/>
+        android:visible="true" />
     <item
         android:id="@+id/m_VerificarConectividad"
+        android:orderInCategory="13"
         android:title="@string/str_lbl_revisar_conectividad"
-        android:visible="true"/>
+        android:visible="true" />
     <item
         android:id="@+id/m_ActualizarAvance"
+        android:orderInCategory="14"
         android:title="@string/str_lbl_sincronizar_avance"
-        android:visible="true"/>
+        android:visible="true" />
+
     <item
         android:id="@+id/m_OperacionGenerica"
+        android:orderInCategory="15"
         android:title="@string/str_operacion"
-        android:visible="false"/>
+        android:visible="false" />
 
+    <item
+        android:id="@+id/m_borrarruta"
+        android:orderInCategory="16"
+        android:title="@string/m_str_borrarRuta"
+        android:visible="true" />
 
+    <item
+        android:id="@+id/m_ayuda"
+        android:orderInCategory="17"
+        android:title="Ayuda..."
+        android:visible="true" />
+
+    <item
+        android:id="@+id/m_cerrarSesion"
+        android:orderInCategory="18"
+        android:title="Cerrar sesión"
+        android:visible="true" />
+
+    <item
+        android:id="@+id/m_salir"
+        android:orderInCategory="19"
+        android:title="@string/Salir" />
 
 </menu>
