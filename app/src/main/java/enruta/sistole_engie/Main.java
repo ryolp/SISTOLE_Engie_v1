@@ -2241,33 +2241,41 @@ public class Main extends FragmentActivity implements TabListener {
 
             if (resumen != null) {
                 if (resumen.totalRegistros > 0) {
-                    if (resumen.cantLecturasRealizadas < resumen.totalRegistros)
+                    if (resumen.cantLecturasPendientes > 0)
                         habilitarLecturas = true;
                     else
                         habilitarLecturas = false;
                 }
             }
 
-            if (globales.sesionEntity.empleado.RequiereCheckIn) {
-                btnOperacion.setText("Hacer Check In");
-                b_lecturas.setEnabled(false);
-                globales.sesionEntity.empleado.idOperacionTipo = CHECK_IN;
-            } else if (globales.sesionEntity.empleado.RequiereCheckSeguridad) {
-                btnOperacion.setText("Hacer Check Seguridad");
-                b_lecturas.setEnabled(false);
-                globales.sesionEntity.empleado.idOperacionTipo = CHECK_SEGURIDAD;
-            } else if (globales.sesionEntity.empleado.idOperacionTipo == CHECK_IN) {
-                btnOperacion.setText("Hacer Check In");
-                b_lecturas.setEnabled(false);
-                globales.sesionEntity.empleado.idOperacionTipo = CHECK_IN;
-            } else if (globales.sesionEntity.empleado.idOperacionTipo == CHECK_OUT) {
-                btnOperacion.setText("Hacer Check Out");
-                b_lecturas.setEnabled(habilitarLecturas);
-                globales.sesionEntity.empleado.idOperacionTipo = CHECK_OUT;
+            if (habilitarLecturas) {
+                if (globales.sesionEntity.empleado.RequiereCheckIn) {
+                    btnOperacion.setText("Hacer Check In");
+                    b_lecturas.setEnabled(false);
+                    globales.sesionEntity.empleado.idOperacionTipo = CHECK_IN;
+                } else if (globales.sesionEntity.empleado.RequiereCheckSeguridad) {
+                    btnOperacion.setText("Hacer Check Seguridad");
+                    b_lecturas.setEnabled(false);
+                    globales.sesionEntity.empleado.idOperacionTipo = CHECK_SEGURIDAD;
+                } else if (globales.sesionEntity.empleado.idOperacionTipo == CHECK_IN) {
+                    btnOperacion.setText("Hacer Check In");
+                    b_lecturas.setEnabled(false);
+                    globales.sesionEntity.empleado.idOperacionTipo = CHECK_IN;
+                } else if (globales.sesionEntity.empleado.idOperacionTipo == CHECK_OUT) {
+                    btnOperacion.setText("Hacer Check Out");
+                    b_lecturas.setEnabled(habilitarLecturas);
+                    globales.sesionEntity.empleado.idOperacionTipo = CHECK_OUT;
+                } else {
+                    btnOperacion.setText("Hacer Check In");
+                    b_lecturas.setEnabled(false);
+                    globales.sesionEntity.empleado.idOperacionTipo = CHECK_IN;
+                }
             } else {
-                btnOperacion.setText("Hacer Check In");
+                b_lecturas.setVisibility(View.VISIBLE);
                 b_lecturas.setEnabled(false);
-                globales.sesionEntity.empleado.idOperacionTipo = CHECK_IN;
+                btnOperacion.setText("---");
+                btnOperacion.setVisibility(View.VISIBLE);
+                btnOperacion.setEnabled(false);
             }
         } else {
             b_lecturas.setVisibility(View.GONE);
@@ -2659,8 +2667,7 @@ public class Main extends FragmentActivity implements TabListener {
             if (/*viewPager.getCurrentItem() == 0 &&*/ page != null) {
                 ((Resumen) page).actualizaResumen();
             }
-        } catch (Throwable t)
-        {
+        } catch (Throwable t) {
             Utils.showMessageLong(this, t.getMessage());
         }
     }

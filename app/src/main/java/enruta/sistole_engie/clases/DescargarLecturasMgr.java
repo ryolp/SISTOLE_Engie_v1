@@ -82,6 +82,19 @@ public class DescargarLecturasMgr extends BaseMgr {
             resp.NumError = 0;
         }
 
+        // Forzar el check de seguridad cada vez que se descargue un archivo.
+        // Esto se debe a que si el usuario hace el check de seguridad, toma su foto ...
+        // ... y esta no se ha transmitido y luego se valida como Administrador...
+        ///... y baja una unidad, la foto se pierde y no se transmite.
+
+        if (resp.Exito) {
+            if (mGlobales != null)
+                if (mGlobales.sesionEntity != null)
+                    if (mGlobales.sesionEntity.empleado != null)
+                        mGlobales.sesionEntity.empleado.RequiereCheckSeguridad = true;
+
+        }
+
         if (mCallback != null)
             mCallback.enExitoComunicacion(req, resp);
     }
