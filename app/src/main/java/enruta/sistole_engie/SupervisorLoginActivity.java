@@ -354,8 +354,8 @@ public class SupervisorLoginActivity extends BaseActivity {
                 mIdEmpleadoSupervisor = resp.Empleado.idEmpleado;
                 mostrarResumen();
             }
-        } catch (Exception e) {
-            mostrarMensaje("Error", "Error al mostrar el informe. Intente nuevamente.", e.getMessage(), null);
+        } catch (Throwable t) {
+            mostrarMensaje("Error", "Error al mostrar el informe. Intente nuevamente.", t.getMessage(), null);
         }
     }
 
@@ -397,7 +397,7 @@ public class SupervisorLoginActivity extends BaseActivity {
         Muestra el grid de resumen
     ------------------------------------------------------------------------------------------- */
 
-    public void mostrarResumen() {
+    public void mostrarResumen() throws Exception {
         Cursor c;
         TomaDeLecturasEngie tdlg;
 

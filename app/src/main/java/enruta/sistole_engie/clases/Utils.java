@@ -201,46 +201,46 @@ public final class Utils {
         return s;
     }
 
-    public static int getInt(Cursor c, String columnName, int defaultValue) {
+    public static int getInt(Cursor c, String columnName, int defaultValue)  throws Exception{
         int idx;
 
         if (c == null)
-            return defaultValue;
+            throw new Exception("No se proporcionó el cursor");
 
         idx = c.getColumnIndex(columnName);
 
         if (idx < 0)
-            return defaultValue;
+            throw new Exception("No existe la columna '" + columnName + "'");
 
         return c.getInt(idx);
     }
 
-    public static long getLong(Cursor c, String columnName, long defaultValue) {
+    public static long getLong(Cursor c, String columnName, long defaultValue)  throws Exception{
         int idx;
         long value;
 
         if (c == null)
-            return defaultValue;
+            throw new Exception("No se proporcionó el cursor");
 
         idx = c.getColumnIndex(columnName);
 
         if (idx < 0)
-            return defaultValue;
+            throw new Exception("No existe la columna '" + columnName + "'");
 
         return c.getLong(idx);
     }
 
-    public static String getString(Cursor c, String columnName, String defaultValue) {
+    public static String getString(Cursor c, String columnName, String defaultValue)  throws Exception{
         int idx;
         String value;
 
         if (c == null)
-            return defaultValue;
+            throw new Exception("No se proporcionó el cursor");
 
         idx = c.getColumnIndex(columnName);
 
         if (idx < 0)
-            return defaultValue;
+            throw new Exception("No existe la columna '" + columnName + "'");
 
         value = c.getString(idx);
 
@@ -250,16 +250,16 @@ public final class Utils {
         return value;
     }
 
-    public static byte[] getBlob(Cursor c, String columnName) {
+    public static byte[] getBlob(Cursor c, String columnName) throws Exception {
         int idx;
 
         if (c == null)
-            return null;
+            throw new Exception("No se proporcionó el cursor");
 
         idx = c.getColumnIndex(columnName);
 
         if (idx < 0)
-            return null;
+            throw new Exception("No existe la columna '" + columnName + "'");
 
         return c.getBlob(idx);
     }

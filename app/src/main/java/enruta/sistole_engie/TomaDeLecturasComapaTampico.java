@@ -167,7 +167,7 @@ public class TomaDeLecturasComapaTampico extends TomaDeLecturasGenerica {
 		globales.defaultRuta="03";
 		globales.defaultItinerario="4480";
 //		globales.defaultServidorGPRS="http://horus.sistoleweb.com";
-		globales.defaultServidorGPRS="https://engie.sistoleweb.com";
+		globales.defaultServidorGPRS= BuildConfig.BASE_URL;
 //		globales.defaultServidorGPRS="http://www.espinosacarlos.com";
 		globales.defaultServidorWIFI="http://10.240.225.11/1120";
 		globales.defaultServidorDeActualizacion="";
@@ -1058,7 +1058,7 @@ public class TomaDeLecturasComapaTampico extends TomaDeLecturasGenerica {
 		return new int[0];
 	}
 	
-	public String getNombreArchvio(int tipo){
+	public String getNombreArchvio(int tipo) throws  Exception {
 		
 		String ls_archivo="";
 		TransmitionObject to= new TransmitionObject();

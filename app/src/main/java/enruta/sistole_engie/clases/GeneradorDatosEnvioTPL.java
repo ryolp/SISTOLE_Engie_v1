@@ -2,11 +2,12 @@ package enruta.sistole_engie.clases;
 
 import android.database.Cursor;
 
-public class GeneradorArchivoTPL {
+public class GeneradorDatosEnvioTPL {
     private Cursor mCursor;
 
-    public String generarInfoLectura(Cursor c) {
+    public String generarInfoLectura(Cursor c) throws Exception  {
         String dato;
+        String tipoRegistro = "LEC";
 
         if (c == null)
             return "";
@@ -14,6 +15,7 @@ public class GeneradorArchivoTPL {
         mCursor = c;
 
         dato = Utils.concatenarColumnas("|",
+                tipoRegistro,
                 getString("poliza"),
                 getString("lectura"),
                 getString("fecha"),
@@ -37,7 +39,30 @@ public class GeneradorArchivoTPL {
         return dato;
     }
 
-    private String getString(String columna) {
+    public String generarNoregistrado(Cursor c) throws Exception {
+        String dato;
+
+        if (c == null)
+            return "";
+
+        mCursor = c;
+
+        dato = Utils.concatenarColumnas("|",
+                getString("TipoRegistro"),
+                getString("idLectura"),
+                getString("idUnidadLect"),
+                getString("idArchivo"),
+                getString("Calle"),
+                getString("Colonia"),
+                getString("NumMedidor"),
+                getString("Lectura"),
+                getString("Observaciones")
+        );
+
+        return dato;
+    }
+
+    private String getString(String columna) throws Exception {
         String dato;
 
         dato = Utils.getString(mCursor, columna, "");   // Obtener el dato de la base de datos SQL Lite

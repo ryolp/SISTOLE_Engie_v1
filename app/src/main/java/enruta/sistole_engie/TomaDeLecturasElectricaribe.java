@@ -1275,7 +1275,7 @@ public class TomaDeLecturasElectricaribe extends TomaDeLecturasGenerica {
 		
 	}
 	
-	public String getNombreArchvio(int tipo){
+	public String getNombreArchvio(int tipo) throws  Exception {
 		
 		String ls_archivo="";
 		TransmitionObject to= new TransmitionObject();

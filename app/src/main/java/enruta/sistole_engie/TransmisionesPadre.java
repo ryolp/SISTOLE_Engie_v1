@@ -93,7 +93,7 @@ public abstract class TransmisionesPadre extends Activity {
         return puedo;
     }
 
-    protected void seleccion() {
+    protected void seleccion() throws Exception {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         AlertDialog alert;
         switch (bu_params.getInt("tipo")) {
@@ -129,6 +129,7 @@ public abstract class TransmisionesPadre extends Activity {
                                             transmiteFotos = true;
                                             break;
                                     }
+
                                     procesosDeTransmision();
 
 
@@ -332,28 +333,29 @@ public abstract class TransmisionesPadre extends Activity {
     }
 
     protected void procesosDeTransmision() {
-        int li_datos = 0, li_fotos;
-        //transmitir();
+        try {
+            int li_datos = 0, li_fotos;
+            //transmitir();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        AlertDialog alert;
-
-
-        openDatabase();
-        Cursor c;
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            AlertDialog alert;
 
 
-        c = db.rawQuery("select * from ruta", null);
-        li_datos = c.getCount();
-        c.close();
-        c = db.rawQuery("select * from fotos", null);
-        li_fotos = c.getCount();
-        c.close();
+            openDatabase();
+            Cursor c;
 
-        if (li_datos == 0 && li_fotos == 0) {
-            muere(true, getString(R.string.msj_trans_no_hay_datos));
-            return;
-        }
+
+            c = db.rawQuery("select * from ruta", null);
+            li_datos = c.getCount();
+            c.close();
+            c = db.rawQuery("select * from fotos", null);
+            li_fotos = c.getCount();
+            c.close();
+
+            if (li_datos == 0 && li_fotos == 0) {
+                muere(true, getString(R.string.msj_trans_no_hay_datos));
+                return;
+            }
 //		c= db.rawQuery("select value from config where key='cpl'", null);
 //		
 //		if (c.getCount()==0){
@@ -369,54 +371,55 @@ public abstract class TransmisionesPadre extends Activity {
 //		c.close();
 //		closeDatabase();
 
-        ls_categoria = globales.tdlg.getNombreArchvio(TomaDeLecturasGenerica.SALIDA);
+            ls_categoria = globales.tdlg.getNombreArchvio(TomaDeLecturasGenerica.SALIDA);
 
-        if (ls_categoria.trim().equals("")) {
-            muere(true, String.format(getString(R.string.msj_config_no_guardada), getString(R.string.info_CPL)));
-            return;
-        }
+            if (ls_categoria.trim().equals("")) {
+                muere(true, String.format(getString(R.string.msj_config_no_guardada), getString(R.string.info_CPL)));
+                return;
+            }
 
-        //hacemos un query para buscar si ya se descargo >:|
+            //hacemos un query para buscar si ya se descargo >:|
 
-        if (globales.preguntarSiSegundaVezDescargada) {
-            c = db.rawQuery("select descargada from encabezado", null);
+            if (globales.preguntarSiSegundaVezDescargada) {
+                c = db.rawQuery("select descargada from encabezado", null);
 
-            c.moveToFirst();
+                c.moveToFirst();
 
-            int descargada = c.getInt(c.getColumnIndex("descargada"));
+                int descargada = c.getInt(c.getColumnIndex("descargada"));
 
-            c.close();
+                c.close();
 
-            if (descargada == 1) {
-                //preguntar si deseo descargar
+                if (descargada == 1) {
+                    //preguntar si deseo descargar
 
-                builder.setMessage("El itinerario ya ha sido descargado anteriormente, ¿Desea sobrescribir con los datos actuales?")
-                        .setCancelable(false).setPositiveButton(R.string.continuar, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                //recepcion();
-                                procesosCierreDeLecturas();
-                                dialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                                mostrarAlerta = false;
-                                muere(true, "");
+                    builder.setMessage("El itinerario ya ha sido descargado anteriormente, ¿Desea sobrescribir con los datos actuales?")
+                            .setCancelable(false).setPositiveButton(R.string.continuar, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    //recepcion();
+                                    procesosCierreDeLecturas();
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                    mostrarAlerta = false;
+                                    muere(true, "");
 
-                            }
-                        });
+                                }
+                            });
 
-                alert = builder.create();
-                alert.show();
+                    alert = builder.create();
+                    alert.show();
+                } else {
+                    procesosCierreDeLecturas();
+                }
             } else {
                 procesosCierreDeLecturas();
             }
-        } else {
-            procesosCierreDeLecturas();
+        } catch (Throwable t) {
+            muere(true, t.getMessage());
         }
-
-
     }
 
     public void procesosCierreDeLecturas() {

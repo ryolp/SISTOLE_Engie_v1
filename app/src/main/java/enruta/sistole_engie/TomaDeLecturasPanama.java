@@ -1036,7 +1036,7 @@ public class TomaDeLecturasPanama extends TomaDeLecturasGenerica {
 		return new int[0];
 	}
 	
-	public String getNombreArchvio(int tipo){
+	public String getNombreArchvio(int tipo) throws  Exception {
 		
 		String ls_archivo="";
 		TransmitionObject to= new TransmitionObject();

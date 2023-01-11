@@ -169,7 +169,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         globales.defaultUnicom = "1120";                                // CE, Hay que ver si tenemos el campo CPL
         globales.defaultRuta = "03";
         globales.defaultItinerario = "4480";
-        globales.defaultServidorGPRS = "https://engie.sistoleweb.com";
+        globales.defaultServidorGPRS = BuildConfig.BASE_URL;
 //		globales.defaultServidorGPRS="http://www.espinosacarlos.com";
         globales.defaultServidorWIFI = "http://10.240.225.11/1120";
         globales.defaultServidorDeActualizacion = "";
@@ -528,8 +528,8 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
     public MensajeEspecial mensajeDeConsumo(String ls_lectAct) {
         //Vamos a investigar si es un Consumo Cero
 
-        int li_lectAct= Integer.parseInt(ls_lectAct);
-        if ((globales.tll.getLecturaActual().consAnoAnt == li_lectAct) && (globales.tll.getLecturaActual().consBimAnt == li_lectAct)){
+        int li_lectAct = Integer.parseInt(ls_lectAct);
+        if ((globales.tll.getLecturaActual().consAnoAnt == li_lectAct) && (globales.tll.getLecturaActual().consBimAnt == li_lectAct)) {
             //Si es la misma o menor... quiere decir que no hubo un consumo
             return mj_consumocero;
         }
@@ -540,18 +540,18 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
     public void RespuestaMensajeSeleccionada(MensajeEspecial me, int respuesta) {
         // TODO Auto-generated method stub
 
-        switch (me.respondeA){
+        switch (me.respondeA) {
             case PREGUNTAS_SIGUE_CORTADO:
-                if (respuesta== MensajeEspecial.NO){
+                if (respuesta == MensajeEspecial.NO) {
                     //Borramos si hay una j
                     globales.tll.getLecturaActual().deleteAnomalia("J");
                     //Agregamos la anomalia J al vector de anomalias
                     cambiosAnomaliaAntesDeGuardar(globales.is_lectura);
                     globales.tll.getLecturaActual().setAnomalia("J");
-                    globales.is_presion=globales.tll.getLecturaActual().getAnomalia();
-                    globales.tll.getLecturaActual().is_estadoDelSuministroReal="0";
-                }else{
-                    globales.tll.getLecturaActual().is_estadoDelSuministroReal="1";
+                    globales.is_presion = globales.tll.getLecturaActual().getAnomalia();
+                    globales.tll.getLecturaActual().is_estadoDelSuministroReal = "0";
+                } else {
+                    globales.tll.getLecturaActual().is_estadoDelSuministroReal = "1";
                 }
                 break;
             case PREGUNTAS_CONSUMO_CERO:
@@ -568,9 +568,9 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
                 break;
 
             case PREGUNTAS_UBICACION_VACIA:
-                globales.tll.getLecturaActual().is_ubicacion=me.regresaValor(respuesta).substring(1,2);
-                globales.tll.getLecturaActual().deleteAnomalia(me.regresaValor(respuesta).substring(0,1));
-                globales.tll.getLecturaActual().setAnomalia(me.regresaValor(respuesta).substring(0,1));
+                globales.tll.getLecturaActual().is_ubicacion = me.regresaValor(respuesta).substring(1, 2);
+                globales.tll.getLecturaActual().deleteAnomalia(me.regresaValor(respuesta).substring(0, 1));
+                globales.tll.getLecturaActual().setAnomalia(me.regresaValor(respuesta).substring(0, 1));
                 globales.tll.getLecturaActual().setSubAnomalia(me.regresaValor(respuesta));
                 break;
 
@@ -673,21 +673,18 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
     public int[] getCamposGenerico(String anomalia) {
         int[] campos = null;
         if (anomalia.equals("noregistrados")) {
-            campos = new int[6];
+            campos = new int[5];
+
             campos[0] = CALLE;
             campos[1] = COLONIA;
             campos[2] = NUM_MEDIDOR;
-            campos[3] = NUM_ESFERAS;
-            campos[4] = LECTURA;
-            campos[5] = OBSERVACIONES;
+            campos[3] = LECTURA;
+            campos[4] = OBSERVACIONES;
 
         } else if (anomalia.equals("cambiomedidor")) {
-            campos = new int[2];
+            campos = new int[1];
 
             campos[0] = NUM_MEDIDOR;
-            campos[1] = NUM_ESFERAS;
-
-
         } else if (anomalia.equals("observacion")) {
             campos = new int[2];
             campos[0] = CODIGO_OBSERVACION;
@@ -714,37 +711,65 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
     }
 
     @Override
-    public void regresaDeCamposGenericos(Bundle bu_params, String anomalia) {
+    public void regresaDeCamposGenericos(Bundle bu_params, String anomalia) throws Exception {
         String cadena =/*globales.lote*/"";
+        Lectura lectura;
+        ContentValues cv_datos = new ContentValues();
 
         if (anomalia.equals("noregistrados")) {
+            lectura = globales.tll.getLecturaActual();
 
+            if (lectura == null)
+                throw new Exception("No se encontró una lectura para realizar la operación.");
 
             openDatabase();
 
-            cadena += Main.rellenaString(bu_params.getString(String.valueOf(CALLE)), " ", 30, false);
-            cadena += Main.rellenaString(bu_params.getString(String.valueOf(COLONIA)), " ", 50, false);
-            cadena += Main.rellenaString(bu_params.getString(String.valueOf(NUM_MEDIDOR)), " ", 20, false);
-            cadena += Main.rellenaString(bu_params.getString(String.valueOf(NUM_ESFERAS)), "0", 2, true);
-            cadena += Main.rellenaString(bu_params.getString(String.valueOf(LECTURA)), "0", 8, true);
+//            cadena += Main.rellenaString(bu_params.getString(String.valueOf(CALLE)), " ", 30, false);
+//            cadena += Main.rellenaString(bu_params.getString(String.valueOf(COLONIA)), " ", 50, false);
+//            cadena += Main.rellenaString(bu_params.getString(String.valueOf(NUM_MEDIDOR)), " ", 20, false);
+//            cadena += Main.rellenaString(bu_params.getString(String.valueOf(NUM_ESFERAS)), "0", 2, true);
+//            cadena += Main.rellenaString(bu_params.getString(String.valueOf(LECTURA)), "0", 8, true);
+//
+//            cadena += Main.rellenaString(bu_params.getString(String.valueOf(OBSERVACIONES)), " ", 25, false);
 
-            cadena += Main.rellenaString(bu_params.getString(String.valueOf(OBSERVACIONES)), " ", 25, false);
+            cv_datos.put("envio", 1);
+            cv_datos.put("idArchivo", lectura.idArchivo);
+            cv_datos.put("idLectura", lectura.poliza);
+            cv_datos.put("idUnidadLect", lectura.idUnidadLect);
+            cv_datos.put("Calle", bu_params.getString(String.valueOf(CALLE)));
+            cv_datos.put("Colonia", bu_params.getString(String.valueOf(COLONIA)));
+            cv_datos.put("NumMedidor", bu_params.getString(String.valueOf(NUM_MEDIDOR)));
+            cv_datos.put("Lectura", bu_params.getString(String.valueOf(LECTURA)));
+            cv_datos.put("Observaciones", bu_params.getString(String.valueOf(OBSERVACIONES)));
+            cv_datos.put("TipoRegistro", "NR");
 
             //Guardamos en la bd
-            db.execSQL("insert into noRegistrados (envio, poliza) values(1, '" + cadena + "')");
+            //db.execSQL("insert into noRegistrados (envio, poliza) values(1, '" + cadena + "')");
+
+            db.insert("noRegistrados", null, cv_datos);
+
             closeDatabase();
         } else if (anomalia.equals("cambiomedidor")) {
-            cadena += Main.rellenaString(globales.tll.getLecturaActual().getDireccion(), " ", 30, false);
-            cadena += Main.rellenaString(globales.tll.getLecturaActual().getColonia(), " ", 50, false);
-            cadena += Main.rellenaString(bu_params.getString(String.valueOf(NUM_MEDIDOR)), " ", 20, false);
-            cadena += Main.rellenaString(bu_params.getString(String.valueOf(NUM_ESFERAS)), "0", 2, true);
-            cadena += Main.rellenaString("", " ", 8, true);
-            cadena += Main.rellenaString(/*globales.tll.getLecturaActual().sinUso1*/ String.valueOf(globales.il_ultimoSegReg), " ", 4, true);
-            cadena += Main.rellenaString("CM Poliza=" + globales.tll.getLecturaActual().poliza, " ", 25, false);
+            lectura = globales.tll.getLecturaActual();
+
+            if (lectura == null)
+                throw new Exception("No se encontró una lectura para realizar la operación.");
+
+            cv_datos.put("envio", 1);
+            cv_datos.put("idArchivo", lectura.idArchivo);
+            cv_datos.put("idLectura", lectura.poliza);
+            cv_datos.put("idUnidadLect", lectura.idUnidadLect);
+            cv_datos.put("Calle", lectura.getDireccion());
+            cv_datos.put("Colonia", lectura.getColonia());
+            cv_datos.put("NumMedidor", bu_params.getString(String.valueOf(NUM_MEDIDOR)));
+            cv_datos.put("TipoRegistro", "CM");
 
             openDatabase();
 
-            db.execSQL("insert into noRegistrados(envio, poliza) values(1, '" + cadena + "')");
+            // db.execSQL("insert into noRegistrados(envio, poliza) values(1, '" + cadena + "')");
+
+            db.insert("noRegistrados", null, cv_datos);
+
             closeDatabase();
         } else if (anomalia.equals("sellos")) {
             //Hay que poner el sello de instalacion
@@ -1088,31 +1113,37 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
     @Override
     public MensajeEspecial regresaDeAnomalias(String ls_anomalia, boolean esAnomalia) {
-        if (esAnomalia) {
-            return null;
-        }
-        openDatabase();
+        Cursor c = null;
 
-        Cursor c;
-        c = db.rawQuery("Select * from anomalia where substr(desc, 1, 3)='" + ls_anomalia + "'", null);
+        try {
+            if (esAnomalia) {
+                return null;
+            }
+            openDatabase();
 
-        if (c.getCount() == 0) {
-            c.close();
+            c = db.rawQuery("Select * from anomalia where substr(desc, 1, 3)='" + ls_anomalia + "'", null);
+
+            if (c.getCount() == 0) {
+                c.close();
+                closeDatabase();
+                return null;
+            }
+            c.moveToFirst();
+
+            if (Utils.getString(c, "subanomalia", "").equals("S")) {
+                String desc = Utils.getString(c, "desc", "");
+//			desc=Main.rellenaString(desc, " ", 18, false);
+//			globales.tll.getLecturaActual().setComentarios("OB"+desc.substring(0,3));
+                globales.tll.getLecturaActual().ls_codigoObservacion = "OB" + desc.substring(0, 3);
+            }
+        } catch (Throwable t) {
+            Utils.showMessageLong(context, t.getMessage());
+        } finally {
+            if (c != null)
+                c.close();
             closeDatabase();
             return null;
         }
-        c.moveToFirst();
-
-        if (c.getString(c.getColumnIndex("subanomalia")).equals("S")) {
-            String desc = c.getString(c.getColumnIndex("desc"));
-//			desc=Main.rellenaString(desc, " ", 18, false);
-//			globales.tll.getLecturaActual().setComentarios("OB"+desc.substring(0,3));
-            globales.tll.getLecturaActual().ls_codigoObservacion = "OB" + desc.substring(0, 3);
-        }
-
-        c.close();
-        closeDatabase();
-        return null;
     }
 
     @Override
@@ -1173,7 +1204,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         return new int[0];
     }
 
-    public String getNombreArchvio(int tipo) {
+    public String getNombreArchvio(int tipo) throws Exception {
 
         String ls_archivo = "";
         TransmitionObject to = new TransmitionObject();
@@ -1243,68 +1274,68 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         Regresa una clase con la información del resumen, de manera que pueda usarse en donde se ocupan sin los datos formateados.
      */
 
-    public ResumenEntity getResumenEntity(SQLiteDatabase db){
+    public ResumenEntity getResumenEntity(SQLiteDatabase db) throws Exception {
         Cursor c;
         ResumenEntity resumen = new ResumenEntity();
 
         c = db.rawQuery("Select count(*) canti from Ruta", null);
         c.moveToFirst();
-        resumen.totalRegistros = c.getLong(c.getColumnIndex("canti"));
+        resumen.totalRegistros = Utils.getLong(c, "canti", 0);
 
         try {
             c = db.rawQuery("Select value from config where key='cpl'", null);
             c.moveToFirst();
-            resumen.archivo = c.getString(c.getColumnIndex("value"));
+            resumen.archivo = Utils.getString(c, "value", "");
         } catch (Throwable e) {
             resumen.archivo = "";
         }
 
         c = db.rawQuery("Select count(*) canti from ruta where tipoLectura='0'", null);
         c.moveToFirst();
-        resumen.cantLecturasRealizadas = c.getLong(c.getColumnIndex("canti"));
+        resumen.cantLecturasRealizadas = Utils.getLong(c, "canti", 0);
 
         c = db.rawQuery("Select count(*) canti from fotos", null);
         c.moveToFirst();
-        resumen.cantFotos = c.getLong(c.getColumnIndex("canti"));
+        resumen.cantFotos = Utils.getLong(c, "canti", 0);
         c.close();
 
         c = db.rawQuery("Select count(*) canti from ruta where tipoLectura='4'", null);
         c.moveToFirst();
-        resumen.cantSinLectura = c.getLong(c.getColumnIndex("canti"));
+        resumen.cantSinLectura = Utils.getLong(c, "canti", 0);
         c.close();
 
         c = db.rawQuery("Select count(*) canti from ruta where trim(anomalia)<>''", null);
         c.moveToFirst();
-        resumen.cantConAnomalia = c.getLong(c.getColumnIndex("canti"));
+        resumen.cantConAnomalia = Utils.getLong(c, "canti", 0);
         c.close();
 
         c = db.rawQuery("Select count(*) canti from ruta where trim(tipoLectura)=''", null);
         c.moveToFirst();
-        resumen.cantLecturasPendientes = c.getLong(c.getColumnIndex("canti"));
+        resumen.cantLecturasPendientes = Utils.getLong(c, "canti", 0);
         c.close();
 
         c = db.rawQuery("Select count(*) canti from NoRegistrados", null);
         c.moveToFirst();
-        resumen.cantNoRegistrados = c.getLong(c.getColumnIndex("canti"));
+        resumen.cantNoRegistrados = Utils.getLong(c, "canti", 0);
         c.close();
 
         c = db.rawQuery("Select count(*) canti from ruta where envio=1", null);
         c.moveToFirst();
-        resumen.ordenesSinEnviar = c.getLong(c.getColumnIndex("canti"));
+        resumen.ordenesSinEnviar = Utils.getLong(c, "canti", 0);
         c.close();
 
         c = db.rawQuery("Select count(*) canti from fotos where envio=1", null);
         c.moveToFirst();
-        resumen.fotosSinEnviar = c.getLong(c.getColumnIndex("canti"));
+        resumen.fotosSinEnviar = Utils.getLong(c, "canti", 0);
         c.close();
-        
+
         return resumen;
     }
 
     public Vector<EstructuraResumen> getResumen(ResumenEntity resumenIn) {
         float porcentaje = 0;
         Vector<EstructuraResumen> resumenOut = new Vector<EstructuraResumen>();
-        
+
         DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols();
         otherSymbols.setDecimalSeparator('.');
         otherSymbols.setGroupingSeparator(',');
@@ -1313,8 +1344,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         // RLR, 2022-10-23, Se agregan información de la unidad.
         try {
             resumenOut.add(new EstructuraResumen(DbLecturasMgr.getInstance().getUnidades(this.context), "Unidad:"));
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             resumenOut.add(new EstructuraResumen("---", "Unidad:"));
         }
 
@@ -1323,7 +1353,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         resumenOut.add(new EstructuraResumen("Lecturas en la Ruta", String.valueOf(resumenIn.totalRegistros)));
         resumenOut.add(new EstructuraResumen(context.getString(R.string.msj_main_fotos_tomadas), String.valueOf(resumenIn.cantFotos)));
         resumenOut.add(new EstructuraResumen("", ""));
-        
+
         porcentaje = (((float) resumenIn.cantLecturasPendientes * 100) / (float) resumenIn.totalRegistros);
         resumenOut.add(new EstructuraResumen("Lecturas Pendientes", String.valueOf(resumenIn.cantLecturasPendientes), formatter.format(porcentaje) + "%"));
         porcentaje = (((float) resumenIn.cantLecturasRealizadas * 100) / (float) resumenIn.totalRegistros);
@@ -1348,7 +1378,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         return resumenOut;
     }
 
-    public Vector<EstructuraResumen> getResumen(SQLiteDatabase db) {
+    public Vector<EstructuraResumen> getResumen(SQLiteDatabase db) throws Exception {
         ResumenEntity resumenIn;
         Vector<EstructuraResumen> resumenOut = null;
 
@@ -1408,14 +1438,14 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         }
     }
 
-    public String getEstructuras(TransmitionObject to, int tipo, int tipoTransmision) {
+    public String getEstructuras(TransmitionObject to, int tipo, int tipoTransmision) throws Exception {
         openDatabase();
         String resultado = getEstructuras(db, to, tipo, tipoTransmision);
         closeDatabase();
         return resultado;
     }
 
-    public String getEstructuras(SQLiteDatabase db, TransmitionObject to, int tipo, int tipoTransmision) {
+    public String getEstructuras(SQLiteDatabase db, TransmitionObject to, int tipo, int tipoTransmision) throws Exception {
         String ls_subcarpeta, ls_ruta, ls_itinerario, ls_unicom;
         //openDatabase();
 
@@ -1429,7 +1459,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
             return String.format(context.getString(R.string.msj_config_no_disponible), context.getString(R.string.info_servidorGPRS), context.getString(R.string.str_configuracion), context.getString(R.string.info_servidorGPRS));
 //			 }
 
-        to.ls_servidor = c.getString(c.getColumnIndex("value"));
+        to.ls_servidor = Utils.getString(c, "value", "");
         c.close();
         //Ahora vamos a ver que archivo es el que vamos a recibir... para nicaragua es el clp + la extension
         //Lo vamos a guardar en categoria, Asi le llamamos a los archivos desde "SuperLibretaDeDirecciones" 2013 (c) ;)
@@ -1442,7 +1472,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
             return String.format(context.getString(R.string.msj_config_no_disponible), "CPL", context.getString(R.string.str_configuracion), "CPL");
 
         //ls_categoria="";
-        ls_itinerario = c.getString(c.getColumnIndex("value"));
+        ls_itinerario = Utils.getString(c, "value", "");
         c.close();
 
         //Por ultimo la ruta de descarga... Como es un servidor web, hay que quitarle el C:\... mejor empezamos desde lo que sigue. De cualquier manera, deberá tener el siguiente formato
@@ -1452,7 +1482,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         if (!validaCampoDeConfig(c))
             return String.format(context.getString(R.string.msj_config_no_disponible), context.getString(R.string.info_rutaDescarga), context.getString(R.string.str_configuracion), context.getString(R.string.info_rutaDescarga));
 
-        to.ls_carpeta = c.getString(c.getColumnIndex("value"));
+        to.ls_carpeta = Utils.getString(c, "value", "");
 
 
         c.close();
@@ -1507,7 +1537,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
     }
 
 
-    public byte[] encabezadoAMandar(SQLiteDatabase db) {
+    public byte[] encabezadoAMandar(SQLiteDatabase db)  throws Exception {
         TransmitionObject to = new TransmitionObject();
         getEstructuras(db, to, TransmisionesPadre.TRANSMISION, TransmisionesPadre.WIFI);
 
@@ -1515,7 +1545,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
         c.moveToFirst();
 
-        String ruta = c.getString(c.getColumnIndex("value")) + "\\";
+        String ruta = Utils.getString(c, "value", "") + "\\";
 
         c.close();
 
@@ -1523,14 +1553,14 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
         c.moveToFirst();
 
-        ruta += c.getString(c.getColumnIndex("value")) + "\\UP\\";
+        ruta += Utils.getString(c, "value", "") + "\\UP\\";
 
         c.close();
 
         c = db.rawQuery("Select registro from encabezado", null);
 
         c.moveToFirst();
-        byte[] bytesAEnviar = c.getBlob(c.getColumnIndex("registro"));
+        byte[] bytesAEnviar = Utils.getBlob(c, "registro");
         c.close();
 
         bytesAEnviar[0] = '.';
@@ -1543,7 +1573,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         c = db.rawQuery("Select count(*) canti from ruta", null);
         c.moveToFirst();
 
-        valor = String.valueOf(c.getLong(c.getColumnIndex("canti")));
+        valor = String.valueOf(Utils.getLong(c, "canti", 0));
         valor = Main.rellenaString(valor, " ", 4, false);
         c.close();
 
@@ -1558,7 +1588,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         return bytesAEnviar;
     }
 
-    public void noRegistradosinMedidor() {
+    public void noRegistradosinMedidor() throws Exception {
         Bundle bu_params = new Bundle();
 
         bu_params.putString(String.valueOf(NUM_MEDIDOR), "CONDIR");
@@ -1593,10 +1623,10 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         try {
             c = db.rawQuery("Select unicom, ruta, itinerario, ciclo from ruta limit 1 ", null);
             c.moveToFirst();
-            unicom = c.getString(c.getColumnIndex("unicom"));
-            ruta = c.getString(c.getColumnIndex("ruta"));
-            itinerario = c.getString(c.getColumnIndex("itinerario"));
-            ciclo = c.getString(c.getColumnIndex("ciclo"));
+            unicom = Utils.getString(c, "unicom", "");
+            ruta = Utils.getString(c, "ruta", "");
+            itinerario = Utils.getString(c, "itinerario", "");
+            ciclo = Utils.getString(c, "ciclo", "");
 
 
         } catch (Throwable e) {
@@ -1606,7 +1636,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         try {
             c = db.rawQuery("Select value from config where key='cpl'", null);
             c.moveToFirst();
-            cpl = c.getString(c.getColumnIndex("value"));
+            cpl = Utils.getString(c, "value", "");
         } catch (Throwable e) {
 
         }
@@ -1614,7 +1644,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         try {
             c = db.rawQuery("Select value from config where key='server_gprs'", null);
             c.moveToFirst();
-            mac_bt = c.getString(c.getColumnIndex("value"));
+            mac_bt = Utils.getString(c, "value", "");
         } catch (Throwable e) {
 
         }
@@ -1637,8 +1667,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
             if (emp != null) {
                 try {
                     resumen.add(new EstructuraResumen(DbLecturasMgr.getInstance().getUnidades(this.context), "Unidad:"));
-                } catch (Exception e)
-                {
+                } catch (Exception e) {
                     resumen.add(new EstructuraResumen("---", "Unidad:"));
                 }
                 resumen.add(new EstructuraResumen(emp.NombreCompleto, "Lect:"));
@@ -1787,10 +1816,8 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         if (lect != null) {
             selloRetNumero = Utils.ifNullStr(globales.tll.getLecturaActual().selloRetNumero);
             aviso = Utils.ifNullStr(globales.tll.getLecturaActual().is_aviso);
-        }
-        else
-        {
-            selloRetNumero ="";
+        } else {
+            selloRetNumero = "";
             aviso = "";
         }
 

@@ -1085,7 +1085,7 @@ public class TomaDeLecturasColombia extends TomaDeLecturasGenerica {
 		return archivos;
 	}
 	
-	public String getNombreArchvio(int tipo){
+	public String getNombreArchvio(int tipo) throws Exception {
 		
 		String ls_archivo="";
 		

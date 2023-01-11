@@ -14,6 +14,7 @@ public class DialogoMensaje {
     private TextView mTxtMensaje;
     private TextView mTxtDetalle;
     private Button mBtnAceptar;
+    private String mMensajeDetalle = "";
 
     public interface Resultado {
         public void Aceptar(boolean EsOk);
@@ -45,7 +46,7 @@ public class DialogoMensaje {
             mTxtMensaje.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (!mensajeDetalle.equals(""))
+                    if (!mMensajeDetalle.trim().equals(""))
                         mTxtDetalle.setVisibility(View.VISIBLE);
                 }
             });
@@ -61,6 +62,7 @@ public class DialogoMensaje {
             });
         }
 
+        mMensajeDetalle = mensajeDetalle;
         mDialogo.setTitle(titulo);
         mTxtMensaje.setText(mensajeUsuario);
         mTxtDetalle.setText(mensajeDetalle);

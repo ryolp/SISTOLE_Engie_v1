@@ -26,7 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
 
-import enruta.sistole_engie.clases.BuscarMedidorEnWebCallback;
 import enruta.sistole_engie.clases.BuscarMedidorMgr;
 import enruta.sistole_engie.clases.Utils;
 import enruta.sistole_engie.entities.BuscarMedidorRequest;
@@ -65,6 +64,9 @@ public class BuscarMedidorFragment extends Fragment {
 
     protected BuscarMedidorMgr mBuscarMedidorMgr = null;
     protected DialogoDatosMedidor mDialogoMostrarMedidor = null;
+
+    // RL, 2023-01-10, Se agrega el mostrar un diálogo para mostrar mensajes o errores.
+    private DialogoMensaje mDialogoMsg = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -326,44 +328,48 @@ public class BuscarMedidorFragment extends Fragment {
                 }
                 mHandler.post(new Runnable() {
                     public void run() {
-                        if (bm_papa.globales.dirigirAlUnicoResultado) {
-                            //Checamos si existe mas de una, y si lo hay, regresamos el secuencial del primer registro.
-                            openDatabase();
+                        try {
+                            if (bm_papa.globales.dirigirAlUnicoResultado) {
+                                //Checamos si existe mas de una, y si lo hay, regresamos el secuencial del primer registro.
+                                openDatabase();
 
-                            Cursor c = null;
+                                Cursor c = null;
 
-                            switch (bm_papa.tipoDeMedidoresABuscar) {
-                                case BuscarMedidor.SIN_LECTURA:
-                                    c = db.rawQuery("Select min(cast(secuenciaReal as integer)) secuencia from ruta where tipoLectura='' and serieMedidor like '%" + et_medidor.getText().toString().trim() + "%' group by serieMedidor", null);
-                                    break;
-                                case BuscarMedidor.CON_LECTURA:
+                                switch (bm_papa.tipoDeMedidoresABuscar) {
+                                    case BuscarMedidor.SIN_LECTURA:
+                                        c = db.rawQuery("Select min(cast(secuenciaReal as integer)) secuencia from ruta where tipoLectura='' and serieMedidor like '%" + et_medidor.getText().toString().trim() + "%' group by serieMedidor", null);
+                                        break;
+                                    case BuscarMedidor.CON_LECTURA:
 //   	   		     			tll.siguienteMedidorACapturarSinVuelta(true, false);
-                                    c = db.rawQuery("Select min(cast(secuenciaReal as integer)) secuencia from ruta where tipoLectura='4' and serieMedidor like '%" + et_medidor.getText().toString().trim() + "%' group by serieMedidor", null);
-                                    break;
-                                case BuscarMedidor.TODOS:
-                                    c = db.rawQuery("Select min(cast(secuenciaReal as integer)) secuencia from ruta where serieMedidor like '%" + et_medidor.getText().toString().trim() + "%' group by serieMedidor", null);
-                                    break;
-                            }
+                                        c = db.rawQuery("Select min(cast(secuenciaReal as integer)) secuencia from ruta where tipoLectura='4' and serieMedidor like '%" + et_medidor.getText().toString().trim() + "%' group by serieMedidor", null);
+                                        break;
+                                    case BuscarMedidor.TODOS:
+                                        c = db.rawQuery("Select min(cast(secuenciaReal as integer)) secuencia from ruta where serieMedidor like '%" + et_medidor.getText().toString().trim() + "%' group by serieMedidor", null);
+                                        break;
+                                }
 
-                            c.moveToFirst();
+                                c.moveToFirst();
 
 
-                            closeDatabase();
-                            if (c.getCount() == 1 && bm_papa.globales.mostrarBuscarDespuesDeCapturar) {
-                                bm_papa.regresaResultado(c.getInt(c.getColumnIndex("secuencia")));
-                                c.close();
                                 closeDatabase();
-                                return;
+                                if (c.getCount() == 1 && bm_papa.globales.mostrarBuscarDespuesDeCapturar) {
+                                    bm_papa.regresaResultado(Utils.getInt(c, "secuencia", -1));
+                                    c.close();
+                                    closeDatabase();
+                                    return;
+                                }
+
+                                c.close();
+
+                                closeDatabase();
+
                             }
-
-                            c.close();
-
-                            closeDatabase();
-
+                            //Hay que ver si solo existe una
+                            lv_medidores.setAdapter(adapter);
+                            setDatos();
+                        } catch (Throwable t) {
+                            mostrarMensaje("Error", "Error inesperado. Contacte soporte", t.getMessage(), null);
                         }
-                        //Hay que ver si solo existe una
-                        lv_medidores.setAdapter(adapter);
-                        setDatos();
                     }
                 });
 
@@ -377,10 +383,14 @@ public class BuscarMedidorFragment extends Fragment {
                     if (vStrings.size() != 0)
                         mMedidoresEncontrados = true;
 
-                if (!mMedidoresEncontrados)
-                    buscarMedidorEnWeb(mNumMedidor);
+                if (!mMedidoresEncontrados) {
+                    mHandler.post(new Runnable() {
+                        public void run() {
+                            buscarMedidorEnWeb(mNumMedidor);
+                        }
+                    });
+                }
             }
-
         };
 
         lv_medidores.setVisibility(View.GONE);
@@ -388,6 +398,7 @@ public class BuscarMedidorFragment extends Fragment {
 
         tv_msj_buscar.setVisibility(View.GONE);
         busqueda.start();
+
         esconderTeclado();
 
 
@@ -467,19 +478,26 @@ public class BuscarMedidorFragment extends Fragment {
         if (mBuscarMedidorMgr == null) {
             mBuscarMedidorMgr = new BuscarMedidorMgr(this.getContext());
 
-            mBuscarMedidorMgr.setOnBuscarMedidorListener(new BuscarMedidorEnWebCallback() {
+            mBuscarMedidorMgr.setOnBuscarMedidorListener(new BuscarMedidorMgr.BuscarMedidorEnWebCallback() {
                 @Override
                 public void enExito(BuscarMedidorResponse resp) {
                     mostrarResultadosBuscarMedidorWeb(resp);
                 }
 
                 @Override
-                public void enFallo(BuscarMedidorRequest req, BuscarMedidorResponse resp, int codigo, String mensaje) {
-                    Utils.showMessageLong(BuscarMedidorFragment.this.getContext(), "No hay conexión a Internet para buscar este medidor en el servidor : " + mensaje);
+                public void enFallo(BuscarMedidorResponse resp) {
+                    mostrarResultadosBuscarMedidorWeb(resp);
+                }
+
+                @Override
+                public void enFalloComunicacion(BuscarMedidorRequest req, BuscarMedidorResponse resp, int numError,
+                                                String mensajeError, String detalleError) {
+                    mostrarMensaje("Alerta", "No hay conexión a Internet para buscar este medidor en el servidor", detalleError, null);
                 }
             });
         }
 
+        Utils.showMessageShort(this.getActivity(), "Buscando en Sistole Web...");
         mBuscarMedidorMgr.buscarMedidorEnWeb(this.bm_papa.globales, numMedidor, "");
     }
 
@@ -496,10 +514,37 @@ public class BuscarMedidorFragment extends Fragment {
             }
             mDialogoMostrarMedidor.mostrarResultadoBusquedaWeb(resp);
         } else
-            Utils.showMessageLong(BuscarMedidorFragment.this.getContext(), "Tampoco se encontraron medidores en Sistole Web con el número");
-
+            mostrarMensaje("Información", "No se encontraron medidores en Sistole Web con el número capturado");
     }
 
+        /* -------------------------------------------------------------------------------------------
+    Muestra el diálogo o ventana para mostrar mensajes diversos o de error.
+    El detalle del error está oculto hasta que se hace click en el mensaje.
+    ------------------------------------------------------------------------------------------- */
+
+    private void mostrarMensaje(String titulo, String mensaje, String
+            detalleError, DialogoMensaje.Resultado resultado) {
+        if (mDialogoMsg == null) {
+            mDialogoMsg = new DialogoMensaje(this.getActivity());
+        }
+
+        mDialogoMsg.setOnResultado(resultado);
+        mDialogoMsg.mostrarMensaje(titulo, mensaje, detalleError);
+    }
+
+    private void mostrarMensaje(String titulo, String mensaje, Throwable
+            t, DialogoMensaje.Resultado resultado) {
+        if (mDialogoMsg == null) {
+            mDialogoMsg = new DialogoMensaje(this.getActivity());
+        }
+
+        mDialogoMsg.setOnResultado(resultado);
+        mDialogoMsg.mostrarMensaje(titulo, mensaje, t.getMessage());
+    }
+
+    private void mostrarMensaje(String titulo, String mensaje) {
+        mostrarMensaje(titulo, mensaje, "", null);
+    }
 
 }
 	

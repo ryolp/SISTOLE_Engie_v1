@@ -148,22 +148,25 @@ public class trasmisionDatos extends TransmisionesPadre {
 
         TransmitionObject to = new TransmitionObject();
 
-        if (!validaCampoDeConfig(globales.tdlg.getEstructuras(to, bu_params.getInt("tipo"), bu_params.getInt("metodo")))) {
-            return;
+        try {
+            if (!validaCampoDeConfig(globales.tdlg.getEstructuras(to, bu_params.getInt("tipo"), bu_params.getInt("metodo")))) {
+                return;
+            }
+
+            ls_servidor = to.ls_servidor;
+            ls_carpeta = to.ls_carpeta;
+            ls_categoria = to.ls_categoria;
+
+            tv_progreso = (TextView) findViewById(R.id.ep_tv_progreso);
+            tv_indicador = (TextView) findViewById(R.id.ep_tv_indicador);
+            pb_progress = (ProgressBar) findViewById(R.id.ep_gauge);
+
+            mHandler = new Handler();
+
+            seleccion();
+        } catch (Throwable t) {
+            Utils.showMessageLong(this, t.getMessage());
         }
-
-        ls_servidor = to.ls_servidor;
-        ls_carpeta = to.ls_carpeta;
-        ls_categoria = to.ls_categoria;
-
-        tv_progreso = (TextView) findViewById(R.id.ep_tv_progreso);
-        tv_indicador = (TextView) findViewById(R.id.ep_tv_indicador);
-        pb_progress = (ProgressBar) findViewById(R.id.ep_gauge);
-
-        mHandler = new Handler();
-
-        seleccion();
-
     }
 
     public void transmitir() {
@@ -947,13 +950,13 @@ public class trasmisionDatos extends TransmisionesPadre {
         yaAcabo = true;
     }
 
-    private String generaCadenaAEnviar(Cursor c) {
+    private String generaCadenaAEnviar(Cursor c) throws  Exception {
         String ls_cadena = "";
         String ls_lectura;
         c.moveToFirst();
         String ls_tmpSubAnom = "";
 
-        ls_lectura = c.getString(c.getColumnIndex("lectura"));
+        ls_lectura = Utils.getString(c, "lectura", "");
 
         ls_cadena = ls_lectura.length() == 0 ? "4" : "0"; // Indicador de tipo
         // de lectura
@@ -961,11 +964,11 @@ public class trasmisionDatos extends TransmisionesPadre {
                 globales.tdlg.long_registro, true);
         ls_cadena += Main.rellenaString(ls_lectura, "0",
                 globales.tdlg.long_registro, true);
-        ls_cadena += c.getString(c.getColumnIndex("fecha"));
-        ls_cadena += c.getString(c.getColumnIndex("hora"));
+        ls_cadena += Utils.getString(c, "fecha", "");
+        ls_cadena += Utils.getString(c, "hora", "");
 
         ls_cadena += Main.rellenaString(
-                c.getString(c.getColumnIndex("anomalia")), " ",
+                Utils.getString(c,"anomalia", ""), " ",
                 globales.tdlg.long_registro, true);
         // Esto no se bien de que se trata, asi que de momento dejaremos
         // ceros...
@@ -980,89 +983,92 @@ public class trasmisionDatos extends TransmisionesPadre {
     }
 
     public void preguntaArchivo() {
-        AlertDialog alert;
+        try {
+            AlertDialog alert;
 
-        LayoutInflater inflater = this.getLayoutInflater();
+            LayoutInflater inflater = this.getLayoutInflater();
 
-        String ls_archivo;
+            String ls_archivo;
 
-        final View view = inflater.inflate(R.layout.lote_a_cargar, null);
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            final View view = inflater.inflate(R.layout.lote_a_cargar, null);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        final trasmisionDatos slda = this;
-        final String[] selectionArgs = {"archivo"};
-        builder.setView(view);
+            final trasmisionDatos slda = this;
+            final String[] selectionArgs = {"archivo"};
+            builder.setView(view);
 
-        final EditText et_archivocarga = (EditText) view
-                .findViewById(R.id.et_archivocarga);
+            final EditText et_archivocarga = (EditText) view
+                    .findViewById(R.id.et_archivocarga);
 
-        openDatabase();
+            openDatabase();
 
-        Cursor c = db.rawQuery("Select value from config where key=?",
-                selectionArgs);
+            Cursor c = db.rawQuery("Select value from config where key=?",
+                    selectionArgs);
 
-        if (c.getCount() > 0) {
-            c.moveToFirst();
-            ls_archivo = c.getString(c.getColumnIndex("value"));
-            if (ls_archivo.indexOf(".") > 0) {
-                et_archivocarga.setText(ls_archivo.substring(0,
-                        ls_archivo.indexOf(".")));
-            } else {
-                et_archivocarga.setText(ls_archivo);
+            if (c.getCount() > 0) {
+                c.moveToFirst();
+                ls_archivo = Utils.getString(c, "value", "");
+                if (ls_archivo.indexOf(".") > 0) {
+                    et_archivocarga.setText(ls_archivo.substring(0,
+                            ls_archivo.indexOf(".")));
+                } else {
+                    et_archivocarga.setText(ls_archivo);
+                }
+
             }
+            /*
+             * else{ et_archivocarga.setText("cpl001"); }
+             */
 
-        }
-        /*
-         * else{ et_archivocarga.setText("cpl001"); }
-         */
+            closeDatabase();
 
-        closeDatabase();
+            builder.setCancelable(false)
+                    .setPositiveButton(R.string.continuar,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    ls_categoria = et_archivocarga.getText()
+                                            .toString().trim()
+                                            + "." + ls_extension;
+                                    if (ls_categoria.length() == 0)
+                                        mensajeVacioLote();
+                                    else {
+                                        openDatabase();
 
-        builder.setCancelable(false)
-                .setPositiveButton(R.string.continuar,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                ls_categoria = et_archivocarga.getText()
-                                        .toString().trim()
-                                        + "." + ls_extension;
-                                if (ls_categoria.length() == 0)
-                                    mensajeVacioLote();
-                                else {
-                                    openDatabase();
+                                        Cursor c = db
+                                                .rawQuery(
+                                                        "Select value from config where key=?",
+                                                        selectionArgs);
 
-                                    Cursor c = db
-                                            .rawQuery(
-                                                    "Select value from config where key=?",
-                                                    selectionArgs);
+                                        if (c.getCount() > 0)
+                                            db.execSQL("update config set value='"
+                                                    + ls_categoria
+                                                    + "' where key='archivo'");
+                                        else
+                                            db.execSQL("insert into config(key, value) values('archivo', '"
+                                                    + ls_categoria + "')");
 
-                                    if (c.getCount() > 0)
-                                        db.execSQL("update config set value='"
-                                                + ls_categoria
-                                                + "' where key='archivo'");
-                                    else
-                                        db.execSQL("insert into config(key, value) values('archivo', '"
-                                                + ls_categoria + "')");
+                                        closeDatabase();
+                                        recepcion();
+                                    }
 
-                                    closeDatabase();
-                                    recepcion();
+                                    dialog.dismiss();
                                 }
+                            })
+                    .setNegativeButton(R.string.cancelar,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                    mostrarAlerta = false;
+                                    muere(true, "");
 
-                                dialog.dismiss();
-                            }
-                        })
-                .setNegativeButton(R.string.cancelar,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                                mostrarAlerta = false;
-                                muere(true, "");
+                                }
+                            });
 
-                            }
-                        });
-
-        builder.show();
-        esconderTeclado(et_archivocarga);
-
+            builder.show();
+            esconderTeclado(et_archivocarga);
+        } catch (Throwable t) {
+            Utils.showMessageLong(this, t.getMessage());
+        }
     }
 
     // Elimina todo lo que necesite para que sea numero

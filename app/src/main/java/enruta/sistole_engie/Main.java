@@ -145,12 +145,14 @@ public class Main extends FragmentActivity implements TabListener {
         super.onCreate(savedInstanceState);
         //requestWindowFeature(Window.);
         setContentView(R.layout.main_tabs);
-        globales = ((Globales) getApplicationContext());
 
-        porcentaje = globales.porcentaje_main;
-        porcentaje2 = globales.porcentaje_main2;
+        try {
+            globales = ((Globales) getApplicationContext());
 
-        mHandler = new Handler();
+            porcentaje = globales.porcentaje_main;
+            porcentaje2 = globales.porcentaje_main2;
+
+            mHandler = new Handler();
 
 //		openDatabase();
 //		
@@ -160,7 +162,7 @@ public class Main extends FragmentActivity implements TabListener {
 //		closeDatabase();
 
 
-        //setTabs();
+            //setTabs();
 
 //		ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
 //        actionBar = getActionBar();
@@ -176,55 +178,55 @@ public class Main extends FragmentActivity implements TabListener {
 //                    .setTabListener(this));
 //        }
 
-        setTitle("");
+            setTitle("");
 
-        Bundle bu_params = this.getIntent().getExtras();
+            Bundle bu_params = this.getIntent().getExtras();
 
-        ii_rol = bu_params.getInt("rol");
-        esSuperUsuario = bu_params.getBoolean("esSuperUsuario");
-        globales.esSuperUsuario = this.esSuperUsuario;
-        if (CPL.LECTURISTA == ii_rol) {
-            globales.is_nombre_Lect = bu_params.getString("nombre");
-            is_nombre_Lect = bu_params.getString("nombre");
-            globales.transmitirTodo = false;
+            ii_rol = bu_params.getInt("rol");
+            esSuperUsuario = bu_params.getBoolean("esSuperUsuario");
+            globales.esSuperUsuario = this.esSuperUsuario;
+            if (CPL.LECTURISTA == ii_rol) {
+                globales.is_nombre_Lect = bu_params.getString("nombre");
+                is_nombre_Lect = bu_params.getString("nombre");
+                globales.transmitirTodo = false;
 
-            TransmitionObject to = new TransmitionObject();
+                TransmitionObject to = new TransmitionObject();
 
-            if (!globales.tdlg.getEstructuras(to, trasmisionDatos.TRANSMISION, TransmisionesPadre.WIFI).equals("")) {
-                return;
+                if (!globales.tdlg.getEstructuras(to, trasmisionDatos.TRANSMISION, TransmisionesPadre.WIFI).equals("")) {
+                    return;
+                }
+
+                ttw = new ThreadTransmitirWifi(new Serializacion(Serializacion.WIFI), globales,
+                        to.ls_carpeta, to.ls_servidor/* , int tipoTransmision */);
+                ttw.activity = this;
+
+                ttw.iniciaTarea(0);
+            } else {
+                globales.transmitirTodo = true;
             }
-
-            ttw = new ThreadTransmitirWifi(new Serializacion(Serializacion.WIFI), globales,
-                    to.ls_carpeta, to.ls_servidor/* , int tipoTransmision */);
-            ttw.activity = this;
-
-            ttw.iniciaTarea(0);
-        } else {
-            globales.transmitirTodo = true;
-        }
-        globales.tdlg.activacionDesactivacionOpciones(esSuperUsuario);
+            globales.tdlg.activacionDesactivacionOpciones(esSuperUsuario);
 
 
-        //actualizaResumen();
-        agregaRegistrosConfig();
+            //actualizaResumen();
+            agregaRegistrosConfig();
 
-        globales.calidadDeLaFoto = getIntValue("calidad_foto", globales.calidadDeLaFoto);
-        globales.sonidos = getIntValue("sonidos", 0) == 0;
-        globales.lote = getStringValue("lote", "");
+            globales.calidadDeLaFoto = getIntValue("calidad_foto", globales.calidadDeLaFoto);
+            globales.sonidos = getIntValue("sonidos", 0) == 0;
+            globales.lote = getStringValue("lote", "");
 
 
-        tv_versionNum = (TextView) findViewById(R.id.tv_version);
+            tv_versionNum = (TextView) findViewById(R.id.tv_version);
 
-        try {
-            versionNum = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-            version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-            tv_versionNum.setText(tv_versionNum.getText().toString() + " " + versionNum + "\n(" + version + ")");
+            try {
+                versionNum = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+                version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+                tv_versionNum.setText(tv_versionNum.getText().toString() + " " + versionNum + "\n(" + version + ")");
 
-        } catch (NameNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        //prueba();
+            } catch (NameNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            //prueba();
 
 //		versionFontSize=getIntValue( "versionFontSize",  versionFontSize);
 //		infoFontSize=getIntValue( "infoFontSize",  infoFontSize);
@@ -233,29 +235,34 @@ public class Main extends FragmentActivity implements TabListener {
 //		
 //		tv_versionNum.setTextSize(versionFontSize);
 //		tv_resumen.setTextSize(infoFontSize);
-        porcentaje = getDoubleValue("porcentaje_main", porcentaje);
-        porcentaje2 = getDoubleValue("porcentaje2_main", porcentaje2);
+            porcentaje = getDoubleValue("porcentaje_main", porcentaje);
+            porcentaje2 = getDoubleValue("porcentaje2_main", porcentaje2);
 
-        setSizes();
+            setSizes();
 
-        //Quiero ver si existen los parametros... los agregamos si no
-        openDatabase();
+            //Quiero ver si existen los parametros... los agregamos si no
+            openDatabase();
 
-        Cursor c = db.rawQuery("Select * from config where key='server_gprs'", null);
-        int canti = c.getCount();
-        c.close();
-        closeDatabase();
-        if (canti == 0) {
-            //Abrimos y cerramos
-            Intent intent = new Intent(this, Configuracion.class);
-            intent.putExtra("guardar", 1);
-            intent.putExtra("rol", ii_rol);
-            startActivityForResult(intent, CONFIG);
+            Cursor c = db.rawQuery("Select * from config where key='server_gprs'", null);
+            int canti = c.getCount();
+            c.close();
+            closeDatabase();
+            if (canti == 0) {
+                //Abrimos y cerramos
+                Intent intent = new Intent(this, Configuracion.class);
+                intent.putExtra("guardar", 1);
+                intent.putExtra("rol", ii_rol);
+                startActivityForResult(intent, CONFIG);
 
+            }
+
+
+            actualizaTabs();
+        } catch (Throwable t) {
+            Log.d("CPL", t.getMessage());
+            Utils.showMessageLong(this, t.getMessage());
         }
 
-
-        actualizaTabs();
 		/*View customNav = LayoutInflater.from(this).inflate(R.layout.configuracion, null);
 		getActionBar().setCustomView(customNav);*/
 
@@ -1136,23 +1143,25 @@ public class Main extends FragmentActivity implements TabListener {
     }
 
     public void setSizes() {
-        tv_versionNum.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) (porcentaje * versionFontSize));
-        //tv_resumen.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float)(porcentaje * infoFontSize));
-        Fragment page = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + 0);
-        // based on the current position you can then cast the page to the correct
-        // class and call the method:
-        if (/*viewPager.getCurrentItem() == 0 &&*/ page != null) {
-            ((Principal) page).actualizaResumen();
+        try {
+            tv_versionNum.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) (porcentaje * versionFontSize));
+            //tv_resumen.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float)(porcentaje * infoFontSize));
+            Fragment page = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + 0);
+            // based on the current position you can then cast the page to the correct
+            // class and call the method:
+            if (/*viewPager.getCurrentItem() == 0 &&*/ page != null) {
+                ((Principal) page).actualizaResumen();
+            }
+
+            page = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + 1);
+            // based on the current position you can then cast the page to the correct
+            // class and call the method:
+            if (/*viewPager.getCurrentItem() == 0 &&*/ page != null) {
+                ((Resumen) page).actualizaResumen();
+            }
+        } catch (Throwable t) {
+            Utils.showMessageLong(this, t.getMessage());
         }
-
-        page = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + 1);
-        // based on the current position you can then cast the page to the correct
-        // class and call the method:
-        if (/*viewPager.getCurrentItem() == 0 &&*/ page != null) {
-            ((Resumen) page).actualizaResumen();
-        }
-
-
     }
 	 
 	/* public void probarBluetooth(){
@@ -2291,17 +2300,17 @@ public class Main extends FragmentActivity implements TabListener {
 
         try {
             if (globales == null) {
-                Utils.showMessageLong(getApplicationContext(), "Error al hacer checkIn. Intente nuevamente");
+                mostrarMensaje("Alerta", "No se pudo hacer check in. Intente nuevamente");
                 return;
             }
 
             if (globales.sesionEntity == null) {
-                Utils.showMessageLong(getApplicationContext(), "No se ha autenticado en la aplicación");
+                mostrarMensaje("Alerta", "No se ha autenticado en la aplicación. Regrese a la pantalla inicial y capture su usuario y contraseña.");
                 return;
             }
 
             if (globales.sesionEntity.empleado == null) {
-                Utils.showMessageLong(getApplicationContext(), "No se ha autenticado en la aplicación");
+                mostrarMensaje("Alerta", "No se ha autenticado en la aplicación. Regrese a la pantalla inicial y capture su usuario y contraseña.");
                 return;
             }
 
@@ -2325,21 +2334,21 @@ public class Main extends FragmentActivity implements TabListener {
                                     globales.sesionEntity.empleado.RequiereCheckSeguridad = resp.RequiereCheckSeguridad;
                                     inicializarActualizarControles();
                                 } else
-                                    Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente. (1)");
+                                    mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (1)");
                             } else
-                                Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente. (2)");
+                                mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (2)");
                         }
 
                         @Override
                         public void onFailure(Call<OperacionResponse> call, Throwable t) {
-                            Utils.logMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente. (3)", t);
+                            mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (3)", t, null);
                             Log.d(TAG, "No hay conexión a internet. Intente nuevamente. (3) :" + t.getMessage());
                         }
                     }
             );
-        } catch (Exception ex) {
-            Utils.logMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente. (4)", ex);
-            Log.d(TAG, "No hay conexión a internet. Intente nuevamente. (3) :" + ex.getMessage());
+        } catch (Throwable t) {
+            mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (4)", t, null);
+            Log.d(TAG, "No hay conexión a internet. Intente nuevamente. (4) :" + t.getMessage());
         }
     }
 
@@ -2349,17 +2358,17 @@ public class Main extends FragmentActivity implements TabListener {
 
         try {
             if (globales == null) {
-                Utils.showMessageLong(getApplicationContext(), "Error al hacer checkIn. Intente nuevamente");
+                mostrarMensaje("Alerta", "No se pudo hacer check de seguridad. Intente nuevamente.");
                 return;
             }
 
             if (globales.sesionEntity == null) {
-                Utils.showMessageLong(getApplicationContext(), "No se ha autenticado en la aplicación");
+                mostrarMensaje("Alerta", "No se ha autenticado en la aplicación. Regrese a la pantalla inicial y capture su usuario y contraseña.");
                 return;
             }
 
             if (globales.sesionEntity.empleado == null) {
-                Utils.showMessageLong(getApplicationContext(), "No se ha autenticado en la aplicación");
+                mostrarMensaje("Alerta", "No se ha autenticado en la aplicación. Regrese a la pantalla inicial y capture su usuario y contraseña.");
                 return;
             }
 
@@ -2387,22 +2396,22 @@ public class Main extends FragmentActivity implements TabListener {
                                     globales.sesionEntity.empleado.RequiereCheckSeguridad = resp.RequiereCheckSeguridad;
                                     inicializarActualizarControles();
                                 } else {
-                                    Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente (1).");
+                                    mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (1)");
                                 }
                             } else
-                                Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente (2).");
+                                mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (2)");
                         }
 
                         @Override
                         public void onFailure(Call<OperacionResponse> call, Throwable t) {
-                            Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente (3).");
+                            mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (3)", t, null);
                             Log.d(TAG, "No hay conexión a internet. Intente nuevamente. (3) :" + t.getMessage());
                         }
                     }
             );
-        } catch (Exception ex) {
-            Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente (4).");
-            Log.d(TAG, "No hay conexión a internet. Intente nuevamente. (4) :" + ex.getMessage());
+        } catch (Throwable t) {
+            mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (4)", t, null);
+            Log.d(TAG, "No hay conexión a internet. Intente nuevamente. (4) :" + t.getMessage());
         }
     }
 
@@ -2412,17 +2421,17 @@ public class Main extends FragmentActivity implements TabListener {
 
         try {
             if (globales == null) {
-                Utils.showMessageLong(getApplicationContext(), "Error al hacer checkIn. Intente nuevamente");
+                mostrarMensaje("Alerta", "No se pudo hacer check out. Intente nuevamente");
                 return;
             }
 
             if (globales.sesionEntity == null) {
-                Utils.showMessageLong(getApplicationContext(), "No se ha autenticado en la aplicación");
+                mostrarMensaje("Alerta", "No se ha autenticado en la aplicación. Regrese a la pantalla inicial y capture su usuario y contraseña.");
                 return;
             }
 
             if (globales.sesionEntity.empleado == null) {
-                Utils.showMessageLong(getApplicationContext(), "No se ha autenticado en la aplicación");
+                mostrarMensaje("Alerta", "No se ha autenticado en la aplicación. Regrese a la pantalla inicial y capture su usuario y contraseña.");
                 return;
             }
 
@@ -2446,22 +2455,22 @@ public class Main extends FragmentActivity implements TabListener {
                                     globales.sesionEntity.empleado.RequiereCheckSeguridad = resp.RequiereCheckSeguridad;
                                     inicializarActualizarControles();
                                 } else {
-                                    Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente. (1)");
+                                    mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (1)");
                                 }
                             } else
-                                Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente. (2)");
+                                mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (2)");
                         }
 
                         @Override
                         public void onFailure(Call<OperacionResponse> call, Throwable t) {
-                            Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente. (3)");
+                            mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (3)", t, null);
                             Log.d(TAG, "No hay conexión a internet. Intente nuevamente. (3) :" + t.getMessage());
                         }
                     }
             );
-        } catch (Exception ex) {
-            Utils.showMessageLong(getApplicationContext(), "No hay conexión a internet. Intente nuevamente. (4) Intente nuevamente");
-            Log.d(TAG, "No hay conexión a internet. Intente nuevamente. (4) :" + ex.getMessage());
+        } catch (Throwable t) {
+            mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (4)", t, null);
+            Log.d(TAG, "No hay conexión a internet. Intente nuevamente. (4) :" + t.getMessage());
         }
     }
 
@@ -2470,7 +2479,8 @@ public class Main extends FragmentActivity implements TabListener {
     }
 
     /* -------------------------------------------------------------------------------------------
-    Muestra el diálogo o ventana para mostrar mensajes.
+    Muestra el diálogo o ventana para mostrar mensajes diversos o de error.
+    El detalle del error está oculto hasta que se hace click en el mensaje.
     ------------------------------------------------------------------------------------------- */
 
     private void mostrarMensaje(String titulo, String mensaje, String detalleError, DialogoMensaje.Resultado resultado) {
@@ -2480,6 +2490,15 @@ public class Main extends FragmentActivity implements TabListener {
 
         mDialogoMsg.setOnResultado(resultado);
         mDialogoMsg.mostrarMensaje(titulo, mensaje, detalleError);
+    }
+
+    private void mostrarMensaje(String titulo, String mensaje, Throwable t, DialogoMensaje.Resultado resultado) {
+        if (mDialogoMsg == null) {
+            mDialogoMsg = new DialogoMensaje(this);
+        }
+
+        mDialogoMsg.setOnResultado(resultado);
+        mDialogoMsg.mostrarMensaje(titulo, mensaje, t.getMessage());
     }
 
     private void mostrarMensaje(String titulo, String mensaje) {
@@ -2633,11 +2652,16 @@ public class Main extends FragmentActivity implements TabListener {
     private void actualizarResumen() {
         Fragment page;
 
-        page = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + 1);
-        // based on the current position you can then cast the page to the correct
-        // class and call the method:
-        if (/*viewPager.getCurrentItem() == 0 &&*/ page != null) {
-            ((Resumen) page).actualizaResumen();
+        try {
+            page = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + 1);
+            // based on the current position you can then cast the page to the correct
+            // class and call the method:
+            if (/*viewPager.getCurrentItem() == 0 &&*/ page != null) {
+                ((Resumen) page).actualizaResumen();
+            }
+        } catch (Throwable t)
+        {
+            Utils.showMessageLong(this, t.getMessage());
         }
     }
 

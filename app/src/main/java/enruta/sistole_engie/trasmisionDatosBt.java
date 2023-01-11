@@ -22,6 +22,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import enruta.sistole_engie.clases.Utils;
+
 
 public class trasmisionDatosBt extends TransmisionesPadre {
 
@@ -84,25 +86,29 @@ public class trasmisionDatosBt extends TransmisionesPadre {
 	       catch(Throwable e){}
 	       
 	       TransmitionObject to= new TransmitionObject();
-	       
-	       if(!validaCampoDeConfig(globales.tdlg.getEstructuras( to, bu_params.getInt("tipo"), BLUETOOTH))){
-	    	   return;
-	       }
-	       
-	       ls_servidor= to.ls_servidor;
-	       ls_carpeta=to.ls_carpeta;
-	       ls_categoria= to.ls_categoria;
-	       
-	        
-	        tv_progreso = (TextView) findViewById(R.id.ep_tv_progreso);
-			tv_indicador = (TextView) findViewById(R.id.ep_tv_indicador);
-			pb_progress = (ProgressBar) findViewById(R.id.ep_gauge);
-			
-			mHandler=new Handler();
-			
-			
-			seleccion();
-			
+
+		   try {
+			   if (!validaCampoDeConfig(globales.tdlg.getEstructuras(to, bu_params.getInt("tipo"), BLUETOOTH))) {
+				   return;
+			   }
+
+			   ls_servidor = to.ls_servidor;
+			   ls_carpeta = to.ls_carpeta;
+			   ls_categoria = to.ls_categoria;
+
+
+			   tv_progreso = (TextView) findViewById(R.id.ep_tv_progreso);
+			   tv_indicador = (TextView) findViewById(R.id.ep_tv_indicador);
+			   pb_progress = (ProgressBar) findViewById(R.id.ep_gauge);
+
+			   mHandler = new Handler();
+
+
+			   seleccion();
+		   }
+		   catch (Throwable t) {
+			   Utils.showMessageLong(this, t.getMessage());
+		   }
 	}
 	
 	public void openBluetooth() throws Throwable{

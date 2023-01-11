@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.TextView;
 import enruta.sistole_engie.R;
+import enruta.sistole_engie.clases.Utils;
 
 public class Resumen extends Fragment {
 	
@@ -32,35 +33,36 @@ public class Resumen extends Fragment {
 	       return rootView;
 	   }
 	   
-	   public void actualizaResumen(){
-		   long ll_total;
-	    	
-	    	
-	    	String ls_resumen;
-	    	final GridView gv_resumen= (GridView) rootView.findViewById(R.id.gv_resumen);
-	    	tv_resumen= (TextView) rootView.findViewById(R.id.tv_resumen);
-	    	Vector <EstructuraResumen>resumen= null;
-	    	
-	    	Cursor c;
-	    	openDatabase();
-	    	c= db.rawQuery("Select count(*) canti from Ruta", null);
-	    	c.moveToFirst();
-	    	ll_total=c.getLong(c.getColumnIndex("canti"));
-	    	if (ll_total>0){
-	    		
-	    		resumen= ma_papa.globales.tdlg.getResumen(db);
-	    		
-	        	 final ResumenGridAdapter adapter = new ResumenGridAdapter(getActivity(), resumen, ma_papa.infoFontSize * ma_papa.porcentaje2);
-	        	 
+	   public void actualizaResumen() {
+		   try {
+			   long ll_total;
+
+
+			   String ls_resumen;
+			   final GridView gv_resumen = (GridView) rootView.findViewById(R.id.gv_resumen);
+			   tv_resumen = (TextView) rootView.findViewById(R.id.tv_resumen);
+			   Vector<EstructuraResumen> resumen = null;
+
+			   Cursor c;
+			   openDatabase();
+			   c = db.rawQuery("Select count(*) canti from Ruta", null);
+			   c.moveToFirst();
+			   ll_total = c.getLong(c.getColumnIndex("canti"));
+			   if (ll_total > 0) {
+
+				   resumen = ma_papa.globales.tdlg.getResumen(db);
+
+				   final ResumenGridAdapter adapter = new ResumenGridAdapter(getActivity(), resumen, ma_papa.infoFontSize * ma_papa.porcentaje2);
+
 //	        	 gv_resumen.invalidateViews();
 //	        	 adapter.notifyDataSetChanged();
-	        	 
-	        	 gv_resumen.setAdapter(adapter);
-	        	 
-			    	
-		        	tv_resumen.setVisibility(View.GONE);
-		        	gv_resumen.setVisibility(View.VISIBLE);
-		        	
+
+				   gv_resumen.setAdapter(adapter);
+
+
+				   tv_resumen.setVisibility(View.GONE);
+				   gv_resumen.setVisibility(View.VISIBLE);
+
 //		        	gv_resumen.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 //		    			@Override
 //		    			public void onGlobalLayout() {
@@ -70,22 +72,23 @@ public class Resumen extends Fragment {
 //		    			   
 //		    			 }
 //		    			});
-		        	
+
 //		        	ViewGroup.LayoutParams layoutParams = gv_resumen.getLayoutParams();
 //		        	layoutParams.height =(int) adapter.height; //this is in pixels
 //		        	gv_resumen.setLayoutParams(layoutParams);
-		        	
-		        	
-	    	} else{
+
+
+			   } else {
 //	    		tv_resumen.setText("No hay itinerarios cargados" );
-	    		tv_resumen.setVisibility(View.VISIBLE);
-	        	gv_resumen.setVisibility(View.GONE);
-	    	}
-	    	
-	    	
-	    	closeDatabase();
-	    	
-	    	
+				   tv_resumen.setVisibility(View.VISIBLE);
+				   gv_resumen.setVisibility(View.GONE);
+			   }
+
+
+			   closeDatabase();
+		   } catch (Throwable t) {
+			   Utils.showMessageLong(this.getActivity(), t.getMessage());
+		   }
 	    }
 	    
 	    private void openDatabase(){
