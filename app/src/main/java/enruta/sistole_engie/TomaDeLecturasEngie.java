@@ -882,12 +882,12 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         globales.tlc.add(new Campo(25, "TipoDeCliente", 444, 10, Campo.I, " "));
         globales.tlc.add(new Campo(26, "nota1", 404, 10, Campo.I, " "));
 
-        // RL, 13/12/22, Vamos a agregar unas Columnas Nuevas
-
+        // RL, 13/12/22, Columnas nuevas
         globales.tlc.add(new Campo(27, "Porcion", 464, 10, Campo.I, " "));
-        globales.tlc.add(new Campo(28, "idUnidadLect", 474, 10, Campo.I, " "));
-        globales.tlc.add(new Campo(29, "idRegionalLect", 484, 10, Campo.I, " "));
-        globales.tlc.add(new Campo(30, "Regional", 494, 10, Campo.I, " "));
+        globales.tlc.add(new Campo(28, "idUnidadLect", 474, 2, Campo.I, " "));
+        globales.tlc.add(new Campo(29, "idRegionalLect", 476, 2, Campo.I, " "));
+        globales.tlc.add(new Campo(30, "Regional", 478, 2, Campo.I, " "));
+        globales.tlc.add(new Campo(31, "IntercambiarSerieMedidor", 480, 1, Campo.I, " "));
 
         // Columnas que ya existían estaban en este código de la versión 1.0.11 y anteriores
 

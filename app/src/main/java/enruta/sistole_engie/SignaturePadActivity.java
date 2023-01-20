@@ -57,7 +57,7 @@ public class SignaturePadActivity extends Activity {
         ls_nombre= bu_params.getString("ls_nombre");
         temporal = bu_params.getInt("temporal");
         cantidad = bu_params.getInt("cantidad");
-        idLectura= bu_params.getInt("idLectura");
+        idLectura= bu_params.getLong("idLectura");
         thisIsMe= this;
 
         mSignaturePad = (SignaturePad) findViewById(R.id.signature_pad);

@@ -197,7 +197,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 "selloRetNumero default '', selloRetEstado default '', selloRetColor default '', selloRetModelo default '', " +
                 "selloInstNumero default '', selloInstColor default '', selloInstModelo default '', codigoObservacion default '', observacion default '', datosCampana default '', toma default '', giro default '', envio default 0, " +
                 "idArchivo default 0, codigoBarras default '', nota1 default '', nota2 default '', miLatitud default '', miLongitud default '', EstimacionesEngie default '', TipoDeCliente default '', TipoDeAcuse default '', " +
-                "Porcion default '', idUnidadLect default 0, idRegionalLect default 0, Regional default '', idEmpleado default 0, nivelBateria default 0) ");
+                "Porcion default '', idUnidadLect default 0, idRegionalLect default 0, Regional default '', idEmpleado default 0, nivelBateria default 0, " +
+                "IntercambiarSerieMedidor default 0) ");
         //Usuarios
         db.execSQL("CREATE TABLE usuarios (usuario , contrasena , nombre, rol default 1, fotosControlCalidad default 1, baremo default 75)");
         //fotos
@@ -440,6 +441,7 @@ public class DBHelper extends SQLiteOpenHelper {
         verifyColumnInTable(db, "ruta", "Regional", "''");
         verifyColumnInTable(db, "ruta", "idEmpleado", "0");
         verifyColumnInTable(db, "ruta", "nivelBateria", "0");
+        verifyColumnInTable(db, "ruta", "IntercambiarSerieMedidor", "0");
 
         verifyColumnInTable(db, "fotos", "idLectura", "0");
 

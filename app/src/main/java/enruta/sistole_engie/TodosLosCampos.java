@@ -80,7 +80,7 @@ public class TodosLosCampos {
 
 		numCampos = Utils.convToInt(camposStr[1]);
 
-		if (numCampos < 32)  // Si la 2a columna viene una cantidad de campos menor a la esperada, entonces la estructura del dato no es correcta.
+		if (numCampos < 33)  // Si la 2a columna viene una cantidad de campos menor a la esperada, entonces la estructura del dato no es correcta.
 			return 0;
 
 		try {

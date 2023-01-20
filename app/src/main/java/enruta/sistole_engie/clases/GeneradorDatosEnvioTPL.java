@@ -52,6 +52,7 @@ public class GeneradorDatosEnvioTPL {
                 getString("idLectura"),
                 getString("idUnidadLect"),
                 getString("idArchivo"),
+                getString("idEmpleado"),
                 getString("Calle"),
                 getString("Colonia"),
                 getString("NumMedidor"),

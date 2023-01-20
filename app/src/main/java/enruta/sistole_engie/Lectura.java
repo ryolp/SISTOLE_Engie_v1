@@ -79,14 +79,15 @@ public class Lectura extends DbBaseMgr {
 
     public String Porcion;        // RL, 2023-01-02, ID de la porcion
     public String Regional;    // RL, 2023-01-02, Nombre de la regional
-    public int idUnidadLect;   // RL, 2023-01-02, Nombre de la regional
-    public int idRegionalLect; // RL, 2023-01-02, Nombre de la regional
+    public int idUnidadLect;   // RL, 2023-01-02, id de la Unidad
+    public int idRegionalLect; // RL, 2023-01-02, id de la Regional
+    public int intercambiarSerieMedidor;  // RL, 2023-01-17, Indicar de si se intercambia la serieMedidor por el código de barras del
+                                            // ... medidor en la pantalla de Toma de Lecturas, Input y Búsqueda de Medidor.
 
     private Resources res;
 
     Globales globales;
     boolean requiereGPS = false;
-
 
     Lectura(Context context, int secuencial) throws Throwable {
         this.context = context;
@@ -251,6 +252,7 @@ public class Lectura extends DbBaseMgr {
             Porcion = getString(c, "Porcion","" );
             idUnidadLect = getInt(c, "idUnidadLect",0 );
             idRegionalLect = getInt(c, "idRegionalLect",0 );
+            intercambiarSerieMedidor = getInt(c, "IntercambiarSerieMedidor",0 );
 
 //			if (ls_anomalia.equals("") && secuencia%3==0)
 //				ls_anomalia="AC*";
@@ -1624,21 +1626,8 @@ public class Lectura extends DbBaseMgr {
     }
 
     public boolean getIntercambiarSerieMedidor() {
-        String valor;
-
-        if (unidad.length() >= 4)
-        {
-            valor = unidad.substring(3, 4).toUpperCase();
-            if (valor.equals("G") || valor.equals("Q") )
-                return true;
-            else {
-                valor = unidad.substring(2, 4).toUpperCase();
-                if (valor.equals("3T"))
-                    return true;
-                else
-                    return false;
-            }
-        }
+        if (intercambiarSerieMedidor != 0)
+            return true;
         else
             return false;
     }
