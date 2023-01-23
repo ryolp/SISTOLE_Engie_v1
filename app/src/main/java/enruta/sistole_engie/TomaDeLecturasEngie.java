@@ -736,6 +736,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
             cv_datos.put("idArchivo", lectura.idArchivo);
             cv_datos.put("idLectura", lectura.poliza);
             cv_datos.put("idUnidadLect", lectura.idUnidadLect);
+            cv_datos.put("idEmpleado", globales.getIdEmpleado());
             cv_datos.put("Calle", bu_params.getString(String.valueOf(CALLE)));
             cv_datos.put("Colonia", bu_params.getString(String.valueOf(COLONIA)));
             cv_datos.put("NumMedidor", bu_params.getString(String.valueOf(NUM_MEDIDOR)));

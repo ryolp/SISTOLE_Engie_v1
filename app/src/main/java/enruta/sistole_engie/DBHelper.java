@@ -186,7 +186,8 @@ public class DBHelper extends SQLiteOpenHelper {
         //No Registrados
         db.execSQL("CREATE TABLE NoRegistrados (poliza TEXT, envio default 0, "
                 + "Calle default '', Colonia default '', NumMedidor default'', Lectura default '', Observaciones default '', "
-                + "idLectura default 0, idUnidadLect default 0, idArchivo default 0, TipoRegistro default '')");
+                + "idLectura default 0, idUnidadLect default 0, idArchivo default 0, TipoRegistro default '', "
+                + "idEmpleado default 0)");
         //Ruta
         db.execSQL("CREATE TABLE Ruta (supervisionLectura default '', reclamacionLectura default '', reclamacion default '', nisRad default '', poliza default '', sectorlargo default '', sectorCorto default '', tarifa default '', numEsferas default '', consAnoAnt default '', consBimAnt default '', ilr default '', marcaMedidor default '', tipoMedidor default '', serieMedidor default '', aviso default '', comoLlegar2 default '', comoLlegar1 default '', numPortal default '', numEdificio default '', secuencia default '', cliente default '', colonia default '', " +
                 "direccion default '', lectura default '', anomalia default '', texto default '', intentos default '', fecha default '', hora default '', sospechosa default '', intento1 default '', intento2 default '', intento3 default '', intento4 default '', intento5 default '', intento6 default '', intento7 default '', dondeEsta default '', estadoDelSuministro default '', registro default '', subAnomalia default '', comentarios default '', terminacion default '-1', fotoAlFinal default 0, ordenDeLectura  default '', latitud default '0.0', longitud default '0.0', anomInst default '', tipoLectura default '', " +
@@ -448,6 +449,7 @@ public class DBHelper extends SQLiteOpenHelper {
         verifyColumnInTable(db, "NoRegistrados", "idLectura", "0");
         verifyColumnInTable(db, "NoRegistrados", "idUnidadLect", "0");
         verifyColumnInTable(db, "NoRegistrados", "idArchivo", "0");
+        verifyColumnInTable(db, "NoRegistrados", "idEmpleado", "0");
         verifyColumnInTable(db, "NoRegistrados", "Calle", "''");
         verifyColumnInTable(db, "NoRegistrados", "Colonia", "''");
         verifyColumnInTable(db, "NoRegistrados", "NumMedidor", "''");
