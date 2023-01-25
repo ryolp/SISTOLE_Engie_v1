@@ -594,7 +594,6 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         ComentariosInputBehavior cib_config = null;
         switch (campo) {
             case CALLE:
-
                 cib_config = new ComentariosInputBehavior("Direccion", InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS, 30, "");
                 break;
             case COLONIA:
