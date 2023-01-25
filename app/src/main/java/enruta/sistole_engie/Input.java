@@ -496,7 +496,7 @@ public class Input extends TomaDeLecturasPadre {
 
         switch (ii_tipo) {
             case LECTURA:
-                tipoDeCaptura = CAPTURA_Y_SIGUIENTE;
+                tipoDeCaptura = CAPTURA_Y_REGRESA;
                 esLecturaValida = false;
                 if (!pregunteConsumo) {
                     if (validar /*|| modoDeCaptura()*/) {
