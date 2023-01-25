@@ -7,9 +7,14 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.location.Location;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 
 import enruta.sistole_engie.clases.BateriaMgr;
 import enruta.sistole_engie.services.DbBaseMgr;
@@ -992,6 +997,27 @@ public class Lectura extends DbBaseMgr {
         }
 
         return ls_preview;
+    }
+
+    public static SpannableStringBuilder marcarTextoColor(String texto, String textoBuscado,
+                                                     boolean restarUnEspacio) {
+        int antes = 0;
+        SpannableStringBuilder sb = new SpannableStringBuilder(texto);
+        final ForegroundColorSpan fcs = new ForegroundColorSpan(Color.parseColor("red"));
+        final StyleSpan bss = new StyleSpan(android.graphics.Typeface.BOLD);
+        int inicio = -1;
+        int fin = -1;
+
+        inicio = texto.toString().indexOf(textoBuscado);
+
+        if (inicio >= 0)
+        {
+            fin = textoBuscado.length();
+            sb.setSpan(fcs, inicio, fin, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            sb.setSpan(bss, inicio, fin, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        }
+
+        return sb;
     }
 
     // public String formatedInfoReadMetter(){

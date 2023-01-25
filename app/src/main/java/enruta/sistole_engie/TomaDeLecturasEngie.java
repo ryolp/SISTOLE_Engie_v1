@@ -18,6 +18,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.SpannableStringBuilder;
 import android.widget.TextView;
 
 public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
@@ -1028,10 +1029,20 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
     public String getDescripcionDeBuscarMedidor(Lectura lectura,
                                                 int tipoDeBusqueda, String textoBuscado) {
         String ls_preview = "";
+        String serieMedidor = "";
+        String codigoBarrasMedidor = "";
 
         switch (tipoDeBusqueda) {
             case BuscarMedidorTabsPagerAdapter.MEDIDOR:
-                ls_preview = Lectura.marcarTexto(lectura.is_serieMedidor, textoBuscado, false);
+                serieMedidor = lectura.is_serieMedidor;
+                codigoBarrasMedidor = lectura.codigoBarras;
+
+                if (serieMedidor.equals(codigoBarrasMedidor))
+                    ls_preview = Lectura.marcarTexto(serieMedidor, textoBuscado, false);
+                else {
+                    ls_preview = "#SM: "+ Lectura.marcarTexto(serieMedidor, textoBuscado, false);
+                    ls_preview += "<br>#CB: " + Lectura.marcarTexto(codigoBarrasMedidor, textoBuscado, false);
+                }
 
                 ls_preview += "<br>" + lectura.is_sectorCorto;
                 if (!lectura.getColonia().equals(""))
@@ -1040,12 +1051,59 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
                 break;
 
             case BuscarMedidorTabsPagerAdapter.DIRECCION:
-                ls_preview = lectura.is_serieMedidor;
+                serieMedidor = lectura.is_serieMedidor;
+                codigoBarrasMedidor = lectura.codigoBarras;
+
+                if (serieMedidor.equals(codigoBarrasMedidor))
+                    ls_preview = Lectura.marcarTexto(serieMedidor, textoBuscado, false);
+                else {
+                    ls_preview = "#SM: "+ Lectura.marcarTexto(serieMedidor, textoBuscado, false);
+                    ls_preview += "<br>#CB: " + Lectura.marcarTexto(codigoBarrasMedidor, textoBuscado, false);
+                }
 
                 ls_preview += "<br>" + Lectura.marcarTexto(lectura.is_sectorCorto, textoBuscado, false);
                 if (!lectura.getColonia().equals(""))
                     ls_preview += "<br>" + Lectura.marcarTexto(lectura.getColonia(), textoBuscado, false);
                 ls_preview += "<br>" + Lectura.marcarTexto(lectura.getDireccion(), textoBuscado, false);
+                break;
+        }
+
+        return ls_preview;
+    }
+
+    public SpannableStringBuilder getDescripcionDeBuscarMedidorColor(Lectura lectura,
+                                                                     int tipoDeBusqueda, String textoBuscado) {
+        SpannableStringBuilder ls_preview = new SpannableStringBuilder();
+        String serieMedidor = "";
+        String codigoBarrasMedidor = "";
+
+        switch (tipoDeBusqueda) {
+            case BuscarMedidorTabsPagerAdapter.MEDIDOR:
+                serieMedidor = lectura.is_serieMedidor;
+                codigoBarrasMedidor = lectura.codigoBarras;
+
+                if (serieMedidor.equals(codigoBarrasMedidor))
+                    ls_preview.append(Lectura.marcarTexto(serieMedidor, textoBuscado, false));
+                else {
+                    ls_preview.append("#SM: ");
+                    ls_preview.append(Lectura.marcarTexto(serieMedidor, textoBuscado, false));
+                    ls_preview.append("<br>#CB: ");
+                    ls_preview.append(Lectura.marcarTexto(codigoBarrasMedidor, textoBuscado, false));
+                }
+
+                ls_preview.append("<br>" + lectura.is_sectorCorto);
+                if (!lectura.getColonia().equals(""))
+                    ls_preview.append("<br>" + lectura.getColonia());
+                ls_preview.append("<br>" + lectura.getDireccion());
+                break;
+
+            case BuscarMedidorTabsPagerAdapter.DIRECCION:
+                ls_preview.append(lectura.is_serieMedidor);
+
+                ls_preview.append("<br>" + Lectura.marcarTexto(lectura.is_sectorCorto, textoBuscado, false));
+                if (!lectura.getColonia().equals(""))
+                    ls_preview.append("<br>" + Lectura.marcarTexto(lectura.getColonia(), textoBuscado, false));
+                ls_preview.append("<br>" + Lectura.marcarTexto(lectura.getDireccion(), textoBuscado, false));
                 break;
         }
 
@@ -1538,7 +1596,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
     }
 
 
-    public byte[] encabezadoAMandar(SQLiteDatabase db)  throws Exception {
+    public byte[] encabezadoAMandar(SQLiteDatabase db) throws Exception {
         TransmitionObject to = new TransmitionObject();
         getEstructuras(db, to, TransmisionesPadre.TRANSMISION, TransmisionesPadre.WIFI);
 

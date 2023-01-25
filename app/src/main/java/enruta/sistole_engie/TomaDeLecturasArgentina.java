@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.SpannableStringBuilder;
 import android.widget.TextView;
 
 /** Esta clase crea las validaciones y los campos a mostrar**/
@@ -1246,7 +1247,7 @@ public class TomaDeLecturasArgentina extends TomaDeLecturasGenerica {
 	@Override
 	public String getDescripcionDeBuscarMedidor(Lectura lectura,
 			int tipoDeBusqueda, String textoBuscado) {
-		String ls_preview="";
+		String ls_preview = "";
 		
 		switch (tipoDeBusqueda) {
 		case BuscarMedidorTabsPagerAdapter.MEDIDOR:
