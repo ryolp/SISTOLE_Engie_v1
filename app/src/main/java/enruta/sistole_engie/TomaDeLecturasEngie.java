@@ -5,12 +5,12 @@ import java.text.DecimalFormatSymbols;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import enruta.sistole_engie.clases.AppException;
 import enruta.sistole_engie.entities.InfoFotoEntity;
 import enruta.sistole_engie.entities.ResumenEntity;
 import enruta.sistole_engie.clases.Utils;
 import enruta.sistole_engie.entities.EmpleadoCplEntity;
 import enruta.sistole_engie.services.DbLecturasMgr;
-import enruta.sistole_engie.R;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -406,8 +406,8 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         infoFoto.nombreFoto = ls_nombre;
         infoFoto.idLectura = Utils.convToLong(lect.poliza);
         infoFoto.Unidad = lect.unidad;
-        infoFoto.Regional = lect.Regional;
-        infoFoto.Porcion = lect.Porcion;
+        infoFoto.Regional = lect.mRegional;
+        infoFoto.Porcion = lect.mPorcion;
 
         return infoFoto;
     }
@@ -538,24 +538,34 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
     }
 
     @Override
-    public void RespuestaMensajeSeleccionada(MensajeEspecial me, int respuesta) {
+    public void RespuestaMensajeSeleccionada(MensajeEspecial me, int respuesta) throws Exception {
         // TODO Auto-generated method stub
+        Lectura lectura;
+
+        if (globales.tll == null)
+            throw new AppException("Error interno");
+
+        lectura = globales.tll.getLecturaActual();
+
+        if (lectura == null)
+            throw new AppException("Error interno");
 
         switch (me.respondeA) {
             case PREGUNTAS_SIGUE_CORTADO:
                 if (respuesta == MensajeEspecial.NO) {
                     //Borramos si hay una j
-                    globales.tll.getLecturaActual().deleteAnomalia("J");
+                    lectura.deleteAnomalia("J");
                     //Agregamos la anomalia J al vector de anomalias
                     cambiosAnomaliaAntesDeGuardar(globales.is_lectura);
-                    globales.tll.getLecturaActual().setAnomalia("J");
-                    globales.is_presion = globales.tll.getLecturaActual().getAnomalia();
-                    globales.tll.getLecturaActual().is_estadoDelSuministroReal = "0";
+                    lectura.setAnomalia("J");
+                    globales.is_presion = lectura.getAnomalia();
+                    lectura.is_estadoDelSuministroReal = "0";
                 } else {
-                    globales.tll.getLecturaActual().is_estadoDelSuministroReal = "1";
+                    lectura.is_estadoDelSuministroReal = "1";
                 }
                 break;
             case PREGUNTAS_CONSUMO_CERO:
+                lectura.setCodigoRespuestaEncuesta(me.regresaValor(respuesta));
                 //Borramos la anomalia y la sub
 //                globales.tll.getLecturaActual().deleteAnomalia(me.regresaValor(respuesta).substring(0, 1));
                 //Agregamos
@@ -569,21 +579,21 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
                 break;
 
             case PREGUNTAS_UBICACION_VACIA:
-                globales.tll.getLecturaActual().is_ubicacion = me.regresaValor(respuesta).substring(1, 2);
-                globales.tll.getLecturaActual().deleteAnomalia(me.regresaValor(respuesta).substring(0, 1));
-                globales.tll.getLecturaActual().setAnomalia(me.regresaValor(respuesta).substring(0, 1));
-                globales.tll.getLecturaActual().setSubAnomalia(me.regresaValor(respuesta));
+                lectura.is_ubicacion = me.regresaValor(respuesta).substring(1, 2);
+                lectura.deleteAnomalia(me.regresaValor(respuesta).substring(0, 1));
+                lectura.setAnomalia(me.regresaValor(respuesta).substring(0, 1));
+                lectura.setSubAnomalia(me.regresaValor(respuesta));
                 break;
 
             case ANOMALIA_SEIS:
-                globales.tll.getLecturaActual().deleteAnomalia("6");
+                lectura.deleteAnomalia("6");
 //			globales.tll.getLecturaActual().deleteAnomalia("R");
 //			globales.tll.getLecturaActual().deleteAnomalia("Z");
 //			globales.tll.getLecturaActual().deleteAnomalia("5");
 //			globales.tll.getLecturaActual().deleteAnomalia("G");
 //			globales.tll.getLecturaActual().deleteAnomalia(me.regresaValor(respuesta));
-                globales.tll.getLecturaActual().setAnomalia(me.regresaValor(respuesta));
-                globales.tll.getLecturaActual().setAnomalia("6");
+                lectura.setAnomalia(me.regresaValor(respuesta));
+                lectura.setAnomalia("6");
                 break;
         }
 
@@ -735,7 +745,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
             cv_datos.put("envio", 1);
             cv_datos.put("idArchivo", lectura.idArchivo);
             cv_datos.put("idLectura", lectura.poliza);
-            cv_datos.put("idUnidadLect", lectura.idUnidadLect);
+            cv_datos.put("idUnidadLect", lectura.mIdUnidadLect);
             cv_datos.put("idEmpleado", globales.getIdEmpleado());
             cv_datos.put("Calle", bu_params.getString(String.valueOf(CALLE)));
             cv_datos.put("Colonia", bu_params.getString(String.valueOf(COLONIA)));
@@ -759,7 +769,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
             cv_datos.put("envio", 1);
             cv_datos.put("idArchivo", lectura.idArchivo);
             cv_datos.put("idLectura", lectura.poliza);
-            cv_datos.put("idUnidadLect", lectura.idUnidadLect);
+            cv_datos.put("idUnidadLect", lectura.mIdUnidadLect);
             cv_datos.put("Calle", lectura.getDireccion());
             cv_datos.put("Colonia", lectura.getColonia());
             cv_datos.put("NumMedidor", bu_params.getString(String.valueOf(NUM_MEDIDOR)));

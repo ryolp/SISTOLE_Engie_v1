@@ -71,7 +71,7 @@
             android:name="enruta.sistole_engie.PantallaAnomalias"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateVisible" />
         <activity
             android:name="enruta.sistole_engie.BuscarMedidor"
             android:exported="false"

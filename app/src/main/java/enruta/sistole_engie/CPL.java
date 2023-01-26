@@ -351,6 +351,7 @@ public class CPL extends Activity {
 
                     deshabilitarControlesAutenticacionSMS();
 
+                    et_contrasena.setFocusable(true);
                     et_contrasena.requestFocus();
 
                     globales.secuenciaSuperUsuario = "A";

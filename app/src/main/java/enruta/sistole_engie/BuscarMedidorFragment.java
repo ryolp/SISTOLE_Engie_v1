@@ -192,6 +192,17 @@ public class BuscarMedidorFragment extends Fragment {
 
     }
 
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+
+        if (et_medidor != null) {
+            et_medidor.setFocusable(true);
+            et_medidor.requestFocus();
+        }
+    }
+
 
     private void setDatos() {
 

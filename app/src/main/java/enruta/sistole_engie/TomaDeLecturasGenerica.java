@@ -152,7 +152,7 @@ public abstract class TomaDeLecturasGenerica {
      * @param me        Mensaje especial que se mostró
      * @param respuesta la respuesta de seleccionada
      */
-    public abstract void RespuestaMensajeSeleccionada(MensajeEspecial me, int respuesta);
+    public abstract void RespuestaMensajeSeleccionada(MensajeEspecial me, int respuesta) throws Exception;
 
     /**
      * Genera un campo apartir de una clave

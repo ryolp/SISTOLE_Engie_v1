@@ -256,6 +256,9 @@ public class Input extends TomaDeLecturasPadre {
 
                 });
 
+                et_generico.setFocusable(true);
+                et_generico.requestFocus();
+
                 mostrarTeclado();
                 break;
 

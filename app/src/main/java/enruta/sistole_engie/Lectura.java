@@ -82,12 +82,13 @@ public class Lectura extends DbBaseMgr {
     String tipoDeCliente;        // CE, 10/10/22, Tipo de Cliente
     String tipoDeAcuse;          // CE, 10/10/22, Motivo por el que se pide Acuse
 
-    public String Porcion;        // RL, 2023-01-02, ID de la porcion
-    public String Regional;    // RL, 2023-01-02, Nombre de la regional
-    public int idUnidadLect;   // RL, 2023-01-02, id de la Unidad
-    public int idRegionalLect; // RL, 2023-01-02, id de la Regional
-    public int intercambiarSerieMedidor;  // RL, 2023-01-17, Indicar de si se intercambia la serieMedidor por el código de barras del
+    public String mPorcion;        // RL, 2023-01-02, ID de la porcion
+    public String mRegional;    // RL, 2023-01-02, Nombre de la regional
+    public int mIdUnidadLect;   // RL, 2023-01-02, id de la Unidad
+    private int mIdRegionalLect; // RL, 2023-01-02, id de la Regional
+    private int mIntercambiarSerieMedidor;  // RL, 2023-01-17, Indicar de si se intercambia la serieMedidor por el código de barras del
                                             // ... medidor en la pantalla de Toma de Lecturas, Input y Búsqueda de Medidor.
+    private String mCodigoRespuestaEncuesta = "";
 
     private Resources res;
 
@@ -253,11 +254,11 @@ public class Lectura extends DbBaseMgr {
 
             unidad = is_sectorCorto;
 
-            Regional = getString(c, "Regional","" );
-            Porcion = getString(c, "Porcion","" );
-            idUnidadLect = getInt(c, "idUnidadLect",0 );
-            idRegionalLect = getInt(c, "idRegionalLect",0 );
-            intercambiarSerieMedidor = getInt(c, "IntercambiarSerieMedidor",0 );
+            mRegional = getString(c, "Regional","" );
+            mPorcion = getString(c, "Porcion","" );
+            mIdUnidadLect = getInt(c, "idUnidadLect",0 );
+            mIdRegionalLect = getInt(c, "idRegionalLect",0 );
+            mIntercambiarSerieMedidor = getInt(c, "IntercambiarSerieMedidor",0 );
 
 //			if (ls_anomalia.equals("") && secuencia%3==0)
 //				ls_anomalia="AC*";
@@ -519,6 +520,7 @@ public class Lectura extends DbBaseMgr {
         cv_params.put("nivelBateria", nivelBateria);
         cv_params.put("fix", is_fix);
         cv_params.put("codigoObservacion", ls_codigoObservacion);
+        cv_params.put("codigoRespuestaEncuesta", mCodigoRespuestaEncuesta);
         cv_params.put("envio", 1);
 
         String params[] = {String.valueOf(secuenciaReal)};
@@ -1652,9 +1654,12 @@ public class Lectura extends DbBaseMgr {
     }
 
     public boolean getIntercambiarSerieMedidor() {
-        if (intercambiarSerieMedidor != 0)
+        if (mIntercambiarSerieMedidor != 0)
             return true;
         else
             return false;
     }
+
+    public String getCodigoRespuestaEncuesta() {return mCodigoRespuestaEncuesta; }
+    public void setCodigoRespuestaEncuesta(String valor) { mCodigoRespuestaEncuesta = valor;}
 }

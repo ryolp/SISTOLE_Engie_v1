@@ -17,6 +17,7 @@
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@+id/im_clearText"
             android:ems="10"
+            android:inputType="number"
             android:imeActionLabel="Capturar"
             android:imeOptions="actionDone" />
 
