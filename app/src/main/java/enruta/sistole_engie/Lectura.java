@@ -76,8 +76,8 @@ public class Lectura extends DbBaseMgr {
     String nota1;           // RL, 2022-10-03,
     String nota2;           // RL, 2022-10-03,
 
-    String miLatitud;            // CE, 10/10/22, Geolocalizacion del Medidor
-    String miLongitud;           // CE, 10/10/22, Geolocalizacion del Medidor
+    private String mMiLatitud;            // CE, 10/10/22, Geolocalizacion del Medidor
+    private String mMiLongitud;           // CE, 10/10/22, Geolocalizacion del Medidor
     String estimacionesEngie;    // CE, 10/10/22, Numero de Estimaciones
     String tipoDeCliente;        // CE, 10/10/22, Tipo de Cliente
     String tipoDeAcuse;          // CE, 10/10/22, Motivo por el que se pide Acuse
@@ -246,8 +246,8 @@ public class Lectura extends DbBaseMgr {
             codigoBarras = getString(c, "codigoBarras","" );
             nota1 = getString(c, "nota1","" );
             nota2 = getString(c, "nota2","" );
-            miLatitud = getString(c, "miLatitud","" );
-            miLongitud = getString(c, "miLongitud","" );
+            mMiLatitud = getString(c, "miLatitud","" );
+            mMiLongitud = getString(c, "miLongitud","" );
             estimacionesEngie = getString(c, "EstimacionesEngie","" );
             tipoDeCliente = getString(c, "TipoDeCliente","" );
             tipoDeAcuse = getString(c, "TipoDeAcuse","" );
@@ -1634,11 +1634,11 @@ public class Lectura extends DbBaseMgr {
     }
 
     public String getMiLatitud(){
-        return miLatitud;
+        return mMiLatitud;
     }
 
     public String getMiLongitud(){
-        return miLongitud;
+        return mMiLongitud;
     }
 
     public String getEstimacionesEngie(){
@@ -1662,4 +1662,5 @@ public class Lectura extends DbBaseMgr {
 
     public String getCodigoRespuestaEncuesta() {return mCodigoRespuestaEncuesta; }
     public void setCodigoRespuestaEncuesta(String valor) { mCodigoRespuestaEncuesta = valor;}
+
 }

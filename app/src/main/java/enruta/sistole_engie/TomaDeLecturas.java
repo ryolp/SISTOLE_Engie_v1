@@ -1,6 +1,7 @@
 package enruta.sistole_engie;
 
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
@@ -14,6 +15,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -2191,6 +2193,9 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
             case R.id.m_UsarEscaner:
                 usarEscaner();
                 break;
+            case R.id.m_MostrarUbicacionGPS:
+                mostrarUbicacionGPS();
+                break;
         }
 
         if (Build.VERSION.SDK_INT >= 11)
@@ -3673,6 +3678,57 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
             }
         } catch (Throwable t) {
             mostrarMensaje("Error", "Error inesperado. Contacte soporte", t.getMessage(), null);
+        }
+    }
+
+    /*
+        Muestra la ubicación del medidor, de acuerdo con la Latitud, Longitud que se tiene guardada que se envió en el archivo TPL
+    */
+
+    private void mostrarUbicacionGPS() {
+        Lectura lectura;
+        String miLatitud = "";
+        String miLongitud = "";
+        String serieMedidor = "";
+        String codigoBarras = "";
+        boolean intercambiarSerieMedidor = false;
+        String uri = "";
+
+        try {
+            if (globales == null)
+                return;
+
+            if (globales.tll == null)
+                return;
+
+            lectura = globales.tll.getLecturaActual();
+
+            if (lectura == null)
+                return;
+
+            miLatitud = lectura.getMiLatitud();
+            miLongitud = lectura.getMiLongitud();
+
+            if (miLatitud.trim().equals("") || miLongitud.trim().equals(""))
+                return;
+
+            serieMedidor = lectura.getSerieMedidor();
+            codigoBarras = lectura.getCodigoBarras();
+            intercambiarSerieMedidor = lectura.getIntercambiarSerieMedidor();
+
+            //uri = "https://maps.google.com/maps/@?api=1&map_action=map&center=" + miLatitud + "," + miLongitud + "&zoom=20";
+
+            if (!intercambiarSerieMedidor)
+                uri = "geo:" + miLatitud + "," + miLongitud + "?q=" + miLatitud+","+miLongitud + "(" + serieMedidor + ")&z=24";
+            else
+                uri = "geo:" + miLatitud + "," + miLongitud + "?q=" + miLatitud+","+miLongitud + "(" + codigoBarras + ")&z=24";
+
+
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+            intent.setPackage("com.google.android.apps.maps");
+            this.startActivity(intent);
+        } catch (Throwable t) {
+            Utils.showMessageLong(this, t.getMessage());
         }
     }
 
