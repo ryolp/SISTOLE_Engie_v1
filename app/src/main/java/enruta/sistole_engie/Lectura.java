@@ -1621,8 +1621,16 @@ public class Lectura extends DbBaseMgr {
         return codigoBarras;
     }
 
+    public String getCodigoBarrasCorregido(){
+        return codigoBarras.replace("&", "/");
+    }
+
     public String getSerieMedidor(){
         return is_serieMedidor;
+    }
+
+    public String getSerieMedidorCorregido()    {
+        return is_serieMedidor.replace("&", "/");
     }
 
     public String getNota1(){

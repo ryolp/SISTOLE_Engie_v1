@@ -453,9 +453,9 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         // If Unidad = Tampico mostrar Serie Medidor else mostrar código de barras.
 
         if (!lectura.getIntercambiarSerieMedidor())
-            datos.add("Codigo de Barras: " + lectura.getCodigoBarras().trim());
+            datos.add("Codigo de Barras: " + lectura.getCodigoBarrasCorregido().trim());
         else
-            datos.add("Codigo de Barras: " + lectura.getSerieMedidor().trim());
+            datos.add("Serie Medidor: " + lectura.getSerieMedidorCorregido().trim());
 
         datos.add(lectura.getNota1().trim());
         datos.add(lectura.getNota2().trim());

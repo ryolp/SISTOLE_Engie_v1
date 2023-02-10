@@ -1246,7 +1246,9 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
     @SuppressLint("NewApi")
     protected void setDatos(boolean reiniciaValores) {
         String codigoBarras = "";
+        String serieMedidor = "";
         boolean intercambiarConCodigoBarras = false;
+        Lectura lecturaActual;
 
         if (reiniciaValores) {
             if (globales.tll.getNumRecords() > 0) {
@@ -1348,15 +1350,18 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 
         globales.il_lect_max = globales.tdlg.getLecturaMaxima();
         globales.il_lect_min = globales.tdlg.getLecturaMinima();
-        globales.il_lect_act = globales.tll.getLecturaActual().secuenciaReal;
-        is_comentarios = globales.tll.getLecturaActual().getDireccion();
-        globales.is_caseta = globales.tll.getLecturaActual().is_serieMedidor;
+
+        lecturaActual = globales.tll.getLecturaActual();
+
+        globales.il_lect_act = lecturaActual.secuenciaReal;
+        is_comentarios = lecturaActual.getDireccion();
+        globales.is_caseta = lecturaActual.is_serieMedidor;
 
         if (reiniciaValores) {
-            globales.is_lectura = globales.tll.getLecturaActual().getLectura();
-            globales.is_presion = globales.tll.getLecturaActual().getAnomaliaAMostrar();
-            globales.is_terminacion = globales.tll.getLecturaActual().terminacion;
-            globales.mensaje = globales.tll.getLecturaActual().ls_mensaje;
+            globales.is_lectura = lecturaActual.getLectura();
+            globales.is_presion = lecturaActual.getAnomaliaAMostrar();
+            globales.is_terminacion = lecturaActual.terminacion;
+            globales.mensaje = lecturaActual.ls_mensaje;
             ultimaAnomaliaSeleccionada = "";
             ultimaSubAnomaliaSeleccionada = "";
             preguntaSiBorraDatos = false;
@@ -1395,30 +1400,33 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
         else
             globales.sonLecturasConsecutivas = false;
 
-        globales.requiereGPS = globales.tll.getLecturaActual().requiereGPS;
+        globales.requiereGPS = lecturaActual.requiereGPS;
 
         enciendeGPS();
 
         // RL, 2022-10-24, Se requiere que para las regionales de Tampico y Guadalajara
         // En el campo donde se muestra la serie del medidor se muestre el código de barras.
+        // RL, 2023-01. Ahora la información de si intercambiar o no viene en el archivo TPL
 
-        intercambiarConCodigoBarras = globales.tll.getLecturaActual().getIntercambiarSerieMedidor();
+        intercambiarConCodigoBarras = lecturaActual.getIntercambiarSerieMedidor();
 
-        if (!intercambiarConCodigoBarras)
-            tv_caseta.setText(getString(R.string.lbl_tdl_indica_medidor) + globales.is_caseta);
+        if (!intercambiarConCodigoBarras) {
+            serieMedidor = lecturaActual.getSerieMedidorCorregido();
+            tv_caseta.setText(serieMedidor);
+        }
         else {
-            codigoBarras = globales.tll.getLecturaActual().getCodigoBarras();
-            tv_caseta.setText(getString(R.string.lbl_tdl_indica_medidor) + codigoBarras);
+            codigoBarras = lecturaActual.getCodigoBarrasCorregido();
+            tv_caseta.setText(codigoBarras);
         }
 
         //tv_nombre.setText(globales.tll.getLecturaActual().getNombreCliente());
         //globales.tdlg.getInformacionDelMedidor(ll_generica, globales.tll.getLecturaActual(), sizeGenerico);
         preparaDatosGenericos();
-        tv_contador.setText((globales.mostrarRowIdSecuencia ? globales.tll.getLecturaActual().secuenciaReal : globales.il_lect_act) + " de " + globales.il_total);
+        tv_contador.setText((globales.mostrarRowIdSecuencia ? lecturaActual.secuenciaReal : globales.il_lect_act) + " de " + globales.il_total);
         tv_contadorOpcional.setText(tv_contador.getText().toString());
         tv_min.setText(String.valueOf(globales.il_lect_min));
         tv_max.setText(String.valueOf(globales.il_lect_max));
-        tv_lecturaAnterior.setText(String.valueOf(globales.tll.getLecturaActual().lecturaAnterior));
+        tv_lecturaAnterior.setText(String.valueOf(lecturaActual.lecturaAnterior));
 
         // Queremos que los comentarios sean de la siguiente manera Anomalia: ,
         // SubAnomalia \n(todo lo demas)
