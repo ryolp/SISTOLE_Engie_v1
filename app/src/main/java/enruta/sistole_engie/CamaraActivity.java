@@ -66,16 +66,16 @@ public class CamaraActivity extends Activity {
     String is_terminacion = "-A", is_anomalia = "";
     private ContentValues cv_datos;
     boolean otraFoto = false;
-    String caseta;
-    byte[] foto;
+    private String caseta;
+    private byte[] foto;
     int temporal;
     static String mensajeDeErrorCamera = "";
     private Globales globales;
     private ImageButton ib_flash;
-    boolean tieneFlash = true;
-    boolean tieneZoom = true;
-    boolean tieneCamaraFrontal = false;
-    AlertDialog alert;
+    private boolean tieneFlash = true;
+    private boolean tieneZoom = true;
+    private boolean tieneCamaraFrontal = false;
+    private AlertDialog alert;
     /**
      * Cantidad de fotos
      */
@@ -93,6 +93,12 @@ public class CamaraActivity extends Activity {
     protected ImageButton btnSubirResolucion;
     protected ImageButton btnCambiarCamara;
     protected ImageButton btnFirmar;
+
+
+    // RL, 2022-10-04, Etiqueta para mostrar la serie del medidor o su código de barras
+
+    protected TextView lblNumMedidor;
+    protected TextView txtNumMedidor;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -120,6 +126,8 @@ public class CamaraActivity extends Activity {
         ca = this;
 
         tv_indicador = (TextView) findViewById(R.id.tv_indicador);
+        tv_indicador.setVisibility(View.GONE);
+
         captureButton = (Button) findViewById(R.id.camara_b_capture);
         backButton = (Button) findViewById(R.id.camara_b_regresa);
         otraButton = (Button) findViewById(R.id.camara_b_otra);
@@ -129,6 +137,9 @@ public class CamaraActivity extends Activity {
         btnSubirResolucion = (ImageButton) findViewById(R.id.ib_subirResolucion);
         btnCambiarCamara = (ImageButton) findViewById(R.id.ib_cambiarCamara);
         btnFirmar = (ImageButton) findViewById(R.id.ib_firmar);
+
+        lblNumMedidor = (TextView) findViewById(R.id.lblMedidor);
+        txtNumMedidor = (TextView) findViewById(R.id.txtMedidor);
 
         fotoPreview = (FrameLayout) findViewById(R.id.camera_preview_foto);
         cPreview = (FrameLayout) findViewById(R.id.camera_preview);
@@ -154,6 +165,7 @@ public class CamaraActivity extends Activity {
         }
         iniciaCamara();
         mostrarInformacion();
+
         captureButton.setOnClickListener(
                 new View.OnClickListener() {
                     @SuppressLint("NewApi")
@@ -174,6 +186,8 @@ public class CamaraActivity extends Activity {
                             btnSubirResolucion.setVisibility(View.GONE);
                             btnBajarResolucion.setVisibility(View.GONE);
                             btnCambiarCamara.setVisibility(View.GONE);
+                            txtNumMedidor.setVisibility(View.GONE);
+                            lblNumMedidor.setVisibility(View.GONE);
                         } else {
                             iniciaCamara();
                             mostrarInformacion();
@@ -826,6 +840,12 @@ public class CamaraActivity extends Activity {
             tv_indicador.setVisibility(View.VISIBLE);
             tv_indicador.setText((fotosTomadas + 1) + " " + getString(R.string.de) + " " + cantidad + " " + getString(R.string.msj_fotos));
         }
+        else
+            tv_indicador.setVisibility(View.GONE);
+
+        txtNumMedidor.setText(caseta);
+        txtNumMedidor.setVisibility(View.VISIBLE);
+        lblNumMedidor.setVisibility(View.VISIBLE);
     }
 
     public void flashMode(View view) {

@@ -911,7 +911,7 @@ public abstract class TomaDeLecturasPadre extends Activity {
         Intent camara = new Intent(this, CamaraActivity.class);
 
         camara.putExtra("secuencial", lectura.secuenciaReal);
-        camara.putExtra("caseta", lectura.is_serieMedidor);
+        camara.putExtra("caseta", lectura.getCodigoBarrasCorregido());
         camara.putExtra("terminacion", globales.is_terminacion);
         camara.putExtra("temporal", temporal);
         camara.putExtra("cantidad", cantidad);

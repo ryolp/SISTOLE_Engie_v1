@@ -50,8 +50,6 @@ public class Lectura extends DbBaseMgr {
     String poliza, is_ubicacion, is_estimaciones, contadorAlterno;
 
 
-
-
     private DBHelper dbHelper;
 
     private SQLiteDatabase db;
@@ -87,7 +85,7 @@ public class Lectura extends DbBaseMgr {
     public int mIdUnidadLect;   // RL, 2023-01-02, id de la Unidad
     private int mIdRegionalLect; // RL, 2023-01-02, id de la Regional
     private int mIntercambiarSerieMedidor;  // RL, 2023-01-17, Indicar de si se intercambia la serieMedidor por el código de barras del
-                                            // ... medidor en la pantalla de Toma de Lecturas, Input y Búsqueda de Medidor.
+    // ... medidor en la pantalla de Toma de Lecturas, Input y Búsqueda de Medidor.
     private String mCodigoRespuestaEncuesta = "";
 
     private Resources res;
@@ -187,24 +185,24 @@ public class Lectura extends DbBaseMgr {
             is_estimaciones = getString(c, "estimaciones", "").trim();
             is_fechaAviso = getString(c, "fechaAviso", "").trim();
 
-            nis_rad = getInt(c, "nisRad",0 );
+            nis_rad = getInt(c, "nisRad", 0);
             poliza = getString(c, "poliza", "");
-            numerodeesferas = getInt(c, "numEsferas",0 );
-            numerodeesferasReal = getString(c, "numEsferasReal","" ).trim();
+            numerodeesferas = getInt(c, "numEsferas", 0);
+            numerodeesferasReal = getString(c, "numEsferasReal", "").trim();
 
-            numeroDePortal = getString(c, "numPortal","" );
-            numeroDeEdificio = getString(c, "numEdificio","" );
+            numeroDePortal = getString(c, "numPortal", "");
+            numeroDeEdificio = getString(c, "numEdificio", "");
 
-            secuencia = getInt(c, "secuencia",0 );
-            intentos = getString(c, "intentos","" ).trim();
-            sospechosa = getString(c, "sospechosa","" ).trim();
+            secuencia = getInt(c, "secuencia", 0);
+            intentos = getString(c, "intentos", "").trim();
+            sospechosa = getString(c, "sospechosa", "").trim();
 
-            lecturaAnterior = getLong(c, "lecturaAnterior",0 );
-            consBimAnt = getLong(c, "consBimAnt",0 );
-            consAnoAnt = getLong(c, "consAnoAnt",0 );
-            ilr = getLong(c, "ilr",0 );
+            lecturaAnterior = getLong(c, "lecturaAnterior", 0);
+            consBimAnt = getLong(c, "consBimAnt", 0);
+            consAnoAnt = getLong(c, "consAnoAnt", 0);
+            ilr = getLong(c, "ilr", 0);
 
-            baremo = getInt(c, "baremo",0 );
+            baremo = getInt(c, "baremo", 0);
 
 //			if (secuencia % 2 == 0)
 //				requiereGPS = true;
@@ -213,52 +211,52 @@ public class Lectura extends DbBaseMgr {
 
 //			requiereGPS = true;
 
-            requiereGPS = getInt(c, "indicadorGPS",0 ) == 1;
+            requiereGPS = getInt(c, "indicadorGPS", 0) == 1;
 
-            ordenDeLectura = getString(c, "ordenDeLectura","" );
+            ordenDeLectura = getString(c, "ordenDeLectura", "");
 
-            intento1 = getString(c, "intento1","" );
-            intento2 = getString(c, "intento2","" );
-            intento3 = getString(c, "intento3","" );
-            intento4 = getString(c, "intento4","" );
-            intento5 = getString(c, "intento5","" );
-            intento6 = getString(c, "intento6","" );
-            intento7 = getString(c, "intento7","" );
+            intento1 = getString(c, "intento1", "");
+            intento2 = getString(c, "intento2", "");
+            intento3 = getString(c, "intento3", "");
+            intento4 = getString(c, "intento4", "");
+            intento5 = getString(c, "intento5", "");
+            intento6 = getString(c, "intento6", "");
+            intento7 = getString(c, "intento7", "");
 
-            FotoAlFinal = getInt(c, "fotoAlFinal",0 );
+            FotoAlFinal = getInt(c, "fotoAlFinal", 0);
 
-            terminacion = getString(c, "terminacion","" );
+            terminacion = getString(c, "terminacion", "");
 
-            is_latitud = getString(c, "latitud","" );
-            is_longitud = getString(c, "longitud","" );
+            is_latitud = getString(c, "latitud", "");
+            is_longitud = getString(c, "longitud", "");
 
-            ls_mensaje = getString(c, "mensaje","" );
+            ls_mensaje = getString(c, "mensaje", "");
 
 
-            estadoDelSuministro = getString(c, "estadoDelSuministro","" ).trim();
-            dondeEsta = getString(c, "dondeEsta","" );
+            estadoDelSuministro = getString(c, "estadoDelSuministro", "").trim();
+            dondeEsta = getString(c, "dondeEsta", "");
 
             //registro = c.getBlob(c.getColumnIndex("registro"));
 
             // Obtener el idArchivo de donde se obtuvieron los datos
 
             idArchivo = getLong(c, "idArchivo", 0);
-            codigoBarras = getString(c, "codigoBarras","" );
-            nota1 = getString(c, "nota1","" );
-            nota2 = getString(c, "nota2","" );
-            mMiLatitud = getString(c, "miLatitud","" );
-            mMiLongitud = getString(c, "miLongitud","" );
-            estimacionesEngie = getString(c, "EstimacionesEngie","" );
-            tipoDeCliente = getString(c, "TipoDeCliente","" );
-            tipoDeAcuse = getString(c, "TipoDeAcuse","" );
+            codigoBarras = getString(c, "codigoBarras", "");
+            nota1 = getString(c, "nota1", "");
+            nota2 = getString(c, "nota2", "");
+            mMiLatitud = getString(c, "miLatitud", "");
+            mMiLongitud = getString(c, "miLongitud", "");
+            estimacionesEngie = getString(c, "EstimacionesEngie", "");
+            tipoDeCliente = getString(c, "TipoDeCliente", "");
+            tipoDeAcuse = getString(c, "TipoDeAcuse", "");
 
             unidad = is_sectorCorto;
 
-            mRegional = getString(c, "Regional","" );
-            mPorcion = getString(c, "Porcion","" );
-            mIdUnidadLect = getInt(c, "idUnidadLect",0 );
-            mIdRegionalLect = getInt(c, "idRegionalLect",0 );
-            mIntercambiarSerieMedidor = getInt(c, "IntercambiarSerieMedidor",0 );
+            mRegional = getString(c, "Regional", "");
+            mPorcion = getString(c, "Porcion", "");
+            mIdUnidadLect = getInt(c, "idUnidadLect", 0);
+            mIdRegionalLect = getInt(c, "idRegionalLect", 0);
+            mIntercambiarSerieMedidor = getInt(c, "IntercambiarSerieMedidor", 0);
 
 //			if (ls_anomalia.equals("") && secuencia%3==0)
 //				ls_anomalia="AC*";
@@ -1002,7 +1000,7 @@ public class Lectura extends DbBaseMgr {
     }
 
     public static SpannableStringBuilder marcarTextoColor(String texto, String textoBuscado,
-                                                     boolean restarUnEspacio) {
+                                                          boolean restarUnEspacio) {
         int antes = 0;
         SpannableStringBuilder sb = new SpannableStringBuilder(texto);
         final ForegroundColorSpan fcs = new ForegroundColorSpan(Color.parseColor("red"));
@@ -1012,8 +1010,7 @@ public class Lectura extends DbBaseMgr {
 
         inicio = texto.toString().indexOf(textoBuscado);
 
-        if (inicio >= 0)
-        {
+        if (inicio >= 0) {
             fin = textoBuscado.length();
             sb.setSpan(fcs, inicio, fin, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
             sb.setSpan(bss, inicio, fin, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
@@ -1609,55 +1606,62 @@ public class Lectura extends DbBaseMgr {
         setSubAnomalia(ls_anomalia);
     }
 
-    public String getUnidad(){
+    public String getUnidad() {
         return unidad;
     }
 
-    public long getIdArchivo(){
+    public long getIdArchivo() {
         return idArchivo;
     }
 
-    public String getCodigoBarras(){
+    public String getCodigoBarras() {
         return codigoBarras;
     }
 
-    public String getCodigoBarrasCorregido(){
+    public String getCodigoBarrasCorregido() {
         return codigoBarras.replace("&", "/");
     }
 
-    public String getSerieMedidor(){
+    public String getSerieMedidor() {
         return is_serieMedidor;
     }
 
-    public String getSerieMedidorCorregido()    {
+    public String getSerieMedidorCorregido() {
         return is_serieMedidor.replace("&", "/");
     }
 
-    public String getNota1(){
+    public String getNumMedidor() {
+        if (!getIntercambiarSerieMedidor())
+            return getSerieMedidorCorregido();
+        else
+            return getCodigoBarrasCorregido();
+    }
+
+    public String getNota1() {
         return nota1;
     }
 
-    public String getNota2(){
+    public String getNota2() {
         return nota2;
     }
 
-    public String getMiLatitud(){
+    public String getMiLatitud() {
         return mMiLatitud;
     }
 
-    public String getMiLongitud(){
+    public String getMiLongitud() {
         return mMiLongitud;
     }
 
-    public String getEstimacionesEngie(){
+    public String getEstimacionesEngie() {
         return estimacionesEngie;
     }
 
-    public String getTipoDeCliente(){
+    public String getTipoDeCliente() {
         return tipoDeCliente;
     }
 
-    public String getTipoDeAcuse(){
+    public String getTipoDeAcuse() {
         return tipoDeAcuse;
     }
 
@@ -1668,7 +1672,12 @@ public class Lectura extends DbBaseMgr {
             return false;
     }
 
-    public String getCodigoRespuestaEncuesta() {return mCodigoRespuestaEncuesta; }
-    public void setCodigoRespuestaEncuesta(String valor) { mCodigoRespuestaEncuesta = valor;}
+    public String getCodigoRespuestaEncuesta() {
+        return mCodigoRespuestaEncuesta;
+    }
+
+    public void setCodigoRespuestaEncuesta(String valor) {
+        mCodigoRespuestaEncuesta = valor;
+    }
 
 }

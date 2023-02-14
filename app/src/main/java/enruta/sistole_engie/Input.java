@@ -1292,7 +1292,9 @@ public class Input extends TomaDeLecturasPadre {
         else
             et_generico.setHint(lectura.numerodeesferasReal
                     + " " + globales.textoEsferas);
-        tv_medidor.setText(getString(R.string.lbl_tdl_indica_medidor) + globales.is_caseta);
+
+        // RL, 2023-02-13, Para Engie se mostrará el número de serie del medidor o código de barras dependiendo de la regional
+        tv_medidor.setText(getString(R.string.lbl_tdl_indica_medidor) + lectura.getNumMedidor());
 
         tv_medidor.setBackgroundResource(R.color.green);
         tv_medidor.setTextSize(TypedValue.COMPLEX_UNIT_SP, 35);
