@@ -113,6 +113,7 @@ public class ThreadTransmitirWifi extends TimerTask {
         String ls_nombre_final;
         cancelarNotificacion(RESULTADO_TRANSMISION);
         int numErrores = 0;
+        String ciclo = "";
         String unidad = "";
         String regional = "";
         String subCarpeta = "";
@@ -175,7 +176,7 @@ public class ThreadTransmitirWifi extends TimerTask {
                 if (fotoMgr == null)
                     fotoMgr = new FotosMgr();
 
-                ls_query = "SELECT F.nombre, F.rowid, length(F.foto) imageSize, L.sectorCorto Unidad, L.Regional ";
+                ls_query = "SELECT F.nombre, F.rowid, length(F.foto) imageSize, L.sectorCorto Unidad, L.Regional, L.ciclo ";
                 ls_query += "FROM fotos F";
                 ls_query += "   LEFT JOIN ruta L ON F.idLectura = cast(L.poliza as Long) ";
                 if (globales.enviarSoloLoMarcado)
@@ -224,11 +225,12 @@ public class ThreadTransmitirWifi extends TimerTask {
 
                         regional = Utils.getString(c, "Regional", "");
                         unidad = Utils.getString(c, "Unidad", "");
+                        ciclo =  Utils.getString(c, "ciclo", "");
 
-                        if (unidad.equals("") || regional.equals("") || nombreFoto.toLowerCase().contains("xxxxxcheck"))
+                        if (unidad.equals("") || regional.equals("") || ciclo.equals("") || nombreFoto.toLowerCase().contains("xxxxxcheck"))
                             subCarpeta = fechaAnio + "/" + fechaAnioMes + "/" + fecha + "/";
                         else
-                            subCarpeta = "Ciclo/" + regional + "/" + unidad + "/";
+                            subCarpeta = ciclo + "/" + regional + "/" + unidad + "/";
 
                         serial.open(ls_servidor, ls_capertaFotos + subCarpeta, "",
                                 Serializacion.ESCRITURA, 0, 0);

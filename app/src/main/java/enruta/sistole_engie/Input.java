@@ -98,6 +98,10 @@ public class Input extends TomaDeLecturasPadre {
     boolean capturando = false;
     String behavior = "";
 
+    // RL, 2023-03-02, Se agrega dialogo para mostrar mensajes al usuario
+
+    private DialogoMensaje mDialogoMsg = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -1279,32 +1283,37 @@ public class Input extends TomaDeLecturasPadre {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
-        globales.sonLecturasConsecutivas = false;
+
+        try {
+            globales.sonLecturasConsecutivas = false;
 //		tv_info.setVisibility(View.VISIBLE);
 //		tv_info.setText("Medidor con " + lectura.numerodeesferas
 //				+ " esferas.");
 
-        et_generico.setText(globales.is_lectura);
-        et_generico.setTextSize(TypedValue.COMPLEX_UNIT_SP, 50);
-        if (lectura.numerodeesferasReal.equals(""))
-            et_generico.setHint(lectura.numerodeesferas
-                    + " " + globales.textoEsferas);
-        else
-            et_generico.setHint(lectura.numerodeesferasReal
-                    + " " + globales.textoEsferas);
+            et_generico.setText(globales.is_lectura);
+            et_generico.setTextSize(TypedValue.COMPLEX_UNIT_SP, 50);
+            if (lectura.numerodeesferasReal.equals(""))
+                et_generico.setHint(lectura.numerodeesferas
+                        + " " + globales.textoEsferas);
+            else
+                et_generico.setHint(lectura.numerodeesferasReal
+                        + " " + globales.textoEsferas);
 
-        // RL, 2023-02-13, Para Engie se mostrará el número de serie del medidor o código de barras dependiendo de la regional
-        tv_medidor.setText(getString(R.string.lbl_tdl_indica_medidor) + lectura.getNumMedidor());
+            // RL, 2023-02-13, Para Engie se mostrará el número de serie del medidor o código de barras dependiendo de la regional
+            tv_medidor.setText(getString(R.string.lbl_tdl_indica_medidor) + lectura.getNumMedidor());
 
-        tv_medidor.setBackgroundResource(R.color.green);
-        tv_medidor.setTextSize(TypedValue.COMPLEX_UNIT_SP, 35);
-        tv_medidor.setTextColor(this.getResources().getColor(R.color.White));
-        tv_medidor.setGravity(Gravity.CENTER_HORIZONTAL);
+            tv_medidor.setBackgroundResource(R.color.green);
+            tv_medidor.setTextSize(TypedValue.COMPLEX_UNIT_SP, 35);
+            tv_medidor.setTextColor(this.getResources().getColor(R.color.White));
+            tv_medidor.setGravity(Gravity.CENTER_HORIZONTAL);
 
 
-        rl_contenedorLabel.setVisibility(View.VISIBLE);
-        rl_contenedorLabel.setBackgroundResource(R.color.green);
-        globales.tdlg.is_lectAnt = "";
+            rl_contenedorLabel.setVisibility(View.VISIBLE);
+            rl_contenedorLabel.setBackgroundResource(R.color.green);
+            globales.tdlg.is_lectAnt = "";
+        } catch (Exception ex) {
+            mostrarMensaje("Error", "Error inesperado. Pida ayuda a soporte", ex.getMessage(), null);
+        }
     }
 
     @Override
@@ -1494,6 +1503,24 @@ public class Input extends TomaDeLecturasPadre {
             }
 
         }
+    }
+
+    /* -------------------------------------------------------------------------------------------
+    Muestra el diálogo o ventana para mostrar mensajes diversos o de error.
+    El detalle del error está oculto hasta que se hace click en el mensaje.
+    ------------------------------------------------------------------------------------------- */
+
+    private void mostrarMensaje(String titulo, String mensaje, String detalleError, DialogoMensaje.Resultado resultado) {
+        if (mDialogoMsg == null) {
+            mDialogoMsg = new DialogoMensaje(this);
+        }
+
+        mDialogoMsg.setOnResultado(resultado);
+        mDialogoMsg.mostrarMensaje(titulo, mensaje, detalleError);
+    }
+
+    private void mostrarMensaje(String titulo, String mensaje) {
+        mostrarMensaje(titulo, mensaje, "", null);
     }
 
 }

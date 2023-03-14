@@ -413,7 +413,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
     }
 
     // CE, REVISAR
-    public Vector<String> getInformacionDelMedidor(Lectura lectura) {
+    public Vector<String> getInformacionDelMedidor(Lectura lectura) throws Exception {
         Vector<String> datos = new Vector<String>();
 
         //Esta variable la usaremos para poder determinar si algun dato es vacio y mostrar solo lo necesario en la pantalla
@@ -899,6 +899,10 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         globales.tlc.add(new Campo(29, "idRegionalLect", 476, 2, Campo.I, " "));
         globales.tlc.add(new Campo(30, "Regional", 478, 2, Campo.I, " "));
         globales.tlc.add(new Campo(31, "IntercambiarSerieMedidor", 480, 1, Campo.I, " "));
+
+        // RL, 13/03/23, Columnas nuevas
+
+        globales.tlc.add(new Campo(32, "Ciclo", 481, 15, Campo.I, " "));
 
         // Columnas que ya existían estaban en este código de la versión 1.0.11 y anteriores
 

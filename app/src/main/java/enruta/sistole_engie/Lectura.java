@@ -18,6 +18,7 @@ import android.text.style.StyleSpan;
 
 import enruta.sistole_engie.clases.BateriaMgr;
 import enruta.sistole_engie.services.DbBaseMgr;
+import enruta.sistole_engie.services.DbConfigMgr;
 
 public class Lectura extends DbBaseMgr {
 
@@ -54,7 +55,7 @@ public class Lectura extends DbBaseMgr {
 
     private SQLiteDatabase db;
 
-    private Context context;
+    private Context mContext;
 
     private int FotoAlFinal;
 
@@ -94,7 +95,7 @@ public class Lectura extends DbBaseMgr {
     boolean requiereGPS = false;
 
     Lectura(Context context, int secuencial) throws Throwable {
-        this.context = context;
+        this.mContext = context;
         this.secuencia = secuencial;
         res = context.getResources();
 
@@ -301,7 +302,7 @@ public class Lectura extends DbBaseMgr {
     }
 
     private void openDatabase() {
-        dbHelper = new DBHelper(context);
+        dbHelper = new DBHelper(mContext);
 
         db = dbHelper.getReadableDatabase();
     }
@@ -469,7 +470,7 @@ public class Lectura extends DbBaseMgr {
 
         openDatabase();
 
-        nivelBateria = BateriaMgr.getBatteryPercentage(context);
+        nivelBateria = BateriaMgr.getBatteryPercentage(mContext);
 
         cv_params.put("lectura", is_lectura);
         cv_params.put("consumo", is_consumo);
@@ -632,9 +633,9 @@ public class Lectura extends DbBaseMgr {
         for (int i = comienzo; i < tope; i++) {
 
             if (globales.multiplesAnomalias) {
-                anomalia = new Anomalia(context, ls_anomalia.substring(i, i + 1), "", false);
+                anomalia = new Anomalia(mContext, ls_anomalia.substring(i, i + 1), "", false);
             } else {
-                anomalia = new Anomalia(context, ls_anomalia, "", false);
+                anomalia = new Anomalia(mContext, ls_anomalia, "", false);
 
                 if (globales.DiferirEntreAnomInstYMed && anomalia.is_tipo.equals("I")) {
                     is_anomalia = "";
@@ -727,9 +728,9 @@ public class Lectura extends DbBaseMgr {
 //			if (!ls_anomalia.equals(""))
 
             if (globales.multiplesAnomalias)
-                subAnomalia = new Anomalia(context, subanomaliasArray[i], "", true);
+                subAnomalia = new Anomalia(mContext, subanomaliasArray[i], "", true);
             else {
-                subAnomalia = new Anomalia(context, subanomaliasArray[i], is_anomalia, true);
+                subAnomalia = new Anomalia(mContext, subanomaliasArray[i], is_anomalia, true);
             }
 //			else
 //			{
@@ -962,7 +963,7 @@ public class Lectura extends DbBaseMgr {
         ls_preview = globales.tdlg.getDescripcionDeBuscarMedidor(this,
                 tipoDeBusqueda, textoBuscado);
 
-        ls_preview += "<br>" + (globales.mostrarRowIdSecuencia ? contadorAlterno : secuencia) + " " + context.getString(R.string.de) + " " + totalMedidores;
+        ls_preview += "<br>" + (globales.mostrarRowIdSecuencia ? contadorAlterno : secuencia) + " " + mContext.getString(R.string.de) + " " + totalMedidores;
 
         // ls_preview +="\n"+ getDireccion();
         // ls_preview += "<br>" +is_colonia.trim();
@@ -1630,7 +1631,7 @@ public class Lectura extends DbBaseMgr {
         return is_serieMedidor.replace("&", "/");
     }
 
-    public String getNumMedidor() {
+    public String getNumMedidor() throws Exception {
         if (!getIntercambiarSerieMedidor())
             return getSerieMedidorCorregido();
         else
@@ -1665,8 +1666,27 @@ public class Lectura extends DbBaseMgr {
         return tipoDeAcuse;
     }
 
-    public boolean getIntercambiarSerieMedidor() {
-        if (mIntercambiarSerieMedidor != 0)
+    public boolean getIntercambiarSerieMedidor() throws Exception {
+        int valor;
+
+        valor = DbConfigMgr.getInstance().getIntercambiarSerieMedidor(mContext);
+
+        if (valor >= 1)
+            return true;
+        else if (valor == 0)
+            return false;
+        else if (mIntercambiarSerieMedidor != 0)
+            return true;
+        else
+            return false;
+    }
+
+    public boolean getAlinearDerechaNumMedidor() throws Exception {
+        int valor;
+
+        valor = DbConfigMgr.getInstance().getAlinearDerechaNumMedidor(mContext);
+
+        if (valor != 0)
             return true;
         else
             return false;

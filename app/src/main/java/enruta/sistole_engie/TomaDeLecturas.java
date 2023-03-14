@@ -23,6 +23,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -1248,188 +1249,196 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
         String codigoBarras = "";
         String serieMedidor = "";
         boolean intercambiarConCodigoBarras = false;
+        boolean alinearDerechaNumMedidor = false;
         Lectura lecturaActual;
 
-        if (reiniciaValores) {
-            if (globales.tll.getNumRecords() > 0) {
-                if (!globales.tll.hayMasLecturas()
-                        || globales.tll.getLecturaActual() == null) {
-                    if (!globales.bModificar) {
-                        if (globales.permiteDarVuelta && !globales.bcerrar) {
-                            irALaPrimeraSinEjecutarAlTerminar();
-                            globales.permiteDarVuelta = false;
-                            return;
-                        } else {
-                            if (!globales.permiteDarVuelta)
-                                Toast.makeText(this, is_mensaje_direccion,
-                                        Toast.LENGTH_SHORT).show();
-                        }
-
-                    } else {
-                        if (globales.sonLecturasConsecutivas
-                                && globales.estoyCapturando) {
-                            globales.bcerrar = false;
-                            globales.bModificar = false;
-                            // tv_indica_corr.setText("N");
-                            globales.capsModoCorreccion = false;
-                            layout.setBackgroundResource(0);
-                            // item.setIcon(R.drawable.ic_action_correccion);
-                            globales.permiteDarVuelta = false;
-                            getSigLect();
-                            return;
-                        } else {
-
-
-                            if (globales.permiteDarVuelta) {
+        try {
+            if (reiniciaValores) {
+                if (globales.tll.getNumRecords() > 0) {
+                    if (!globales.tll.hayMasLecturas()
+                            || globales.tll.getLecturaActual() == null) {
+                        if (!globales.bModificar) {
+                            if (globales.permiteDarVuelta && !globales.bcerrar) {
                                 irALaPrimeraSinEjecutarAlTerminar();
                                 globales.permiteDarVuelta = false;
                                 return;
                             } else {
-                                Toast.makeText(this, is_mensaje_direccion,
-                                        Toast.LENGTH_SHORT).show();
+                                if (!globales.permiteDarVuelta)
+                                    Toast.makeText(this, is_mensaje_direccion,
+                                            Toast.LENGTH_SHORT).show();
                             }
 
+                        } else {
+                            if (globales.sonLecturasConsecutivas
+                                    && globales.estoyCapturando) {
+                                globales.bcerrar = false;
+                                globales.bModificar = false;
+                                // tv_indica_corr.setText("N");
+                                globales.capsModoCorreccion = false;
+                                layout.setBackgroundResource(0);
+                                // item.setIcon(R.drawable.ic_action_correccion);
+                                globales.permiteDarVuelta = false;
+                                getSigLect();
+                                return;
+                            } else {
+
+
+                                if (globales.permiteDarVuelta) {
+                                    irALaPrimeraSinEjecutarAlTerminar();
+                                    globales.permiteDarVuelta = false;
+                                    return;
+                                } else {
+                                    Toast.makeText(this, is_mensaje_direccion,
+                                            Toast.LENGTH_SHORT).show();
+                                }
+
+                            }
+
+                            // globales.bModificar=false;
                         }
 
-                        // globales.bModificar=false;
-                    }
-
-                    // Si estoy tomando fotos consecutivas, no puedo cerrar ya que
-                    // tengo una actividad hijo que depende de esta...
-                    if (globales.bcerrar
-                            && /* !estoyTomandoFotosConsecutivas */!globales.sonLecturasConsecutivas && !globales.capsModoCorreccion) {
-                        // finish();
-                        //muere();
-                        //Llegamos a la ultima lectura...  hay que ir al principio y empezar modo correccion
-                        //iniciarModoCorreccionCAPS();
-                        rutaFinalizada();
-                        globales.permiteDarVuelta = false;
+                        // Si estoy tomando fotos consecutivas, no puedo cerrar ya que
+                        // tengo una actividad hijo que depende de esta...
+                        if (globales.bcerrar
+                                && /* !estoyTomandoFotosConsecutivas */!globales.sonLecturasConsecutivas && !globales.capsModoCorreccion) {
+                            // finish();
+                            //muere();
+                            //Llegamos a la ultima lectura...  hay que ir al principio y empezar modo correccion
+                            //iniciarModoCorreccionCAPS();
+                            rutaFinalizada();
+                            globales.permiteDarVuelta = false;
 
 //						globales.capsModoCorreccion = true;
 //						globales.bModificar = true;
 //						layout.setBackgroundResource(R.drawable.correccion_pattern);
 //						getPrimLect();
-                        return;
-                    } else if (globales.bcerrar && globales.sonLecturasConsecutivas) {
-                        // Puede darse el caso de que sea la ultima lectura
-                        // consecutiva, se decide cerrar, pero el algoritmo
-                        // avanza... no debe cerrar
-                    } else
-                        globales.bcerrar = true;
+                            return;
+                        } else if (globales.bcerrar && globales.sonLecturasConsecutivas) {
+                            // Puede darse el caso de que sea la ultima lectura
+                            // consecutiva, se decide cerrar, pero el algoritmo
+                            // avanza... no debe cerrar
+                        } else
+                            globales.bcerrar = true;
+                    }
+                } else {
+                    Toast.makeText(this, R.string.msj_lecturas_no_hay_lecturas_cargadas, Toast.LENGTH_SHORT)
+                            .show();
+                    // finish();
+                    muere();
+                    return;
                 }
-            } else {
-                Toast.makeText(this, R.string.msj_lecturas_no_hay_lecturas_cargadas, Toast.LENGTH_SHORT)
-                        .show();
-                // finish();
-                muere();
-                return;
             }
-        }
 
-        button1.setEnabled(true);
-        button2.setEnabled(true);
-        ll_linearLayout2.setVisibility(View.VISIBLE);
-        tv_mensaje.setVisibility(View.GONE);
-        tv_respuesta.setVisibility(View.GONE);
+            button1.setEnabled(true);
+            button2.setEnabled(true);
+            ll_linearLayout2.setVisibility(View.VISIBLE);
+            tv_mensaje.setVisibility(View.GONE);
+            tv_respuesta.setVisibility(View.GONE);
 
-        is_mensaje_direccion = getString(R.string.msj_lecturas_no_hay_mas);
+            is_mensaje_direccion = getString(R.string.msj_lecturas_no_hay_mas);
 
-        String ls_comentarios = "";
+            String ls_comentarios = "";
 
-        globales.permiteDarVuelta = false;
-        if (!globales.bModificar) {
-            layout.setBackgroundResource(0);
-            openDatabase();
-            db.execSQL("update encabezado set ultimoSeleccionado=" + globales.tll.getLecturaActual().secuenciaReal);
-            closeDatabase();
-        }
-
-
-        // button1.setEnabled(true);
+            globales.permiteDarVuelta = false;
+            if (!globales.bModificar) {
+                layout.setBackgroundResource(0);
+                openDatabase();
+                db.execSQL("update encabezado set ultimoSeleccionado=" + globales.tll.getLecturaActual().secuenciaReal);
+                closeDatabase();
+            }
 
 
-        globales.il_lect_max = globales.tdlg.getLecturaMaxima();
-        globales.il_lect_min = globales.tdlg.getLecturaMinima();
+            // button1.setEnabled(true);
 
-        lecturaActual = globales.tll.getLecturaActual();
 
-        globales.il_lect_act = lecturaActual.secuenciaReal;
-        is_comentarios = lecturaActual.getDireccion();
-        globales.is_caseta = lecturaActual.is_serieMedidor;
+            globales.il_lect_max = globales.tdlg.getLecturaMaxima();
+            globales.il_lect_min = globales.tdlg.getLecturaMinima();
 
-        if (reiniciaValores) {
-            globales.is_lectura = lecturaActual.getLectura();
-            globales.is_presion = lecturaActual.getAnomaliaAMostrar();
-            globales.is_terminacion = lecturaActual.terminacion;
-            globales.mensaje = lecturaActual.ls_mensaje;
-            ultimaAnomaliaSeleccionada = "";
-            ultimaSubAnomaliaSeleccionada = "";
-            preguntaSiBorraDatos = false;
-            globales.ignorarContadorControlCalidad = false;
-            preguntaSiBorraDatosComodin = false;
-            globales.ignorarGeneracionCalidadOverride = false;
-            //voyATomarFoto=false;
-            regreseDe = NINGUNA;
-            globales.ignorarTomaDeFoto = false;
-            globales.contadorIntentos = 0;
-            modoLecturaObligatoria = false;
-            globales.fotoForzada = false;
-            is_anomaliasIngresadasAnteriormente = "";
-            //captureAnomalias=false;
-        }
+            lecturaActual = globales.tll.getLecturaActual();
 
-        preguntaRepiteAnomalia();
+            globales.il_lect_act = lecturaActual.secuenciaReal;
+            is_comentarios = lecturaActual.getDireccion();
+            globales.is_caseta = lecturaActual.is_serieMedidor;
 
-        // if (globales.is_caseta.contains("CF")){
-        // setModoCaptura(false);
-        // globales.is_lectura="0";
-        // tv_caseta.setBackgroundResource(R.color.SteelBlue);
-        //
-        // }
+            if (reiniciaValores) {
+                globales.is_lectura = lecturaActual.getLectura();
+                globales.is_presion = lecturaActual.getAnomaliaAMostrar();
+                globales.is_terminacion = lecturaActual.terminacion;
+                globales.mensaje = lecturaActual.ls_mensaje;
+                ultimaAnomaliaSeleccionada = "";
+                ultimaSubAnomaliaSeleccionada = "";
+                preguntaSiBorraDatos = false;
+                globales.ignorarContadorControlCalidad = false;
+                preguntaSiBorraDatosComodin = false;
+                globales.ignorarGeneracionCalidadOverride = false;
+                //voyATomarFoto=false;
+                regreseDe = NINGUNA;
+                globales.ignorarTomaDeFoto = false;
+                globales.contadorIntentos = 0;
+                modoLecturaObligatoria = false;
+                globales.fotoForzada = false;
+                is_anomaliasIngresadasAnteriormente = "";
+                //captureAnomalias=false;
+            }
 
-        globales.is_lectura = globales.is_lectura == null ? ""
-                : globales.is_lectura;
-        globales.is_presion = globales.is_presion == null ? ""
-                : globales.is_presion;
-        is_comentarios = is_comentarios != null ? is_comentarios : "";
+            preguntaRepiteAnomalia();
 
-        // Voy a verificar lo de las lecturas consecutivas
-        if (globales.tll.hayMasMedidoresIguales(globales.is_caseta)
-                && !globales.is_caseta.trim().equals("0"))
-            globales.sonLecturasConsecutivas = true;
-        else
-            globales.sonLecturasConsecutivas = false;
+            // if (globales.is_caseta.contains("CF")){
+            // setModoCaptura(false);
+            // globales.is_lectura="0";
+            // tv_caseta.setBackgroundResource(R.color.SteelBlue);
+            //
+            // }
 
-        globales.requiereGPS = lecturaActual.requiereGPS;
+            globales.is_lectura = globales.is_lectura == null ? ""
+                    : globales.is_lectura;
+            globales.is_presion = globales.is_presion == null ? ""
+                    : globales.is_presion;
+            is_comentarios = is_comentarios != null ? is_comentarios : "";
 
-        enciendeGPS();
+            // Voy a verificar lo de las lecturas consecutivas
+            if (globales.tll.hayMasMedidoresIguales(globales.is_caseta)
+                    && !globales.is_caseta.trim().equals("0"))
+                globales.sonLecturasConsecutivas = true;
+            else
+                globales.sonLecturasConsecutivas = false;
 
-        // RL, 2022-10-24, Se requiere que para las regionales de Tampico y Guadalajara
-        // En el campo donde se muestra la serie del medidor se muestre el código de barras.
-        // RL, 2023-01. Ahora la información de si intercambiar o no viene en el archivo TPL
+            globales.requiereGPS = lecturaActual.requiereGPS;
 
-        intercambiarConCodigoBarras = lecturaActual.getIntercambiarSerieMedidor();
+            enciendeGPS();
 
-        if (!intercambiarConCodigoBarras) {
-            serieMedidor = lecturaActual.getSerieMedidorCorregido();
-            tv_caseta.setText(serieMedidor);
-        }
-        else {
-            codigoBarras = lecturaActual.getCodigoBarrasCorregido();
-            tv_caseta.setText(codigoBarras);
-        }
+            // RL, 2022-10-24, Se requiere que para las regionales de Tampico y Guadalajara
+            // En el campo donde se muestra la serie del medidor se muestre el código de barras.
+            // RL, 2023-01. Ahora la información de si intercambiar o no viene en el archivo TPL
 
-        //tv_nombre.setText(globales.tll.getLecturaActual().getNombreCliente());
-        //globales.tdlg.getInformacionDelMedidor(ll_generica, globales.tll.getLecturaActual(), sizeGenerico);
-        preparaDatosGenericos();
-        tv_contador.setText((globales.mostrarRowIdSecuencia ? lecturaActual.secuenciaReal : globales.il_lect_act) + " de " + globales.il_total);
-        tv_contadorOpcional.setText(tv_contador.getText().toString());
-        tv_min.setText(String.valueOf(globales.il_lect_min));
-        tv_max.setText(String.valueOf(globales.il_lect_max));
-        tv_lecturaAnterior.setText(String.valueOf(lecturaActual.lecturaAnterior));
+            intercambiarConCodigoBarras = lecturaActual.getIntercambiarSerieMedidor();
 
-        // Queremos que los comentarios sean de la siguiente manera Anomalia: ,
-        // SubAnomalia \n(todo lo demas)
+            if (!intercambiarConCodigoBarras) {
+                serieMedidor = lecturaActual.getSerieMedidorCorregido();
+                tv_caseta.setText(serieMedidor);
+            } else {
+                codigoBarras = lecturaActual.getCodigoBarrasCorregido();
+                tv_caseta.setText(codigoBarras);
+            }
+
+            alinearDerechaNumMedidor = lecturaActual.getAlinearDerechaNumMedidor();
+
+            if (alinearDerechaNumMedidor)
+                tv_caseta.setGravity(Gravity.RIGHT);
+            else
+                tv_caseta.setGravity(Gravity.LEFT);
+
+            //tv_nombre.setText(globales.tll.getLecturaActual().getNombreCliente());
+            //globales.tdlg.getInformacionDelMedidor(ll_generica, globales.tll.getLecturaActual(), sizeGenerico);
+            preparaDatosGenericos();
+            tv_contador.setText((globales.mostrarRowIdSecuencia ? lecturaActual.secuenciaReal : globales.il_lect_act) + " de " + globales.il_total);
+            tv_contadorOpcional.setText(tv_contador.getText().toString());
+            tv_min.setText(String.valueOf(globales.il_lect_min));
+            tv_max.setText(String.valueOf(globales.il_lect_max));
+            tv_lecturaAnterior.setText(String.valueOf(lecturaActual.lecturaAnterior));
+
+            // Queremos que los comentarios sean de la siguiente manera Anomalia: ,
+            // SubAnomalia \n(todo lo demas)
 //		if (!globales.tll.getLecturaActual().getAnomaliaAMostrar().equals("")) {
 //			// Tiene una anomalia
 //			ls_comentarios =getString(R.string.str_anomalia)+": "  + globales.is_presion;
@@ -1445,34 +1454,34 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 //		tv_comentarios.setText(ls_comentarios
 //				+ globales.tll.getLecturaActual().getComentarios());
 
-        tv_comentarios.setVisibility(View.GONE);
+            tv_comentarios.setVisibility(View.GONE);
 
-        tv_lectura.setText(getString(R.string.lbl_tdl_indica_lectura) + globales.is_lectura);
-        tv_anomalia.setText(getString(R.string.lbl_tdl_indica_anomalia) + (globales.is_presion.length() > 3 ? "***" : globales.is_presion));
+            tv_lectura.setText(getString(R.string.lbl_tdl_indica_lectura) + globales.is_lectura);
+            tv_anomalia.setText(getString(R.string.lbl_tdl_indica_anomalia) + (globales.is_presion.length() > 3 ? "***" : globales.is_presion));
 
-        if (globales.mostrarCuadriculatdl) {
-            cuadricula.setVisibility(View.VISIBLE);
-            //llenar los campos
-            tv_campo0.setText(globales.tdlg.obtenerContenidoDeEtiqueta("campo0"));
-            tv_campo1.setText(globales.tdlg.obtenerContenidoDeEtiqueta("campo1"));
-            tv_campo2.setText(globales.tdlg.obtenerContenidoDeEtiqueta("campo2"));
-            tv_campo3.setText(globales.tdlg.obtenerContenidoDeEtiqueta("campo3"));
-            tv_campo4.setText(globales.tdlg.obtenerContenidoDeEtiqueta("campo4"));
+            if (globales.mostrarCuadriculatdl) {
+                cuadricula.setVisibility(View.VISIBLE);
+                //llenar los campos
+                tv_campo0.setText(globales.tdlg.obtenerContenidoDeEtiqueta("campo0"));
+                tv_campo1.setText(globales.tdlg.obtenerContenidoDeEtiqueta("campo1"));
+                tv_campo2.setText(globales.tdlg.obtenerContenidoDeEtiqueta("campo2"));
+                tv_campo3.setText(globales.tdlg.obtenerContenidoDeEtiqueta("campo3"));
+                tv_campo4.setText(globales.tdlg.obtenerContenidoDeEtiqueta("campo4"));
 
-            label_campo0.setText(globales.tdlg.obtenerTituloDeEtiqueta("campo0"));
-            label_campo1.setText(globales.tdlg.obtenerTituloDeEtiqueta("campo1"));
-            label_campo2.setText(globales.tdlg.obtenerTituloDeEtiqueta("campo2"));
-            label_campo3.setText(globales.tdlg.obtenerTituloDeEtiqueta("campo3"));
-            label_campo4.setText(globales.tdlg.obtenerTituloDeEtiqueta("campo4"));
-        } else {
-            cuadricula.setVisibility(View.GONE);
-        }
+                label_campo0.setText(globales.tdlg.obtenerTituloDeEtiqueta("campo0"));
+                label_campo1.setText(globales.tdlg.obtenerTituloDeEtiqueta("campo1"));
+                label_campo2.setText(globales.tdlg.obtenerTituloDeEtiqueta("campo2"));
+                label_campo3.setText(globales.tdlg.obtenerTituloDeEtiqueta("campo3"));
+                label_campo4.setText(globales.tdlg.obtenerTituloDeEtiqueta("campo4"));
+            } else {
+                cuadricula.setVisibility(View.GONE);
+            }
 
-        // if (strEsDemanda.equals("5")) {nNumColorAviso = 8; strTextoEspecial =
-        // " - " + tipoMedidor.trim(); }
-        // if (strEsDemanda.equals("6") || strEsDemanda.equals("7"))
-        // {nNumColorAviso = 9; strTextoEspecial = " - " + tipoMedidor.trim(); }
-        //
+            // if (strEsDemanda.equals("5")) {nNumColorAviso = 8; strTextoEspecial =
+            // " - " + tipoMedidor.trim(); }
+            // if (strEsDemanda.equals("6") || strEsDemanda.equals("7"))
+            // {nNumColorAviso = 9; strTextoEspecial = " - " + tipoMedidor.trim(); }
+            //
 //		if (globales.tll.getLecturaActual().is_tarifa.endsWith("5")) {
 //			// ll_linearLayout1.setBackgroundColor(R.color.Blue);
 //			ll_linearLayout1.setBackgroundResource(R.color.Blue);
@@ -1484,91 +1493,94 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 //			ll_linearLayout1.setBackgroundResource(R.color.green);
 //		}
 
-        /*
-         * int secuencial=(int) globales.il_lect_act; button5.setEnabled(false);
-         * Cursor c; //Por ahora no tenemos un objeto de donde tomar las fotos
-         * asi que haremos esto...
-         *
-         * openDatabase();
-         *
-         *
-         *
-         * c=db.rawQuery(
-         * "Select count(*) canti from fotos where cast(secuencial as Integer)="
-         * + secuencial,null);
-         *
-         * c.moveToFirst();
-         *
-         * if (c.getInt(c.getColumnIndex("canti"))==0){
-         * button5.setEnabled(false); } else{ button5.setEnabled(true); }
-         *
-         * closeDatabase();
-         */
+            /*
+             * int secuencial=(int) globales.il_lect_act; button5.setEnabled(false);
+             * Cursor c; //Por ahora no tenemos un objeto de donde tomar las fotos
+             * asi que haremos esto...
+             *
+             * openDatabase();
+             *
+             *
+             *
+             * c=db.rawQuery(
+             * "Select count(*) canti from fotos where cast(secuencial as Integer)="
+             * + secuencial,null);
+             *
+             * c.moveToFirst();
+             *
+             * if (c.getInt(c.getColumnIndex("canti"))==0){
+             * button5.setEnabled(false); } else{ button5.setEnabled(true); }
+             *
+             * closeDatabase();
+             */
 
-        tieneFotos();
+            tieneFotos();
 
-        // button5.setEnabled(false);
-        // tv_contador.bringToFront();
+            // button5.setEnabled(false);
+            // tv_contador.bringToFront();
 
-        if (globales.esSuperUsuario) {
-            ll_limites.setVisibility(View.VISIBLE);
-        }
+            if (globales.esSuperUsuario) {
+                ll_limites.setVisibility(View.VISIBLE);
+            }
 
-        if (!globales.modoCaptura) {
-            salirModoCaptura();
-        }
-        if (Build.VERSION.SDK_INT >= 11)
-            invalidateOptionsMenu();
+            if (!globales.modoCaptura) {
+                salirModoCaptura();
+            }
+            if (Build.VERSION.SDK_INT >= 11)
+                invalidateOptionsMenu();
 
-        // button6.setEnabled(true);
+            // button6.setEnabled(true);
 
-        try {
-            timer.cancel();
-        } catch (Throwable e) {
-
-        }
-
-        timer.purge();
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-
-            @Override
-            public void run() {
-                // TODO Auto-generated method stub
-                mHandler.post(new Runnable() {
-                    public void run() {
-                        if (!modoLecturaObligatoria)
-                            button6.setEnabled(true);
-                    }
-                });
+            try {
+                timer.cancel();
+            } catch (Throwable e) {
 
             }
 
-        }, 500);
+            timer.purge();
+            timer = new Timer();
+            timer.schedule(new TimerTask() {
 
-        FormatoDeEtiquetas fde = globales.tdlg.getMensajedeRespuesta();
+                @Override
+                public void run() {
+                    // TODO Auto-generated method stub
+                    mHandler.post(new Runnable() {
+                        public void run() {
+                            if (!modoLecturaObligatoria)
+                                button6.setEnabled(true);
+                        }
+                    });
 
-        if (fde != null) {
-            tv_respuesta.setText(fde.texto);
-            tv_respuesta.setBackgroundResource(fde.color);
-            tv_respuesta.setVisibility(View.VISIBLE);
-        }
+                }
+
+            }, 500);
+
+            FormatoDeEtiquetas fde = globales.tdlg.getMensajedeRespuesta();
+
+            if (fde != null) {
+                tv_respuesta.setText(fde.texto);
+                tv_respuesta.setBackgroundResource(fde.color);
+                tv_respuesta.setVisibility(View.VISIBLE);
+            }
 
 
-        String advertencia = globales.tdlg.getMensajedeAdvertencia();
-        if (advertencia.equals("")) {
-            tv_advertencia.setVisibility(View.GONE);
+            String advertencia = globales.tdlg.getMensajedeAdvertencia();
+            if (advertencia.equals("")) {
+                tv_advertencia.setVisibility(View.GONE);
 
-        } else {
-            tv_advertencia.setText(advertencia);
-            tv_advertencia.setVisibility(View.VISIBLE);
-        }
+            } else {
+                tv_advertencia.setText(advertencia);
+                tv_advertencia.setVisibility(View.VISIBLE);
+            }
 
-        this.me = globales.tdlg.getMensaje();
-        if (globales.mensaje.equals("") && me != null)
-            activaAvisoEspecial(me);
-        else if (!globales.mensaje.equals("")) {
-            muestraRespuestaSeleccionada(me);
+            this.me = globales.tdlg.getMensaje();
+            if (globales.mensaje.equals("") && me != null)
+                activaAvisoEspecial(me);
+            else if (!globales.mensaje.equals("")) {
+                muestraRespuestaSeleccionada(me);
+            }
+        } catch (Throwable t) {
+            mostrarMensaje("Error", "Error inesperado. Pida ayuda a soporte", t.getMessage(), null);
         }
     }
 
@@ -2776,68 +2788,70 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
     }
 
     public void setSizes() {
+        try {
+            tv_caseta.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentaje * casetaSize));
+            tv_lectura.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentaje * lecturaSize));
+            tv_mensaje.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentaje * lecturaSize));
+            tv_anomalia.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentaje * anomSize));
+            tv_min.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentajeInfoCliente * minSize));
+            tv_max.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentajeInfoCliente * maxSize));
+            tv_respuesta.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentaje * respuestasSize));
 
-        tv_caseta.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentaje * casetaSize));
-        tv_lectura.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentaje * lecturaSize));
-        tv_mensaje.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentaje * lecturaSize));
-        tv_anomalia.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentaje * anomSize));
-        tv_min.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentajeInfoCliente * minSize));
-        tv_max.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentajeInfoCliente * maxSize));
-        tv_respuesta.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentaje * respuestasSize));
+            this.tv_lecturaAnterior.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentajeInfoCliente * maxSize));
 
-        this.tv_lecturaAnterior.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentajeInfoCliente * maxSize));
+            tv_comentarios.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentajeInfoCliente * comentariosSize));
 
-        tv_comentarios.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentajeInfoCliente * comentariosSize));
+            tv_advertencia.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentajeInfoCliente * comentariosSize));
 
-        tv_advertencia.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentajeInfoCliente * comentariosSize));
+            tv_campo0.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentajeInfoCliente * comentariosSize));
+            tv_campo1.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentajeInfoCliente * comentariosSize));
+            tv_campo2.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentajeInfoCliente * comentariosSize));
+            tv_campo3.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentajeInfoCliente * comentariosSize));
+            tv_campo4.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentajeInfoCliente * comentariosSize));
 
-        tv_campo0.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentajeInfoCliente * comentariosSize));
-        tv_campo1.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentajeInfoCliente * comentariosSize));
-        tv_campo2.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentajeInfoCliente * comentariosSize));
-        tv_campo3.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentajeInfoCliente * comentariosSize));
-        tv_campo4.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentajeInfoCliente * comentariosSize));
+            label_campo0.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentajeInfoCliente * labelCuadriculaSize));
 
-        label_campo0.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentajeInfoCliente * labelCuadriculaSize));
+            label_campo1.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentajeInfoCliente * labelCuadriculaSize));
 
-        label_campo1.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentajeInfoCliente * labelCuadriculaSize));
+            label_campo2.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentajeInfoCliente * labelCuadriculaSize));
 
-        label_campo2.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentajeInfoCliente * labelCuadriculaSize));
+            label_campo3.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentajeInfoCliente * labelCuadriculaSize));
 
-        label_campo3.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentajeInfoCliente * labelCuadriculaSize));
-
-        label_campo4.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentajeInfoCliente * labelCuadriculaSize));
-
-
-        sizeGenerico = (float) (porcentajeInfoCliente * comentariosSize);
-
-        tv_contadorOpcional.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                (float) (porcentajeInfoCliente * contadorOpcionalSize));
+            label_campo4.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentajeInfoCliente * labelCuadriculaSize));
 
 
-        //Esto se genera genericamente, asi que hay que rehacerlo
-        //globales.tdlg.getInformacionDelMedidor(ll_generica, globales.tll.getLecturaActual(), sizeGenerico);
-        preparaDatosGenericos();
+            sizeGenerico = (float) (porcentajeInfoCliente * comentariosSize);
 
+            tv_contadorOpcional.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    (float) (porcentajeInfoCliente * contadorOpcionalSize));
+
+
+            //Esto se genera genericamente, asi que hay que rehacerlo
+            //globales.tdlg.getInformacionDelMedidor(ll_generica, globales.tll.getLecturaActual(), sizeGenerico);
+            preparaDatosGenericos();
+        } catch (Throwable t){
+            mostrarMensaje("Error", "Error inesperado. Pida ayuda a soporte técnico", t.getMessage(), null);
+        }
     }
 
     public void setPorcentaje() {
@@ -3002,7 +3016,7 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 
     }
 
-    private void preparaDatosGenericos() {
+    private void preparaDatosGenericos() throws Exception {
         Lectura lect;
 
         ll_generica.removeAllViews();

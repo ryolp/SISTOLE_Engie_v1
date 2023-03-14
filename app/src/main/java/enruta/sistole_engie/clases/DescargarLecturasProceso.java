@@ -16,6 +16,7 @@ import enruta.sistole_engie.R;
 import enruta.sistole_engie.TodasLasLecturas;
 import enruta.sistole_engie.Usuario;
 import enruta.sistole_engie.entities.ResumenEntity;
+import enruta.sistole_engie.services.DbConfigMgr;
 import enruta.sistole_engie.services.DbLecturasMgr;
 
 public class DescargarLecturasProceso implements Runnable {
@@ -167,10 +168,7 @@ public class DescargarLecturasProceso implements Runnable {
             cantRegistros = lineas.length;
 
             for (String ls_linea : lineas) {
-                if (i != 0 && !ls_linea.startsWith("#")
-                        && !ls_linea.startsWith("!")
-                        && !mGlobales.tdlg.esUnRegistroRaro(ls_linea)
-                        && ls_linea.startsWith("L")) {
+                if (i != 0 && ls_linea.startsWith("L")) {
                     secuenciaReal++;
                     idArchivo = mGlobales.tlc.strToBD(mDb, ls_linea, secuenciaReal);// Esta
 
@@ -184,7 +182,11 @@ public class DescargarLecturasProceso implements Runnable {
                     // guarda
                     // new Lectura(context,
                     // ls_linea.getBytes("ISO-8859-1"), db);
-                } else if (ls_linea.startsWith("#")) {// Esto indica que
+                }
+                else if (i != 0 && ls_linea.startsWith("P")) {
+                    actualizarParametros(ls_linea);
+                }
+                else if (ls_linea.startsWith("#")) {// Esto indica que
                     // es una
                     // anomalia
                     new Anomalia(mContext, ls_linea.getBytes("ISO-8859-1"), mDb);
@@ -241,5 +243,9 @@ public class DescargarLecturasProceso implements Runnable {
         db.execSQL("delete from encabezado ");
         db.execSQL("delete from NoRegistrados ");
         db.execSQL("delete from usuarios ");
+    }
+
+    private void actualizarParametros(String linea) {
+        DbConfigMgr.getInstance().actualizarParametros(mDb, linea);
     }
 }

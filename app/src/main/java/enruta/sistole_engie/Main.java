@@ -903,6 +903,9 @@ public class Main extends FragmentActivity implements TabListener {
 
         tv_resumen = (TextView) findViewById(R.id.tv_resumen);
 
+        if (tv_resumen == null)
+            return;
+
         Cursor c;
         openDatabase();
         c = db.rawQuery("Select count(*) canti from Ruta", null);
@@ -950,9 +953,11 @@ public class Main extends FragmentActivity implements TabListener {
                     getString(R.string.msj_main_fotos_tomadas) + " " + ll_fotos + "\n\n" +
                     getString(R.string.msj_main_no_registrados) + "No Registrados " + ll_noRegistrados;
 
-            tv_resumen.setText(ls_resumen);
+            if (tv_resumen != null)
+                tv_resumen.setText(ls_resumen);
         } else {
-            tv_resumen.setText(R.string.msj_main_no_hay_itinerarios);
+            if (tv_resumen != null)
+                tv_resumen.setText(R.string.msj_main_no_hay_itinerarios);
         }
 
         closeDatabase();

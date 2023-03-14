@@ -34,6 +34,7 @@ import enruta.sistole_engie.clases.ArchivosLectMgr;
 import enruta.sistole_engie.clases.Utils;
 import enruta.sistole_engie.entities.ArchivosLectRequest;
 import enruta.sistole_engie.entities.ArchivosLectResponse;
+import enruta.sistole_engie.services.DbConfigMgr;
 
 public class trasmisionDatos extends TransmisionesPadre {
     boolean quedanMas = true;
@@ -744,10 +745,7 @@ public class trasmisionDatos extends TransmisionesPadre {
                         // Agregamos mientras verificamos...
                         // vLecturas.add(ls_cadena);
                         // db.execSQL("Insert into lecturas(registro) values ('"+ls_linea+"')");
-                        if (i != 0 && !ls_linea.startsWith("#")
-                                && !ls_linea.startsWith("!")
-                                && !globales.tdlg.esUnRegistroRaro(ls_linea)
-                                && ls_linea.startsWith("L")) {
+                        if (i != 0 && ls_linea.startsWith("L")) {
                             secuenciaReal++;
                             idArchivo = globales.tlc.strToBD(db, ls_linea, secuenciaReal);// Esta
 
@@ -767,7 +765,8 @@ public class trasmisionDatos extends TransmisionesPadre {
                             // guarda
                             // new Lectura(context,
                             // ls_linea.getBytes("ISO-8859-1"), db);
-                        } else if (ls_linea.startsWith("#")) {// Esto indica que
+                        }
+                        else if (ls_linea.startsWith("#")) {// Esto indica que
                             // es una
                             // anomalia
                             new Anomalia(context,
