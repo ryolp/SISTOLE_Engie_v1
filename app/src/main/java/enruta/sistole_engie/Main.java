@@ -2347,7 +2347,7 @@ public class Main extends FragmentActivity implements TabListener {
                                     globales.sesionEntity.empleado.RequiereCheckSeguridad = resp.RequiereCheckSeguridad;
                                     inicializarActualizarControles();
                                 } else
-                                    mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (1)");
+                                    mostrarMensaje("Alerta", resp.Mensaje);
                             } else
                                 mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (2)");
                         }
@@ -2409,7 +2409,7 @@ public class Main extends FragmentActivity implements TabListener {
                                     globales.sesionEntity.empleado.RequiereCheckSeguridad = resp.RequiereCheckSeguridad;
                                     inicializarActualizarControles();
                                 } else {
-                                    mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (1)");
+                                    mostrarMensaje("Alerta", resp.Mensaje);
                                 }
                             } else
                                 mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (2)");
@@ -2468,7 +2468,7 @@ public class Main extends FragmentActivity implements TabListener {
                                     globales.sesionEntity.empleado.RequiereCheckSeguridad = resp.RequiereCheckSeguridad;
                                     inicializarActualizarControles();
                                 } else {
-                                    mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (1)");
+                                    mostrarMensaje("Alerta", resp.Mensaje);
                                 }
                             } else
                                 mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (2)");

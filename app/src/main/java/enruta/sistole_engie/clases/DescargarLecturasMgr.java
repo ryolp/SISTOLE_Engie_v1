@@ -51,6 +51,7 @@ public class DescargarLecturasMgr extends BaseMgr {
         mRequest = new ArchivosLectRequest();
         mRequest.idEmpleado = mGlobales.getIdEmpleado();
         mRequest.NombreArchivo = nombreArchivo;
+        mRequest.FechaOperacion = Utils.getDateTime();
 
             try {
             WebApiManager.getInstance(mContext).descargarArchivo(mRequest, new Callback<ArchivosLectResponse>() {
