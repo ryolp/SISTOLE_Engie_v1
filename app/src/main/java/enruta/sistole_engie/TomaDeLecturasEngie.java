@@ -1362,47 +1362,77 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
             resumen.archivo = "";
         }
 
+        // Obtener la cantidad lecturas realizadas.
+
         c = db.rawQuery("Select count(*) canti from ruta where tipoLectura='0'", null);
         c.moveToFirst();
         resumen.cantLecturasRealizadas = Utils.getLong(c, "canti", 0);
+
+        // Obtener la cantidad total de fotos tomadas.
 
         c = db.rawQuery("Select count(*) canti from fotos", null);
         c.moveToFirst();
         resumen.cantFotos = Utils.getLong(c, "canti", 0);
         c.close();
 
+        // Obtener la cantidad de registros a los que aún no se le ha tomado la lectura
+
         c = db.rawQuery("Select count(*) canti from ruta where tipoLectura='4'", null);
         c.moveToFirst();
         resumen.cantSinLectura = Utils.getLong(c, "canti", 0);
         c.close();
+
+        // Obtener la cantidad de lecturas con anomalía.
 
         c = db.rawQuery("Select count(*) canti from ruta where trim(anomalia)<>''", null);
         c.moveToFirst();
         resumen.cantConAnomalia = Utils.getLong(c, "canti", 0);
         c.close();
 
+        // Obtener la cantidad de lecturas pendientes
+
         c = db.rawQuery("Select count(*) canti from ruta where trim(tipoLectura)=''", null);
         c.moveToFirst();
         resumen.cantLecturasPendientes = Utils.getLong(c, "canti", 0);
         c.close();
+
+        // Obtener la cantidad de medidores no registrados
 
         c = db.rawQuery("Select count(*) canti from NoRegistrados", null);
         c.moveToFirst();
         resumen.cantNoRegistrados = Utils.getLong(c, "canti", 0);
         c.close();
 
+        // Obtener la cantidad de ordenes sin enviar
+
         c = db.rawQuery("Select count(*) canti from ruta where envio=1", null);
         c.moveToFirst();
         resumen.ordenesSinEnviar = Utils.getLong(c, "canti", 0);
         c.close();
+
+        // Obtener la cantidad de fotos sin enviar
 
         c = db.rawQuery("Select count(*) canti from fotos where envio=1", null);
         c.moveToFirst();
         resumen.fotosSinEnviar = Utils.getLong(c, "canti", 0);
         c.close();
 
+        // Obtener la cantidad de acuses
+
+        c = db.rawQuery("Select count(*) canti from ruta where TipoDeAcuse<>'' AND TipoDeAcuse<>'20'", null);
+        c.moveToFirst();
+        resumen.cantAcuses = Utils.getLong(c, "canti", 0);
+        c.close();
+
+
         return resumen;
     }
+
+    /*
+        Este método genera una lista de datos con el resumen del proceso de lecturas.
+        Este resumen contiene cantidad de lecturas asignadas, realizadas, pendientes, fotografías pendientes,etc.
+        datos que se mostrarán en la pantalla de Resumen.
+     */
 
     public Vector<EstructuraResumen> getResumen(ResumenEntity resumenIn) {
         float porcentaje = 0;
@@ -1433,13 +1463,16 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         porcentaje = (((float) resumenIn.cantSinLectura * 100) / (float) resumenIn.totalRegistros);
         resumenOut.add(new EstructuraResumen("Registros sin Lectura", String.valueOf(resumenIn.cantSinLectura), formatter.format(porcentaje) + "%"));
 
+        resumenOut.add(new EstructuraResumen("", "")); //Agregamos una linea mas o separador del grid
 
-        resumenOut.add(new EstructuraResumen("", "")); //Agregamos una linea mas
+        resumenOut.add(new EstructuraResumen("Acuses", String.valueOf(resumenIn.cantAcuses)));
+
+        resumenOut.add(new EstructuraResumen("", "")); //Agregamos una linea mas o separador del grid
 
         resumenOut.add(new EstructuraResumen("Lecturas por Enviar", String.valueOf(resumenIn.ordenesSinEnviar)));
         resumenOut.add(new EstructuraResumen("Fotos por Enviar", String.valueOf(resumenIn.fotosSinEnviar)));
 
-        resumenOut.add(new EstructuraResumen("", "")); //Agregamos una linea mas
+        resumenOut.add(new EstructuraResumen("", "")); //Agregamos una linea mas o separador del grid
 
 //    	 resumenOut.add(new EstructuraResumen("Mensajes", String.valueOf(resumenIn.mensajes)));
         if (globales.mostrarNoRegistrados)

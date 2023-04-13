@@ -1555,6 +1555,8 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 
             }, 500);
 
+            // Mostrar la sección de acuses
+
             FormatoDeEtiquetas fde = globales.tdlg.getMensajedeRespuesta();
 
             if (fde != null) {
