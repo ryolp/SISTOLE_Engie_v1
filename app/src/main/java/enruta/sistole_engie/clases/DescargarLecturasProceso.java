@@ -19,6 +19,14 @@ import enruta.sistole_engie.entities.ResumenEntity;
 import enruta.sistole_engie.services.DbConfigMgr;
 import enruta.sistole_engie.services.DbLecturasMgr;
 
+/*
+    DescargarLecturasProceso().
+
+    Clase que agrupa el proceso que lee las lecturas recibidas del servidor y las registra
+    en la base de datos del celular.
+    La instancia de esta clase se ejecuta en un thread diferente al principal.
+*/
+
 public class DescargarLecturasProceso implements Runnable {
     protected Context mContext = null;
     protected TodasLasLecturas mTll;
@@ -32,6 +40,11 @@ public class DescargarLecturasProceso implements Runnable {
     protected DbLecturasMgr mDbLectMgr = null;
     protected DescargarLecturasProceso.EnNotificaciones mNotificaciones = null;
 
+    /*
+        EnNotificaciones().
+
+        Interface para el envío de las notificaciones al proceso que llama a la instancia de esta clase.
+    */
     public interface EnNotificaciones {
         public void enMensaje(String mensaje);
 
@@ -42,6 +55,12 @@ public class DescargarLecturasProceso implements Runnable {
         public void enFinalizado();
     }
 
+    /*
+        DescargarLecturasProceso().
+
+        Constructor de la clase.
+    */
+
     public DescargarLecturasProceso(Context context, Globales globales, Handler handler, String contenido) {
         mContext = context;
         mGlobales = globales;
@@ -49,9 +68,22 @@ public class DescargarLecturasProceso implements Runnable {
         mContenido = contenido;
     }
 
+    /*
+        setEnNotificaciones().
+
+        Metodo para guardar una referencia al método del proceso que llama a la instancia de esta clase,
+        el cual recibirá las notificaciones de este proceso.
+    */
+
     public void setEnNotificaciones(DescargarLecturasProceso.EnNotificaciones progreso) {
         mNotificaciones = progreso;
     }
+
+    /*
+        run().
+
+        Entrada principal para que un thread ejecute el proceso definido en esta clase.
+    */
 
     public void run() {
         boolean resultado;
@@ -74,6 +106,12 @@ public class DescargarLecturasProceso implements Runnable {
         }
     }
 
+    /*
+        notificarMensaje().
+
+        Función para notificar al thread principal de un evento.
+    */
+
     private void notificarMensaje(String mensaje) {
         if (mNotificaciones != null) {
             mHandler.post(new Runnable() {
@@ -84,6 +122,13 @@ public class DescargarLecturasProceso implements Runnable {
             });
         }
     }
+
+    /*
+        notificarProgreso().
+
+        Función para notificar al thread principal del avance de la ejecución del proceso de descargar...
+        ... las lecturas del servidor.
+    */
 
     private void notificarProgreso(int valorActual, int cantidadTotal) {
 
@@ -109,6 +154,11 @@ public class DescargarLecturasProceso implements Runnable {
         }
     }
 
+    /*
+        notificarError().
+        Función para notificar al thread principal de un error.
+    */
+
     private void notificarError(String mensaje, String detalleError) {
         if (mNotificaciones != null) {
             mHandler.post(new Runnable() {
@@ -128,6 +178,10 @@ public class DescargarLecturasProceso implements Runnable {
     }
 
 
+    /*
+        openDatabase().
+        Función para abrir la base de datos.
+    */
     private void openDatabase() {
         if (mDbHelper == null)
             mDbHelper = new DBHelper(mContext);
@@ -136,6 +190,10 @@ public class DescargarLecturasProceso implements Runnable {
             mDb = mDbHelper.getReadableDatabase();
     }
 
+    /*
+        closeDatabase().
+        Función para cerrar la base de datos.
+    */
     private void closeDatabase() {
         if (mDb != null)
             if (mDb.isOpen()) {
@@ -143,6 +201,16 @@ public class DescargarLecturasProceso implements Runnable {
                 mDbHelper.close();
             }
     }
+
+    /*
+        procesarLecturas().
+
+        Este método recibe un string con el listado de lecturas. El string está separado en renglones por un saldo de línea. Cada renglón está separado...
+         ... en columnas por un pipe (|). Registra en la base de datos las lecturas recibidas y los parámetros.
+         Los renglones que empiezan con L son las lecturas.
+         Los renglones que empiezan con P con los parametros.
+         Los renglones que empiezan con # son el catálogo de anomalías.
+     */
 
     private void procesarLecturas(String contenido) throws Exception {
         Vector<String> vLecturas;
@@ -236,6 +304,11 @@ public class DescargarLecturasProceso implements Runnable {
         }
     }
 
+    /*
+        borrarRuta().
+
+        Este método borra el contenido de varias tablas para que puedan recibir la información que descarga.
+     */
     private static void borrarRuta(SQLiteDatabase db) {
         db.execSQL("delete from ruta ");
         db.execSQL("delete from fotos ");
@@ -245,6 +318,11 @@ public class DescargarLecturasProceso implements Runnable {
         db.execSQL("delete from usuarios ");
     }
 
+    /*
+        actualizarParametros().
+
+        Este método actualiza la tabla que contiene la información de los parámetros.
+    */
     private void actualizarParametros(String linea) {
         DbConfigMgr.getInstance().actualizarParametros(mDb, linea);
     }

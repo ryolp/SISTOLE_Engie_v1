@@ -17,6 +17,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/*
+    DescargarLecturasMgr().
+
+    Clase que agrupa el proceso que descarga las lecturas del servidor.
+*/
 public class DescargarLecturasMgr extends BaseMgr {
     protected TodasLasLecturas mTll;
     protected Vector<Lectura> mLecturas;

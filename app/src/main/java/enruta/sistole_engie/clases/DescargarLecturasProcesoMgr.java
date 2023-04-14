@@ -13,19 +13,50 @@ import enruta.sistole_engie.entities.ArchivosLectRequest;
 import enruta.sistole_engie.entities.ArchivosLectResponse;
 import enruta.sistole_engie.services.DbConfigMgr;
 
+/*
+    DescargarLecturasProcesoMgr().
+
+    Clase que utiliza las clases DescargarLecturasMgr y DescargarLecturasProceso para descargar las lecturas
+    ... del servidor, registrarlas en la base de datos y notificar el thread principal de los eventos durante
+    ... el proceso para que el thread principal notifique el usuario mediante la interface gráfica del
+    ... avance del proceso o de los eventos que ocurren.
+
+    Primero se descargan las lecturas utilizando la clase DescargarLecturasMgr.
+    Cuando se reciban las lecturas se procesan con la clase DescargarLecturasProceso.
+*/
+
 public class DescargarLecturasProcesoMgr extends BaseMgr {
     protected DescargarLecturasProceso descargarLecturasProceso = null;
     protected DescargarLecturasMgr mDescargarMgr = null;
     protected DescargarLecturasProcesoMgr.EnCallback mCallBack = null;
+
+    /*
+        DescargarLecturasProcesoMgr().
+
+        Constructor de la clase.
+    */
 
     public DescargarLecturasProcesoMgr(Context context, Globales globales) {
         mContext = context;
         mGlobales = globales;
     }
 
+    /*
+        setEnCallback().
+
+        Metodo para guardar una referencia al método del proceso que llama a la instancia de esta clase,
+        el cual recibirá las notificaciones de este proceso.
+    */
+
     public void setEnCallback(DescargarLecturasProcesoMgr.EnCallback callback) {
         mCallBack = callback;
     }
+
+    /*
+        EnCallback.
+
+        Interface para el envío de las notificaciones al proceso que llama a la instancia de esta clase.
+    */
 
     public interface EnCallback {
         public void enExito();
@@ -38,6 +69,13 @@ public class DescargarLecturasProcesoMgr extends BaseMgr {
 
         public void enProgreso(String progreso, int porcentaje);
     }
+
+    /*
+        descargarLecturas().
+
+        Método principal para iniciar el proceso para descargar las lecturas del servidor, registrarlas en la
+        base de datos del celular y notificar al thread principal de los eventos y avances.
+    */
 
     public void descargarLecturas() {
         String archivo;
@@ -70,7 +108,10 @@ public class DescargarLecturasProcesoMgr extends BaseMgr {
     }
 
     /*
-        Función que se encarga de procesar el archivo de lecturas si se recibió
+        exito().
+        Si la recepción de los datos fue exitosa, entonces el proceso continua con
+        procesar la información recibida. Notificar al proceso que llamó esta intancia
+        que se recibió la información.
      */
     private void exito(ArchivosLectResponse resp) {
         if (resp.Exito) {
@@ -82,7 +123,9 @@ public class DescargarLecturasProcesoMgr extends BaseMgr {
     }
 
     /*
-        Función que se encarga de notificar que hubo un fallo en la comunicación
+        falloComunicacion().
+        Si la recepción de los datos tuvo un error, entonces notificar al proceso que llamó
+        a esta instancia que hubo un fallo en la comunicación
     */
     private void falloComunicacion(int numError, String mensajeError, String detalleError) {
         if (mCallBack != null)
@@ -90,7 +133,8 @@ public class DescargarLecturasProcesoMgr extends BaseMgr {
     }
 
     /*
-        Función que se encarga de notificar que hubo un fallo en la comunicación
+        Método que utiliza la interface definida para notificar al proceso que llamó a esta
+        instancia.
     */
     private void notificarMensaje(String mensaje) {
         if (mCallBack != null)
@@ -98,8 +142,9 @@ public class DescargarLecturasProcesoMgr extends BaseMgr {
     }
 
     /*
-        Función que se encarga de:
-            Inicializar el thread que procesará las lecturas.
+        Método que se encarga de:
+            Crear la instancia de la clase DescargarLecturasProceso
+            Inicializar el thread que procesará las lecturas a través de DescargarLecturasProceso
             Inicializar los eventos que se reciben del thread para notificarlos al thread principal.
     */
     private void procesarLecturas(String contenido) {
