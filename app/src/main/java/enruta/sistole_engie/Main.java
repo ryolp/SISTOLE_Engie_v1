@@ -2278,9 +2278,16 @@ public class Main extends FragmentActivity implements TabListener {
             } else {
                 b_lecturas.setVisibility(View.VISIBLE);
                 b_lecturas.setEnabled(false);
-                btnOperacion.setText("---");
-                btnOperacion.setVisibility(View.VISIBLE);
-                btnOperacion.setEnabled(false);
+
+                if (globales.sesionEntity.empleado.idOperacionTipo == CHECK_OUT || globales.sesionEntity.empleado.RequiereCheckOut) {
+                    btnOperacion.setText("Hacer Check Out");
+                    globales.sesionEntity.empleado.idOperacionTipo = CHECK_OUT;
+                    btnOperacion.setEnabled(true);
+                } else {
+                    btnOperacion.setText("---");
+                    btnOperacion.setVisibility(View.VISIBLE);
+                    btnOperacion.setEnabled(false);
+                }
             }
         } else {
             b_lecturas.setVisibility(View.GONE);
@@ -2345,6 +2352,7 @@ public class Main extends FragmentActivity implements TabListener {
                                     globales.sesionEntity.empleado.idOperacionTipo = CHECK_OUT;
                                     globales.sesionEntity.empleado.RequiereCheckIn = resp.RequiereCheckIn;
                                     globales.sesionEntity.empleado.RequiereCheckSeguridad = resp.RequiereCheckSeguridad;
+                                    globales.sesionEntity.empleado.RequiereCheckOut = resp.RequiereCheckOut;
                                     inicializarActualizarControles();
                                 } else
                                     mostrarMensaje("Alerta", resp.Mensaje);
@@ -2407,6 +2415,7 @@ public class Main extends FragmentActivity implements TabListener {
                                     globales.sesionEntity.empleado.idOperacionTipo = CHECK_OUT;
                                     globales.sesionEntity.empleado.RequiereCheckIn = resp.RequiereCheckIn;
                                     globales.sesionEntity.empleado.RequiereCheckSeguridad = resp.RequiereCheckSeguridad;
+                                    globales.sesionEntity.empleado.RequiereCheckOut = resp.RequiereCheckOut;
                                     inicializarActualizarControles();
                                 } else {
                                     mostrarMensaje("Alerta", resp.Mensaje);
@@ -2466,6 +2475,7 @@ public class Main extends FragmentActivity implements TabListener {
                                     globales.sesionEntity.empleado.idOperacionTipo = CHECK_IN;
                                     globales.sesionEntity.empleado.RequiereCheckIn = resp.RequiereCheckIn;
                                     globales.sesionEntity.empleado.RequiereCheckSeguridad = resp.RequiereCheckSeguridad;
+                                    globales.sesionEntity.empleado.RequiereCheckOut = resp.RequiereCheckOut;
                                     inicializarActualizarControles();
                                 } else {
                                     mostrarMensaje("Alerta", resp.Mensaje);

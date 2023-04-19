@@ -23,6 +23,7 @@ public class EmpleadoCplEntity {
     public int ArchivoAbierto=0;
     public boolean RequiereCheckIn = false;
     public boolean RequiereCheckSeguridad = false;
+    public boolean RequiereCheckOut = false;
     public String Token="";
     public boolean EsLecturista= false;
     public boolean EsAdministrador= false;
