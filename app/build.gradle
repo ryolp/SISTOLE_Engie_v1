@@ -23,6 +23,11 @@ android {
             debuggable true
             buildConfigField "String", 'BASE_URL', '"https://dev-engie.sistoleweb.com"'
         }
+        pre_prod {
+            initWith debug
+            applicationIdSuffix ".pre_prod"
+            buildConfigField "String", 'BASE_URL', '"https://engie.sistoleweb.com"'
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
