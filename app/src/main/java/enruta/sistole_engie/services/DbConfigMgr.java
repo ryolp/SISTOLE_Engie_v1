@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import enruta.sistole_engie.BuildConfig;
 import enruta.sistole_engie.DBHelper;
 import enruta.sistole_engie.clases.AppException;
 import enruta.sistole_engie.clases.ParametrosTPL;
@@ -37,7 +38,7 @@ public class DbConfigMgr extends  DbBaseMgr {
     }
 
     public String getServidor(Context context){
-        String servidor="";
+        String servidor = BuildConfig.BASE_URL;
 
         try {
             openDatabase(context);
@@ -46,13 +47,13 @@ public class DbConfigMgr extends  DbBaseMgr {
             c.moveToFirst();
 
             if (c.getCount() == 0)
-                return "";
+                return BuildConfig.BASE_URL;
 
             servidor = getString(c,"value", "");
 
         } catch (Exception e) {
             String error;
-            servidor = "";
+            servidor = BuildConfig.BASE_URL;
             error = e.getMessage();
         }
         finally {
