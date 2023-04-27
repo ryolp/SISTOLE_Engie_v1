@@ -16,6 +16,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
@@ -992,7 +993,9 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         else if (globales.tll.getLecturaActual().getTipoDeAcuse().trim().equals("4"))
             return new FormatoDeEtiquetas("Acuse por Cliente VIP", R.color.DarkSalmon);
         else if (globales.tll.getLecturaActual().getTipoDeAcuse().trim().equals("5"))
-            return new FormatoDeEtiquetas("Reclamación Recurrente", R.color.DeepPink);
+            return new FormatoDeEtiquetas("Reclamación Reincidente", R.color.DeepPink);
+        else if (globales.tll.getLecturaActual().getTipoDeAcuse().trim().equals("6"))
+            return new FormatoDeEtiquetas("Fauna Nociva", R.color.CornflowerBlue);
         else if (globales.tll.getLecturaActual().is_giro.trim().equals("20"))
             return new FormatoDeEtiquetas("Cliente suscrito a Paperless", R.color.Blue);
         else
