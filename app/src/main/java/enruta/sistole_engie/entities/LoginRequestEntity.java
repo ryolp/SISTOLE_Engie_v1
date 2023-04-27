@@ -1,5 +1,7 @@
 package enruta.sistole_engie.entities;
 
+import java.util.Date;
+
 public class LoginRequestEntity {
     public long idEmpleado;
     public String Usuario;
@@ -9,6 +11,7 @@ public class LoginRequestEntity {
     public String VersionName;
     public String VersionCode;
     public String Token;
+    public Date FechaOperacion;
 
 //    public LoginRequestEntity(String Usuario, String Email, String Password, String CodigoSMS, String VersionName, String VersionCode){
 //        this.Usuario = Usuario;

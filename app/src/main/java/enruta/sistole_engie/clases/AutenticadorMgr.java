@@ -71,6 +71,7 @@ public class AutenticadorMgr {
             mRequest.Password = password;
             mRequest.VersionName = getVersionName();
             mRequest.VersionCode = getVersionCode();
+            mRequest.FechaOperacion = Utils.getDateTime();
 
             WebApiManager.getInstance(mContext).autenticarEmpleado(mRequest, new Callback<LoginResponseEntity>() {
                         @Override
@@ -175,6 +176,7 @@ public class AutenticadorMgr {
             mRequest.CodigoSMS = codigoSMS;
             mRequest.VersionName = getVersionName();
             mRequest.VersionCode = getVersionCode();
+            mRequest.FechaOperacion = Utils.getDateTime();
 
             WebApiManager.getInstance(mContext).validarEmpleadoSMS(mRequest, new Callback<LoginResponseEntity>() {
                         @Override

@@ -969,6 +969,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
     }
 
     // CE, REVISAR
+    // Se regresa una lista de Acuses más lo de Cliente Paperless
     @Override
     public FormatoDeEtiquetas getMensajedeRespuesta() {
         // TODO Auto-generated method stub
@@ -990,6 +991,8 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
             return new FormatoDeEtiquetas("Acuse por Comercio", R.color.Coral);
         else if (globales.tll.getLecturaActual().getTipoDeAcuse().trim().equals("4"))
             return new FormatoDeEtiquetas("Acuse por Cliente VIP", R.color.DarkSalmon);
+        else if (globales.tll.getLecturaActual().getTipoDeAcuse().trim().equals("5"))
+            return new FormatoDeEtiquetas("Reclamación Recurrente", R.color.DeepPink);
         else if (globales.tll.getLecturaActual().is_giro.trim().equals("20"))
             return new FormatoDeEtiquetas("Cliente suscrito a Paperless", R.color.Blue);
         else

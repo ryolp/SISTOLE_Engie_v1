@@ -42,6 +42,7 @@ public class VerificadorConectividadMgr {
             req.idEmpleado = mGlobales.getIdEmpleado();
             req.Usuario = mGlobales.sesionEntity.Usuario;
             req.Token = mGlobales.getSesionToken();
+            req.FechaOperacion = Utils.getDateTime();
 
             WebApiManager.getInstance(mContext).verificarConexion(req, new Callback<LoginResponseEntity>() {
                         @Override
