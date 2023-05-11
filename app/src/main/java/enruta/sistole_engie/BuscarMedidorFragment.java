@@ -96,12 +96,12 @@ public class BuscarMedidorFragment extends Fragment {
 
         et_medidor = (EditText) rootView.findViewById(R.id.et_medidor);
 
+        et_medidor.setInputType(InputType.TYPE_CLASS_NUMBER + InputType.TYPE_CLASS_TEXT);
 
         tv_msj_buscar = (TextView) rootView.findViewById(R.id.tv_msj_buscar); //tv_msj_buscar
 
         if (tipo == BuscarMedidorTabsPagerAdapter.DIRECCION || tipo == BuscarMedidorTabsPagerAdapter.CALLES)
             et_medidor.setInputType(InputType.TYPE_CLASS_TEXT);
-
 
         switch (tipo) {
 
