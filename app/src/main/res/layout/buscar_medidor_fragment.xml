@@ -13,7 +13,7 @@
         android:layout_toLeftOf="@+id/im_clearText"
         android:singleLine="true"
         android:maxLines="1"
-        android:inputType="text"
+        android:inputType="textVisiblePassword"
         android:ems="10"
         android:imeActionLabel="Buscar"
         android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789-/+_">
