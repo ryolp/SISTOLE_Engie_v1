@@ -2,32 +2,64 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BuscarMedidor" >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".BuscarMedidor">
 
-    <EditText
-        android:id="@+id/et_medidor"
-        android:layout_width="wrap_content"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/group_et_medidor"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/im_clearText"
-        android:singleLine="true"
-        android:maxLines="1"
-        android:inputType="text"
-        android:ems="10"
-        android:imeActionLabel="Buscar"
-        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789-/+_">
+        android:layout_alignParentTop="true">
 
-    </EditText>
+        <EditText
+            android:id="@+id/et_medidor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:imeActionLabel="Buscar"
+            android:inputType="number"
+            android:maxLines="1"
+            android:singleLine="true"
+            app:layout_constraintRight_toLeftOf="@id/im_CambiarTeclado"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/im_CambiarTeclado"
+            app:layout_constraintTop_toTopOf="parent"></EditText>
+
+        <ImageButton
+            android:id="@+id/im_CambiarTeclado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:src="@drawable/ic_keyboard_32"
+            app:layout_constraintEnd_toStartOf="@id/im_clearText"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/im_clearText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:src="@drawable/clear_button_behavior"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
 
     <TextView
         android:id="@+id/tv_msj_buscar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/group_et_medidor"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/et_medidor"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="57dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="-57dp"
         android:gravity="center"
         android:text="@string/msj_buscar"
         android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -37,32 +69,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/ll_button_bar1"
+        android:layout_below="@+id/group_et_medidor"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/et_medidor"
-        android:visibility="gone" >
+        android:visibility="gone">
 
     </ListView>
-    
+
     <ListView
         android:id="@+id/lv_resumenAnomalias"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/ll_button_bar1"
+        android:layout_below="@+id/group_et_medidor"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/et_medidor"
-        android:visibility="gone" >
-
+        android:visibility="gone">
     </ListView>
 
-    <ImageButton
-        android:id="@+id/im_clearText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/tv_msj_buscar"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:background="@android:color/transparent"
-        android:src="@drawable/clear_button_behavior" />
+
 
     <ProgressBar
         android:id="@+id/progressBar1"
@@ -70,7 +93,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:visibility="gone"
-        android:layout_centerVertical="true" />
+        android:layout_centerVertical="true"
+        android:visibility="gone" />
 
 </RelativeLayout>
