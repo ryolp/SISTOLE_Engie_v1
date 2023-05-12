@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import enruta.sistole_engie.R;
+import enruta.sistole_engie.entities.InfoFotoEntity;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -337,6 +338,33 @@ public class TomaDeLecturasPanama extends TomaDeLecturasGenerica {
     	ls_nombre+=Main.obtieneFecha("his");
     	ls_nombre+=".JPG";
     	return ls_nombre;
+	}
+
+	/*
+    Obtiene el nombre de la foto que se utilizará para guardarla
+    RL, 2023-01-02, Se agrega porque en la clase padre se define como un método abstracto que tiene que ser implementado.
+*/
+	public InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia ){
+		String ls_nombre="", ls_unicom;
+		Cursor c;
+		InfoFotoEntity infoFotoEntity = new InfoFotoEntity();
+
+		/**
+		 * Este es el fotmato del nombre de la foto
+		 *
+		 * NumMedidor a 10 posiciones,
+		 * fecha	  a YYYYMMDD
+		 * hora		  a HHMMSS
+		 */
+
+		ls_nombre = Main.rellenaString(globales.tll.getLecturaActual().is_serieMedidor, "0", globales.tlc.getLongCampo("serieMedidor"), true) + "-";
+		ls_nombre+=Main.obtieneFecha("ymd");
+		ls_nombre+=Main.obtieneFecha("his");
+		ls_nombre+=".JPG";
+
+		infoFotoEntity.nombreFoto = ls_nombre;
+
+		return infoFotoEntity;
 	}
 
 // CE, REVISAR
@@ -1008,7 +1036,7 @@ public class TomaDeLecturasPanama extends TomaDeLecturasGenerica {
 		return new int[0];
 	}
 	
-	public String getNombreArchvio(int tipo){
+	public String getNombreArchvio(int tipo) throws  Exception {
 		
 		String ls_archivo="";
 		TransmitionObject to= new TransmitionObject();

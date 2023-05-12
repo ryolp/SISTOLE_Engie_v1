@@ -3,10 +3,12 @@ package enruta.sistole_engie;
 import java.util.Vector;
 
 import android.app.Application;
+import android.content.Context;
 import android.location.Location;
 import android.text.InputType;
 
 import enruta.sistole_engie.entities.SesionEntity;
+import enruta.sistole_engie.services.DbConfigMgr;
 
 public class Globales extends Application {
     final static int NICARAGUA = 0;
@@ -213,7 +215,7 @@ public class Globales extends Application {
      * Fin de Variables de toma de lecturas
      **/
 
-    TodosLosCampos tlc /*=new TodosLosCampos()*/;
+    public TodosLosCampos tlc /*=new TodosLosCampos()*/;
     public TomaDeLecturasGenerica tdlg;
 
     //TomaDeLecturasGenerica tdlGenerica= new TomaDeLecturasGenerica(this);
@@ -444,6 +446,4 @@ public class Globales extends Application {
 
         return anomaliaTraducida;
     }
-
-
 }

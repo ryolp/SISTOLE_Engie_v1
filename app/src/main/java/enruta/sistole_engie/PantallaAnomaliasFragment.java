@@ -28,90 +28,89 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import enruta.sistole_engie.clases.Utils;
+
 public class PantallaAnomaliasFragment extends Fragment {
-	DBHelper dbHelper;
-	SQLiteDatabase db;
-	ListView lv_lista;
-	GridView gv_lista;
-	TextView tv_mensaje;
-	PantallaAnomaliasGridAdapter adapter;
-	RelativeLayout rl_busquedaManual;
-	int tipo;
-	
-	ImageButton b_clearText;
+    private DBHelper dbHelper;
+    private SQLiteDatabase db;
+    private ListView lv_lista;
+    private GridView gv_lista;
+    private TextView tv_mensaje;
+    private PantallaAnomaliasGridAdapter adapter;
+    private RelativeLayout rl_busquedaManual;
+    private int tipo;
 
-	boolean tieneSubanomalia = false;
-	// String is_anomalia;
-	int ii_secuencial;
-	// String is_lectura="";
+    private ImageButton b_clearText;
 
-	boolean tieneMensaje = false;
-	View rootView;
+    boolean tieneSubanomalia = false;
+    // String is_anomalia;
+    private int ii_secuencial;
+    // String is_lectura="";
 
-	String is_desc = "";
-	Cursor c;
+    private boolean tieneMensaje = false;
+    private View rootView;
 
-	PantallaAnomalias pa_papa;
+    private String is_desc = "";
+    private Cursor c;
 
-	EditText li_anomalia;
-	TextView tv_label;
+    private PantallaAnomalias pa_papa;
 
-	@SuppressLint("NewApi")
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		// setContentView(R.layout.anomalias);
-		pa_papa = (PantallaAnomalias) getActivity();
-		rootView = inflater.inflate(R.layout.anomalias_fragment, container,
-				false);
-		// setTitle("");
+    private EditText li_anomalia;
+    private TextView tv_label;
+
+    @SuppressLint("NewApi")
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // setContentView(R.layout.anomalias);
+        pa_papa = (PantallaAnomalias) getActivity();
+        rootView = inflater.inflate(R.layout.anomalias_fragment, container,
+                false);
+        // setTitle("");
 //		String ls_filtro = "";
-		li_anomalia = (EditText) rootView.findViewById(R.id.anom_et_anomalia);
-		
-		//Verificamos si la entrada de anomalias debe ser de numeros o tambien letras
-		
-		
+        li_anomalia = (EditText) rootView.findViewById(R.id.anom_et_anomalia);
 
-			pa_papa.anomaliaTraducida=pa_papa.globales.traducirAnomalia();
+        //Verificamos si la entrada de anomalias debe ser de numeros o tambien letras
+
+        pa_papa.anomaliaTraducida = pa_papa.globales.traducirAnomalia();
+
+        Bundle bu_params = this.getArguments();
+
+        // ii_secuencial=bu_params.getInt("secuencial");
+        // try{
+        // pa_papa.is_lectura=bu_params.getString("lectura");
+        // }catch(Throwable e){
+        //
+        // }
+
+        tipo = bu_params.getInt("tipo");
+
+        li_anomalia.setText(bu_params.getString("anomalia"));
+
+        b_clearText = (ImageButton) rootView.findViewById(R.id.im_clearText);
 
 
-		Bundle bu_params = this.getArguments();
+        lv_lista = (ListView) rootView.findViewById(R.id.anom_lv_lista);
+        gv_lista = (GridView) rootView.findViewById(R.id.anom_gv_lista);
+        tv_label = (TextView) rootView.findViewById(R.id.tv_label);
+        tv_mensaje = (TextView) rootView.findViewById(R.id.tv_mensaje);
+        rl_busquedaManual = (RelativeLayout) rootView.findViewById(R.id.rl_busquedaManual);
 
-		// ii_secuencial=bu_params.getInt("secuencial");
-		// try{
-		// pa_papa.is_lectura=bu_params.getString("lectura");
-		// }catch(Throwable e){
-		//
-		// }
+        b_clearText.setOnClickListener(new OnClickListener() {
 
-		tipo = bu_params.getInt("tipo");
+            @Override
+            public void onClick(View view) {
+                //Borramos el texto
 
-		li_anomalia.setText(bu_params.getString("anomalia"));
+                li_anomalia.getText().clear();
+            }
 
-		b_clearText=(ImageButton) rootView.findViewById(R.id.im_clearText);
-		
+        });
 
-		lv_lista = (ListView) rootView.findViewById(R.id.anom_lv_lista);
-		gv_lista = (GridView) rootView.findViewById(R.id.anom_gv_lista);
-		tv_label = (TextView) rootView.findViewById(R.id.tv_label);
-		tv_mensaje= (TextView) rootView.findViewById(R.id.tv_mensaje);
-		rl_busquedaManual = (RelativeLayout)rootView.findViewById(R.id.rl_busquedaManual);
-		
-		b_clearText.setOnClickListener(new OnClickListener(){
 
-			@Override
-			public void onClick(View view) {
-				//Borramos el texto 
-				
-				li_anomalia.getText().clear();
-			}
-			
-		});
-		
-		
-		//Hay que borrarse los tabs, asi que se tiene que volver a llamar a toda la rutina de inicializacion
-		reinicializaTAB();
+        //Hay que borrarse los tabs, asi que se tiene que volver a llamar a toda la rutina de inicializacion
+        reinicializaTAB();
 //		
 //		lv_lista.setOnItemClickListener(new OnItemClickListener() {
 //			public void onItemClick(AdapterView<?> parent, View view,
@@ -230,463 +229,466 @@ public class PantallaAnomaliasFragment extends Fragment {
 //
 //		li_anomalia.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-		return rootView;
-	}
-	
-	public void setArrayOfAnomalias(String query){
-		
-		
-		c = db.rawQuery(query
-				, null);
-		c.moveToFirst();
-		
-		if (c.getCount()>0){
-			Vector <String> v_anomalias= new Vector <String>();
-			gv_lista.setVisibility(View.VISIBLE);
-			//Llenamos un arreglo
-			for (int i=0; i<c.getCount();i++){
-				v_anomalias.add(c.getString(c.getColumnIndex("anom")));
-				
-				if (i+1<c.getCount())
-					c.moveToNext();
-			}
-			
-			adapter = new PantallaAnomaliasGridAdapter(pa_papa, v_anomalias, pa_papa.ii_vp_height, pa_papa.ii_vp_width);
-			gv_lista.setAdapter(adapter);
-			
-			gv_lista.setOnItemClickListener(new OnItemClickListener() {
-				public void onItemClick(AdapterView<?> parent, View view,
-						int position, long id) {
-						lv_lista.setVisibility(View.VISIBLE);
-						rl_busquedaManual.setVisibility(View.VISIBLE);
-						gv_lista.setVisibility(View.GONE);
-						//Ya que no tenemos la descripcion habra que buscarla
-						pa_papa.is_anomaliaSelec = adapter.getSecuencia(position);
-						openDatabase();
-						c= db.rawQuery("Select desc from Anomalia where "+pa_papa.anomaliaTraducida+"='"+pa_papa.is_anomaliaSelec+"'", null);
-						
-						c.moveToFirst();
-						
-						is_desc = c.getString(c.getColumnIndex("desc"));
-						c.close();
-						
-						closeDatabase();
-						
-						
-						selectAnomalia(pa_papa.is_anomaliaSelec);
-				}
-			});
-			
-		}else{
-			//Mensaje de no hay 
-			if (tipo==PantallaAnomaliasTabsPagerAdapter.MAS_USADAS){
-				tv_mensaje.setText(R.string.msj_anomalias_no_hay);
-			}
-			else{
-				tv_mensaje.setText(R.string.msj_anomalias_no_hay);
-				
-			}
-			tv_mensaje.setVisibility(View.VISIBLE);
-			gv_lista.setVisibility(View.GONE);
-		}
-	}
+        return rootView;
+    }
 
-	@SuppressLint("NewApi")
-	public void selectAnomalia(String ls_anomalia) {
-		ls_anomalia=ls_anomalia.toUpperCase();
-		String[] args = { ls_anomalia };
-		String query="";
-		// Buscamos si la anomalia tiene una sub anomalia
-		
-		if (!tieneSubanomalia){
-			if (!pa_papa.globales.tdlg.esAnomaliaCompatible(ls_anomalia, pa_papa.is_anomalia) ){
-				//Toast.makeText(pa_papa, R.string.msj_anomalias_no_compatible, Toast.LENGTH_LONG).show();
-				pa_papa.mensajeOK(pa_papa.getString(R.string.msj_anomalias_no_compatible));
-				if (tipo==PantallaAnomaliasTabsPagerAdapter.RECIENTES || tipo==PantallaAnomaliasTabsPagerAdapter.MAS_USADAS){
-					reinicializaTAB();
-				}
-				
-				return;
-			}
-		}
-		
-		String ls_mensaje=pa_papa.globales.tdlg.validaAnomalia(pa_papa.is_anomaliaSelec);
-		if (!ls_mensaje.equals("")){
-			//Toast.makeText(pa_papa, ls_mensaje, Toast.LENGTH_LONG).show();
-			pa_papa.mensajeOK(ls_mensaje);
-			if (tipo==PantallaAnomaliasTabsPagerAdapter.RECIENTES || tipo==PantallaAnomaliasTabsPagerAdapter.MAS_USADAS){
-				reinicializaTAB();
-			}
-			return;
-		}
-		
+    @Override
+    public void onStart() {
+        super.onStart();
 
-		openDatabase();
+        if (li_anomalia != null)
+            li_anomalia.requestFocus();
+    }
 
-		li_anomalia.setText("");
+    public void setArrayOfAnomalias(String query) {
+        try {
+            c = db.rawQuery(query
+                    , null);
+            c.moveToFirst();
 
-		c.close();
-		
-		
-		if (!tieneSubanomalia) {
-			query="select mens , capt , subanomalia from anomalia where "+pa_papa.anomaliaTraducida+"='"
-					+ pa_papa.is_anomaliaSelec +"'  and subanomalia='T'";
-		}
-		else{
-			query="select mens, capt, subanomalia from anomalia where substr(desc, 1, "+pa_papa.globales.longitudCodigoSubAnomalia+")='"
-					+ pa_papa.is_subAnomSelect+"'  and subanomalia='S'";
-		}
+            if (c.getCount() > 0) {
+                Vector<String> v_anomalias = new Vector<String>();
+                gv_lista.setVisibility(View.VISIBLE);
+                //Llenamos un arreglo
+                for (int i = 0; i < c.getCount(); i++) {
+                    v_anomalias.add(Utils.getString(c, "anom", ""));
 
-		boolean omitirBusquedaDeAnomalia=false;
-			c = db.rawQuery(
-					query, null);
-			c.moveToFirst();
-			if (c.getCount()>0){
-				if (c.getInt(c.getColumnIndex("mens")) == 1 || c.getInt(c.getColumnIndex("capt")) == 1 ) {
-					tieneMensaje = true;
-				}
-				
-				
-				if (!tieneSubanomalia){
-					if(!c.getString(c.getColumnIndex("subanomalia")).equals("T")){
-						omitirBusquedaDeAnomalia=true;
-					}
-				}
-			}
-			
-			
-			
-			
-			c.close();
-		
+                    if (i + 1 < c.getCount())
+                        c.moveToNext();
+                }
 
-		c = db.rawQuery(
-				"select rowid _id, "+pa_papa.anomaliaTraducida+" anom, desc desc from anomalia where "+pa_papa.anomaliaTraducida+"=? and subanomalia='S' and activa='A'",
-				args);
-		if (c.getCount() > 0 && !tieneSubanomalia && tieneMensaje && !omitirBusquedaDeAnomalia) {
-			// c.moveToFirst();
-			tieneSubanomalia = true;
+                adapter = new PantallaAnomaliasGridAdapter(pa_papa, v_anomalias, pa_papa.ii_vp_height, pa_papa.ii_vp_width);
+                gv_lista.setAdapter(adapter);
 
-			tv_label.setText(ls_anomalia + " - " + is_desc);
-			tv_label.setVisibility(View.VISIBLE);
+                gv_lista.setOnItemClickListener(new OnItemClickListener() {
+                    public void onItemClick(AdapterView<?> parent, View view,
+                                            int position, long id) {
+                        try {
+                            lv_lista.setVisibility(View.VISIBLE);
+                            rl_busquedaManual.setVisibility(View.VISIBLE);
+                            gv_lista.setVisibility(View.GONE);
+                            //Ya que no tenemos la descripcion habra que buscarla
+                            pa_papa.is_anomaliaSelec = adapter.getSecuencia(position);
+                            openDatabase();
+                            c = db.rawQuery("Select desc from Anomalia where " + pa_papa.anomaliaTraducida + "='" + pa_papa.is_anomaliaSelec + "'", null);
 
-			String[] columns = new String[] { "desc" };
+                            c.moveToFirst();
 
-			ListAdapter adapter;
-			// if (Build.VERSION.SDK_INT>=11)
-			// //Solo para la nueva api
-			adapter = new SimpleCursorAdapter(pa_papa,
-					android.R.layout.simple_list_item_1, c, columns,
-					new int[] { android.R.id.text1 });
-			// else
-			// adapter=new SimpleCursorAdapter(this,
-			// android.R.layout.simple_list_item_2, c, columns, new int[]
-			// {android.R.id.text1, android.R.id.text2 });
-			lv_lista.setAdapter(adapter);
+                            is_desc = Utils.getString(c, "desc", "");
+                            c.close();
 
-			// Guardamos la anomalia principal
-			//pa_papa.is_anomalia = ls_anomalia;
+                            closeDatabase();
 
-		} else {
-			// vamos por el mensaje!! (que emocion...)
-			
-			if (tieneMensaje){
-				//Hay que saber cual es la que se va a abrir, input o inputCampos generico
-				//Para eso le preguntaremos a generica si tiene varios campos
-				
-				int [] campos=pa_papa.globales.tdlg.getCamposGenerico(pa_papa.is_anomaliaSelec, pa_papa.is_subAnomSelect);
-				
-				
-					if (!tieneSubanomalia) {
-						c = db.rawQuery(
-								"select mens, desc, capt, "+pa_papa.anomaliaTraducida+" anomalia from anomalia where "+pa_papa.anomaliaTraducida+" ='"
-										+ pa_papa.is_anomaliaSelec+"'", null);
-					}
-						else{
-							
-								c = db.rawQuery(
-										"select mens, desc, capt, "+pa_papa.anomaliaTraducida+" anomalia from anomalia where substr(desc, 1, "+pa_papa.globales.longitudCodigoSubAnomalia+")='"
-												+ pa_papa.is_subAnomSelect+"'", null);
-							}
-					
-					c.moveToFirst();
-					String ls_indicadorMensaje=pa_papa.globales.tdlg.remplazaValorDeArchivo(TomaDeLecturasGenerica.MENSAJE, !tieneSubanomalia? pa_papa.is_anomaliaSelec:pa_papa.is_subAnomSelect,  String.valueOf(c.getInt(c.getColumnIndex("mens"))));
-					if (campos==null && (ls_indicadorMensaje.equals("1") || c.getInt(c.getColumnIndex("capt"))==1)){
-					
-						// Abrimos input
-						Intent intent = new Intent(pa_papa, Input.class);
-						intent.putExtra("tipo", Input.COMENTARIOS);
-						intent.putExtra("comentarios", "");
+                            selectAnomalia(pa_papa.is_anomaliaSelec);
+                        } catch (Throwable t) {
+                            Utils.logMessageLong(pa_papa, "Error interno", t);
+                        }
+                    }
+                });
 
-						// Con esto generamos la etiqueta que tendra el input
-						intent.putExtra("label",
-								c.getString(c.getColumnIndex("anomalia")) + " - "
-										+ c.getString(c.getColumnIndex("desc"))
-										+ "");
-						
+            } else {
+                //Mensaje de no hay
+                if (tipo == PantallaAnomaliasTabsPagerAdapter.MAS_USADAS) {
+                    tv_mensaje.setText(R.string.msj_anomalias_no_hay);
+                } else {
+                    tv_mensaje.setText(R.string.msj_anomalias_no_hay);
+
+                }
+                tv_mensaje.setVisibility(View.VISIBLE);
+                gv_lista.setVisibility(View.GONE);
+            }
+        } catch (Throwable t) {
+            Utils.logMessageLong(pa_papa, "Error interno", t);
+        }
+    }
+
+    @SuppressLint("NewApi")
+    public void selectAnomalia(String ls_anomalia) {
+        try {
+            ls_anomalia = ls_anomalia.toUpperCase();
+            String[] args = {ls_anomalia};
+            String query = "";
+            // Buscamos si la anomalia tiene una sub anomalia
+
+            if (!tieneSubanomalia) {
+                if (!pa_papa.globales.tdlg.esAnomaliaCompatible(ls_anomalia, pa_papa.is_anomalia)) {
+                    //Toast.makeText(pa_papa, R.string.msj_anomalias_no_compatible, Toast.LENGTH_LONG).show();
+                    pa_papa.mensajeOK(pa_papa.getString(R.string.msj_anomalias_no_compatible));
+                    if (tipo == PantallaAnomaliasTabsPagerAdapter.RECIENTES || tipo == PantallaAnomaliasTabsPagerAdapter.MAS_USADAS) {
+                        reinicializaTAB();
+                    }
+
+                    return;
+                }
+            }
+
+            String ls_mensaje = pa_papa.globales.tdlg.validaAnomalia(pa_papa.is_anomaliaSelec);
+            if (!ls_mensaje.equals("")) {
+                //Toast.makeText(pa_papa, ls_mensaje, Toast.LENGTH_LONG).show();
+                pa_papa.mensajeOK(ls_mensaje);
+                if (tipo == PantallaAnomaliasTabsPagerAdapter.RECIENTES || tipo == PantallaAnomaliasTabsPagerAdapter.MAS_USADAS) {
+                    reinicializaTAB();
+                }
+                return;
+            }
+
+
+            openDatabase();
+
+            li_anomalia.setText("");
+
+            c.close();
+
+
+            if (!tieneSubanomalia) {
+                query = "select mens , capt , subanomalia from anomalia where " + pa_papa.anomaliaTraducida + "='"
+                        + pa_papa.is_anomaliaSelec + "'  and subanomalia='T'";
+            } else {
+                query = "select mens, capt, subanomalia from anomalia where substr(desc, 1, " + pa_papa.globales.longitudCodigoSubAnomalia + ")='"
+                        + pa_papa.is_subAnomSelect + "'  and subanomalia='S'";
+            }
+
+            boolean omitirBusquedaDeAnomalia = false;
+            c = db.rawQuery(
+                    query, null);
+            c.moveToFirst();
+            if (c.getCount() > 0) {
+                if (Utils.getInt(c, "mens", 0) == 1 || Utils.getInt(c, "capt", 0) == 1) {
+                    tieneMensaje = true;
+                }
+
+
+                if (!tieneSubanomalia) {
+                    if (!Utils.getString(c, "subanomalia", "").equals("T")) {
+                        omitirBusquedaDeAnomalia = true;
+                    }
+                }
+            }
+
+
+            c.close();
+
+
+            c = db.rawQuery(
+                    "select rowid _id, " + pa_papa.anomaliaTraducida + " anom, desc desc from anomalia where " + pa_papa.anomaliaTraducida + "=? and subanomalia='S' and activa='A'",
+                    args);
+            if (c.getCount() > 0 && !tieneSubanomalia && tieneMensaje && !omitirBusquedaDeAnomalia) {
+                // c.moveToFirst();
+                tieneSubanomalia = true;
+
+                tv_label.setText(ls_anomalia + " - " + is_desc);
+                tv_label.setVisibility(View.VISIBLE);
+
+                String[] columns = new String[]{"desc"};
+
+                ListAdapter adapter;
+                // if (Build.VERSION.SDK_INT>=11)
+                // //Solo para la nueva api
+                adapter = new SimpleCursorAdapter(pa_papa,
+                        android.R.layout.simple_list_item_1, c, columns,
+                        new int[]{android.R.id.text1});
+                // else
+                // adapter=new SimpleCursorAdapter(this,
+                // android.R.layout.simple_list_item_2, c, columns, new int[]
+                // {android.R.id.text1, android.R.id.text2 });
+                lv_lista.setAdapter(adapter);
+
+                // Guardamos la anomalia principal
+                //pa_papa.is_anomalia = ls_anomalia;
+
+            } else {
+                // vamos por el mensaje!! (que emocion...)
+
+                if (tieneMensaje) {
+                    //Hay que saber cual es la que se va a abrir, input o inputCampos generico
+                    //Para eso le preguntaremos a generica si tiene varios campos
+
+                    int[] campos = pa_papa.globales.tdlg.getCamposGenerico(pa_papa.is_anomaliaSelec, pa_papa.is_subAnomSelect);
+
+
+                    if (!tieneSubanomalia) {
+                        c = db.rawQuery(
+                                "select mens, desc, capt, " + pa_papa.anomaliaTraducida + " anomalia from anomalia where " + pa_papa.anomaliaTraducida + " ='"
+                                        + pa_papa.is_anomaliaSelec + "'", null);
+                    } else {
+
+                        c = db.rawQuery(
+                                "select mens, desc, capt, " + pa_papa.anomaliaTraducida + " anomalia from anomalia where substr(desc, 1, " + pa_papa.globales.longitudCodigoSubAnomalia + ")='"
+                                        + pa_papa.is_subAnomSelect + "'", null);
+                    }
+
+                    c.moveToFirst();
+                    String ls_indicadorMensaje = pa_papa.globales.tdlg.remplazaValorDeArchivo(TomaDeLecturasGenerica.MENSAJE, !tieneSubanomalia ? pa_papa.is_anomaliaSelec : pa_papa.is_subAnomSelect, String.valueOf(Utils.getInt(c, "mens", 0)));
+                    if (campos == null && (ls_indicadorMensaje.equals("1") || Utils.getInt(c, "capt", 0) == 1)) {
+
+                        // Abrimos input
+                        Intent intent = new Intent(pa_papa, Input.class);
+                        intent.putExtra("tipo", Input.COMENTARIOS);
+                        intent.putExtra("comentarios", "");
+
+                        // Con esto generamos la etiqueta que tendra el input
+                        intent.putExtra("label",
+                                Utils.getString(c, "anomalia", "") + " - "
+                                        + Utils.getString(c, "desc", "")
+                                        + "");
+
 //						String codigoAnomalia="";
 //						if (globales.convertirAnomalias)
 //							codigoAnomalia=pa_papa.is_anomalia.is_conv;
 //						else
 //							codigoAnomalia=anom.is_anomalia;
-						
-						//Aqui mandamos el comportamiento de input, en otras palabras, le daremos la anomalia para que pueda configurarlo como se le de la gana
-						intent.putExtra("behavior", pa_papa.is_anomaliaSelec);
-						// Tambien debo mandar que etiqueta quiero tener
-						pa_papa.startActivityForResult(intent, TomaDeLecturas.COMENTARIOS);
-						
-				}
-				else if (campos!=null /*&& (c.getInt(c.getColumnIndex("mens"))==1 || c.getInt(c.getColumnIndex("capt"))==1)*/){
-					//Tiene mas datos a guardar
-					Intent intent = new Intent(pa_papa, InputCamposGenerico.class);
-					intent.putExtra("campos",campos);
-					intent.putExtra("label", c.getString(c.getColumnIndex("anomalia")) + " - "
-										+ c.getString(c.getColumnIndex("desc"))
-										+ "\n");
-					intent.putExtra("anomalia", c.getString(c.getColumnIndex("anomalia")));
-					pa_papa.startActivityForResult(intent, TomaDeLecturas.INPUT_CAMPOS_GENERICO);
-				}else{
-					pa_papa.mandarAnomalia();
-				}
-				
-				
-				
-			}else{
-					pa_papa.globales.tdlg.RealizarModificacionesDeAnomalia(pa_papa.is_subAnomSelect);
 
-				
-				
-				pa_papa.mandarAnomalia();
-			}
+                        //Aqui mandamos el comportamiento de input, en otras palabras, le daremos la anomalia para que pueda configurarlo como se le de la gana
+                        intent.putExtra("behavior", pa_papa.is_anomaliaSelec);
+                        // Tambien debo mandar que etiqueta quiero tener
+                        pa_papa.startActivityForResult(intent, TomaDeLecturas.COMENTARIOS);
+
+                    } else if (campos != null /*&& (c.getInt(c.getColumnIndex("mens"))==1 || c.getInt(c.getColumnIndex("capt"))==1)*/) {
+                        //Tiene mas datos a guardar
+                        Intent intent = new Intent(pa_papa, InputCamposGenerico.class);
+                        intent.putExtra("campos", campos);
+                        intent.putExtra("label", Utils.getString(c, "anomalia", "") + " - "
+                                + Utils.getString(c, "desc", "")
+                                + "\n");
+                        intent.putExtra("anomalia", Utils.getString(c, "anomalia", ""));
+                        pa_papa.startActivityForResult(intent, TomaDeLecturas.INPUT_CAMPOS_GENERICO);
+                    } else {
+                        pa_papa.mandarAnomalia();
+                    }
 
 
-		}
+                } else {
+                    pa_papa.globales.tdlg.RealizarModificacionesDeAnomalia(pa_papa.is_subAnomSelect);
 
-		// c.close();
-		closeDatabase();
 
-	}
+                    pa_papa.mandarAnomalia();
+                }
 
-	public void getAnomaliaEditText(View view) {
-		boolean existe = false;
-		esconderTeclado();
-		
-		if (li_anomalia.getText().toString().equals("")){
+
+            }
+
+            // c.close();
+            closeDatabase();
+        } catch (Throwable t) {
+            Utils.logMessageLong(this.getActivity(), "Error interno", t);
+        }
+    }
+
+    public void getAnomaliaEditText(View view) {
+        boolean existe = false;
+        esconderTeclado();
+
+        try {
+            if (li_anomalia.getText().toString().equals("")) {
 //			Toast.makeText(pa_papa,R.string.msj_anomalias_no_valida,
 //					Toast.LENGTH_LONG).show();
-			pa_papa.mensajeOK(pa_papa.getString(R.string.msj_anomalias_no_valida));
-			return;
-		}
-		// Hay que validar...
-		if (tieneSubanomalia
-				&& li_anomalia.getText().toString().trim().length() < pa_papa.globales.longitudCodigoSubAnomalia) {
+                pa_papa.mensajeOK(pa_papa.getString(R.string.msj_anomalias_no_valida));
+                return;
+            }
+            // Hay que validar...
+            if (tieneSubanomalia
+                    && li_anomalia.getText().toString().trim().length() < pa_papa.globales.longitudCodigoSubAnomalia) {
 //	st.makeText(pa_papa, String.format(getString(R.string.msj_anomalias_validacion_subavisos), String.valueOf(pa_papa.globales.longitudCodigoSubAnomalia)),
 //					Toast.LENGTH_LONG).show();
-			pa_papa.mensajeOK(String.format(getString(R.string.msj_anomalias_validacion_subavisos), String.valueOf(pa_papa.globales.longitudCodigoSubAnomalia)));
-			return;
-		}
+                pa_papa.mensajeOK(String.format(getString(R.string.msj_anomalias_validacion_subavisos), String.valueOf(pa_papa.globales.longitudCodigoSubAnomalia)));
+                return;
+            } else if (!tieneSubanomalia
+                    && li_anomalia.getText().toString().trim().equals("0")) {
+                pa_papa.borrarAnomalia();
+                return;
+            }
 
-		else if (!tieneSubanomalia
-				&& li_anomalia.getText().toString().trim().equals("0")) {
-			pa_papa.borrarAnomalia();
-			return;
-		}
+            openDatabase();
 
-		openDatabase();
+            // Mas validaciones
+            if (!tieneSubanomalia) {
 
-		// Mas validaciones
-		if (!tieneSubanomalia) {
+                String query = "Select rowid _id, " + pa_papa.anomaliaTraducida + " anom , desc desc from anomalia where subanomalia<>'S' and subanomalia<>'A' and activa='A' and " + pa_papa.anomaliaTraducida + "=";
+                c = db.rawQuery(query + "'" + li_anomalia.getText().toString().trim().toUpperCase() + "'",
+                        null);
 
-			String query = "Select rowid _id, "+pa_papa.anomaliaTraducida+" anom , desc desc from anomalia where subanomalia<>'S' and subanomalia<>'A' and activa='A' and "+pa_papa.anomaliaTraducida+"=";
-			c = db.rawQuery(query + "'" +li_anomalia.getText().toString().trim().toUpperCase() + "'",
-					null);
+                pa_papa.is_anomaliaSelec = li_anomalia.getText().toString().trim();
+            } else {
+                String query = "Select rowid _id, " + pa_papa.anomaliaTraducida + " anom , desc desc from anomalia where subanomalia='S' and subanomalia<>'A' and activa='A' and " + pa_papa.anomaliaTraducida + "='";
+                pa_papa.is_subAnomSelect = li_anomalia.getText().toString().trim().toUpperCase();
+                c = db.rawQuery(query + pa_papa.is_anomaliaSelec
+                        + "' and substr(desc, 1, " + pa_papa.globales.longitudCodigoSubAnomalia + ")  ='"
+                        + pa_papa.is_subAnomSelect + "'", null);
+            }
 
-			pa_papa.is_anomaliaSelec = li_anomalia.getText().toString().trim();
-		}
+            if (c.getCount() > 0) {
+                existe = true;
+                c.moveToFirst();
+                is_desc = Utils.getString(c, "desc", "");
+            }
 
-		else {
-			String query = "Select rowid _id, "+pa_papa.anomaliaTraducida+" anom , desc desc from anomalia where subanomalia='S' and subanomalia<>'A' and activa='A' and "+pa_papa.anomaliaTraducida+"='";
-			pa_papa.is_subAnomSelect = li_anomalia.getText().toString().trim().toUpperCase();
-			c = db.rawQuery(query + pa_papa.is_anomaliaSelec
-					+ "' and substr(desc, 1, "+pa_papa.globales.longitudCodigoSubAnomalia+")  ='"
-					+ pa_papa.is_subAnomSelect + "'", null);
-		}
-
-		if (c.getCount() > 0) {
-			existe = true;
-			c.moveToFirst();
-			is_desc = c.getString(c.getColumnIndex("desc"));
-		}
-
-		c.close();
-		closeDatabase();
-		if (existe) {
-			selectAnomalia(li_anomalia.getText().toString());
-			li_anomalia.setText("");
-		} else {
+            c.close();
+            closeDatabase();
+            if (existe) {
+                selectAnomalia(li_anomalia.getText().toString());
+                li_anomalia.setText("");
+            } else {
 //			Toast.makeText(pa_papa, R.string.msj_anomalias_no_valida,
 //					Toast.LENGTH_LONG).show();
-			pa_papa.mensajeOK(pa_papa.getString(R.string.msj_anomalias_no_valida));
-		}
+                pa_papa.mensajeOK(pa_papa.getString(R.string.msj_anomalias_no_valida));
+            }
+        } catch (Throwable t) {
+            Utils.logMessageLong(this.getActivity(), "Error interno", t);
+        }
+    }
 
-	}
+    public void esconderTeclado() {
+        InputMethodManager mgr = (InputMethodManager) pa_papa
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        mgr.hideSoftInputFromWindow(li_anomalia.getWindowToken(), 0);
+    }
 
-	public void esconderTeclado() {
-		InputMethodManager mgr = (InputMethodManager) pa_papa
-				.getSystemService(Context.INPUT_METHOD_SERVICE);
-		mgr.hideSoftInputFromWindow(li_anomalia.getWindowToken(), 0);
-	}
-	
-	public void openDatabase(){
-		dbHelper= new DBHelper(pa_papa);
-		db = dbHelper.getReadableDatabase();
-	}
-	
-	public void closeDatabase(){
-		db.close();
-		
-		dbHelper.close();
-	}
-	
-	public void reinicializaTAB(){
-		
-		tv_label.setVisibility(View.GONE);
-		tieneSubanomalia=false;
-		tieneMensaje=false;
-		openDatabase();
-		
-		String ls_filtro = pa_papa.getFiltro();
-				
-				lv_lista.setOnItemClickListener(new OnItemClickListener() {
-					public void onItemClick(AdapterView<?> parent, View view,
-							int position, long id) {
+    public void openDatabase() {
+        dbHelper = new DBHelper(pa_papa);
+        db = dbHelper.getReadableDatabase();
+    }
 
-						if (!tieneSubanomalia) {
-							TextView tv_anomalia = (TextView) view
-									.findViewById(android.R.id.text1);
+    public void closeDatabase() {
+        db.close();
 
-							is_desc = ((TextView) view
-									.findViewById(android.R.id.text2)).getText()
-									.toString();
-							String ls_anomalia = tv_anomalia.getText().toString();
+        dbHelper.close();
+    }
 
-							pa_papa.is_anomaliaSelec = ls_anomalia;
-							selectAnomalia(ls_anomalia);
+    public void reinicializaTAB() {
 
-						} else {
+        tv_label.setVisibility(View.GONE);
+        tieneSubanomalia = false;
+        tieneMensaje = false;
+        openDatabase();
 
-							TextView tv_anomalia = (TextView) view
-									.findViewById(android.R.id.text1);
-							String ls_anomalia = tv_anomalia.getText().toString()
-									.substring(0, pa_papa.globales.longitudCodigoSubAnomalia);
-							pa_papa.is_subAnomSelect = ls_anomalia;
-							selectAnomalia(ls_anomalia);
+        String ls_filtro = pa_papa.getFiltro();
 
-						}
+        lv_lista.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
 
-					}
-				});
+                if (!tieneSubanomalia) {
+                    TextView tv_anomalia = (TextView) view
+                            .findViewById(android.R.id.text1);
 
-				switch (tipo) {
-				case PantallaAnomaliasTabsPagerAdapter.TODAS:
-					//ls_filtro= pa_papa.getFiltro();
-					
-					String orderBy="";
-					if (pa_papa.globales.ordenarAnomalias){
-						orderBy=" order by cast("+ pa_papa.anomaliaTraducida+" as int)";
-					}
+                    is_desc = ((TextView) view
+                            .findViewById(android.R.id.text2)).getText()
+                            .toString();
+                    String ls_anomalia = tv_anomalia.getText().toString();
 
-					c = db.rawQuery(
-							"Select rowid _id, "+pa_papa.anomaliaTraducida+" anom , desc desc from anomalia where subanomalia<>'S' and subanomalia<>'A' and activa='A' "
-									+ ls_filtro+ orderBy, null);
-					c.moveToFirst();
+                    pa_papa.is_anomaliaSelec = ls_anomalia;
+                    selectAnomalia(ls_anomalia);
 
-					// String[] columns = new String[] { "anomalia", "desc" };
-					String[] columns = new String[] { "anom", "desc" };
+                } else {
 
-					ListAdapter adapter;
-					// if (Build.VERSION.SDK_INT>=11)
-					// //Solo para la nueva api
-					// adapter=new SimpleCursorAdapter(this,
-					// android.R.layout.simple_list_item_2, c, columns, new int[]
-					// {android.R.id.text1, android.R.id.text2 },0);
-					// else
-					adapter = new SimpleCursorAdapter(pa_papa,
-							android.R.layout.simple_list_item_2, c, columns, new int[] {
-									android.R.id.text1, android.R.id.text2 });
-					lv_lista.setAdapter(adapter);
+                    TextView tv_anomalia = (TextView) view
+                            .findViewById(android.R.id.text1);
+                    String ls_anomalia = tv_anomalia.getText().toString()
+                            .substring(0, pa_papa.globales.longitudCodigoSubAnomalia);
+                    pa_papa.is_subAnomSelect = ls_anomalia;
+                    selectAnomalia(ls_anomalia);
+
+                }
+
+            }
+        });
+
+        switch (tipo) {
+            case PantallaAnomaliasTabsPagerAdapter.TODAS:
+                //ls_filtro= pa_papa.getFiltro();
+
+                String orderBy = "";
+                if (pa_papa.globales.ordenarAnomalias) {
+                    orderBy = " order by cast(" + pa_papa.anomaliaTraducida + " as int)";
+                }
+
+                c = db.rawQuery(
+                        "Select rowid _id, " + pa_papa.anomaliaTraducida + " anom , desc desc from anomalia where subanomalia<>'S' and subanomalia<>'A' and activa='A' "
+                                + ls_filtro + orderBy, null);
+                c.moveToFirst();
+
+                // String[] columns = new String[] { "anomalia", "desc" };
+                String[] columns = new String[]{"anom", "desc"};
+
+                ListAdapter adapter;
+                // if (Build.VERSION.SDK_INT>=11)
+                // //Solo para la nueva api
+                // adapter=new SimpleCursorAdapter(this,
+                // android.R.layout.simple_list_item_2, c, columns, new int[]
+                // {android.R.id.text1, android.R.id.text2 },0);
+                // else
+                adapter = new SimpleCursorAdapter(pa_papa,
+                        android.R.layout.simple_list_item_2, c, columns, new int[]{
+                        android.R.id.text1, android.R.id.text2});
+                lv_lista.setAdapter(adapter);
 
 //					lv_lista.setOnItemClickListener(new OnItemClickListener() {
 //						public void onItemClick(AdapterView<?> parent, View view,
 //								int position, long id) {
-		//
+                //
 //							if (!tieneSubanomalia) {
 //								TextView tv_anomalia = (TextView) view
 //										.findViewById(android.R.id.text1);
-		//
+                //
 //								is_desc = ((TextView) view
 //										.findViewById(android.R.id.text2)).getText()
 //										.toString();
 //								String ls_anomalia = tv_anomalia.getText().toString();
-		//
+                //
 //								is_anomaliaSelec = ls_anomalia;
 //								selectAnomalia(ls_anomalia);
-		//
+                //
 //							} else {
-		//
+                //
 //								TextView tv_anomalia = (TextView) view
 //										.findViewById(android.R.id.text1);
 //								String ls_anomalia = tv_anomalia.getText().toString()
 //										.substring(0, 4);
 //								is_subAnomSelect = ls_anomalia;
 //								selectAnomalia(ls_anomalia);
-		//
+                //
 //							}
-		//
+                //
 //						}
 //					});
 
-					
 
-					li_anomalia.setOnEditorActionListener(new OnEditorActionListener() {
+                li_anomalia.setOnEditorActionListener(new OnEditorActionListener() {
 
-						@Override
-						public boolean onEditorAction(TextView arg0, int arg1,
-								KeyEvent arg2) {
-							// Si le damos al teclado mostramos
-							getAnomaliaEditText(arg0);
-							return false;
-						}
-					});
-					break;
-					
-				case PantallaAnomaliasTabsPagerAdapter.RECIENTES:
-					lv_lista.setVisibility(View.GONE);
-					rl_busquedaManual.setVisibility(View.GONE);
-					
-					setArrayOfAnomalias("Select anoma."+pa_papa.anomaliaTraducida+" anom from Anomalia anoma, usoAnomalias uso  where anoma."+pa_papa.anomaliaTraducida+"=uso.anomalia and subanomalia<>'S' and subanomalia<>'A' and activa='A' and fecha<>'' "+ls_filtro+" order by cast (fecha as Integer) desc limit 12");
-					//setArrayOfAnomalias("Select anoma."+pa_papa.anomaliaTraducida+" anom from Anomalia anoma LEFT JOIN usoAnomalias uso  on  anoma."+pa_papa.anomaliaTraducida+"=uso.anomalia and subanomalia<>'S' where subanomalia<>'A' and activa='A' "+ls_filtro+" order by cast (fecha as Integer) desc limit 12");
-					
-					break;
-					
-				case PantallaAnomaliasTabsPagerAdapter.MAS_USADAS:
-					lv_lista.setVisibility(View.GONE);
-					rl_busquedaManual.setVisibility(View.GONE);
-					setArrayOfAnomalias("Select  anoma."+pa_papa.anomaliaTraducida+" anom from Anomalia anoma, usoAnomalias uso where anoma."+pa_papa.anomaliaTraducida+"=uso.anomalia and subanomalia<>'S' and subanomalia<>'A' and activa='A' and veces<>0 "+ls_filtro+" order by veces desc, cast (fecha as Integer) desc limit 12");
-					//setArrayOfAnomalias("Select  anoma."+pa_papa.anomaliaTraducida+" anom from Anomalia anoma LEFT JOIN usoAnomalias uso on anoma."+pa_papa.anomaliaTraducida+"=uso.anomalia and subanomalia<>'S'  where subanomalia<>'A' and activa='A' "+ls_filtro+" order by veces desc, cast (fecha as Integer) desc limit 12");
-					break;
-				}
+                    @Override
+                    public boolean onEditorAction(TextView arg0, int arg1,
+                                                  KeyEvent arg2) {
+                        // Si le damos al teclado mostramos
+                        getAnomaliaEditText(arg0);
+                        return false;
+                    }
+                });
+                break;
 
-				if (pa_papa.globales.convertirAnomalias)
-					li_anomalia.setInputType(/*InputType.TYPE_CLASS_TEXT|*/InputType.TYPE_TEXT_FLAG_CAP_WORDS| InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-				else
-					li_anomalia.setInputType(InputType.TYPE_CLASS_NUMBER);
-				
-				closeDatabase();
-	}
+            case PantallaAnomaliasTabsPagerAdapter.RECIENTES:
+                lv_lista.setVisibility(View.GONE);
+                rl_busquedaManual.setVisibility(View.GONE);
 
-	
-	
-	
+                setArrayOfAnomalias("Select anoma." + pa_papa.anomaliaTraducida + " anom from Anomalia anoma, usoAnomalias uso  where anoma." + pa_papa.anomaliaTraducida + "=uso.anomalia and subanomalia<>'S' and subanomalia<>'A' and activa='A' and fecha<>'' " + ls_filtro + " order by cast (fecha as Integer) desc limit 12");
+                //setArrayOfAnomalias("Select anoma."+pa_papa.anomaliaTraducida+" anom from Anomalia anoma LEFT JOIN usoAnomalias uso  on  anoma."+pa_papa.anomaliaTraducida+"=uso.anomalia and subanomalia<>'S' where subanomalia<>'A' and activa='A' "+ls_filtro+" order by cast (fecha as Integer) desc limit 12");
+
+                break;
+
+            case PantallaAnomaliasTabsPagerAdapter.MAS_USADAS:
+                lv_lista.setVisibility(View.GONE);
+                rl_busquedaManual.setVisibility(View.GONE);
+                setArrayOfAnomalias("Select  anoma." + pa_papa.anomaliaTraducida + " anom from Anomalia anoma, usoAnomalias uso where anoma." + pa_papa.anomaliaTraducida + "=uso.anomalia and subanomalia<>'S' and subanomalia<>'A' and activa='A' and veces<>0 " + ls_filtro + " order by veces desc, cast (fecha as Integer) desc limit 12");
+                //setArrayOfAnomalias("Select  anoma."+pa_papa.anomaliaTraducida+" anom from Anomalia anoma LEFT JOIN usoAnomalias uso on anoma."+pa_papa.anomaliaTraducida+"=uso.anomalia and subanomalia<>'S'  where subanomalia<>'A' and activa='A' "+ls_filtro+" order by veces desc, cast (fecha as Integer) desc limit 12");
+                break;
+        }
+
+        if (pa_papa.globales.convertirAnomalias)
+            li_anomalia.setInputType(/*InputType.TYPE_CLASS_TEXT|*/InputType.TYPE_TEXT_FLAG_CAP_WORDS | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        else
+            li_anomalia.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+        closeDatabase();
+    }
+
 
 }

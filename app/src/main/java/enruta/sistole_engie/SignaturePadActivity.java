@@ -36,12 +36,13 @@ public class SignaturePadActivity extends Activity {
     private Button mClearButton;
     private Button mSaveButton;
 
-    ContentValues cv_datos;
-    long secuencial;
-    String is_terminacion = "-A", is_anomalia = "";
-    String ls_nombre, caseta;
-    int temporal, cantidad;
-    SignaturePadActivity thisIsMe;
+    private ContentValues cv_datos;
+    private long secuencial;
+    private String is_terminacion = "-A", is_anomalia = "";
+    private String ls_nombre, caseta;
+    private int temporal, cantidad;
+    private long idLectura;
+    private SignaturePadActivity thisIsMe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +57,7 @@ public class SignaturePadActivity extends Activity {
         ls_nombre= bu_params.getString("ls_nombre");
         temporal = bu_params.getInt("temporal");
         cantidad = bu_params.getInt("cantidad");
+        idLectura= bu_params.getLong("idLectura");
         thisIsMe= this;
 
         mSignaturePad = (SignaturePad) findViewById(R.id.signature_pad);
@@ -102,6 +104,7 @@ public class SignaturePadActivity extends Activity {
                 cv_datos.put("foto", firmaAGuardar);
                 cv_datos.put("envio", TomaDeLecturas.NO_ENVIADA);
                 cv_datos.put("temporal", temporal);
+                cv_datos.put("idLectura", idLectura);
 
                 DBHelper dbHelper = new DBHelper(thisIsMe);
                 SQLiteDatabase db = dbHelper.getReadableDatabase();

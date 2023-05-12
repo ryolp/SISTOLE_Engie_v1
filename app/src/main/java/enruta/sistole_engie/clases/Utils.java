@@ -3,6 +3,7 @@ package enruta.sistole_engie.clases;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
@@ -32,13 +33,15 @@ public final class Utils {
     }
 
     public static void logMessageLong(Context context, String msg, Throwable t) {
-        msg = msg + " : " + t.getMessage();
+        if (t != null)
+            msg = msg + " : " + t.getMessage();
         Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
         Log.d("CPL", msg);
     }
 
     public static void logMessageShort(Context context, String msg, Throwable t) {
-        msg = msg + " : " + t.getMessage();
+        if (t != null)
+            msg = msg + " : " + t.getMessage();
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
         Log.d("CPL", msg);
     }
@@ -164,5 +167,100 @@ public final class Utils {
 
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    public static String concatenar(String separador, String ... valores) {
+        String s = "";
+
+        for(String valor : valores ){
+            if (!s.equals("") && !valor.equals(""))
+                s = s + separador + valor;
+            else if(!valor.equals(""))
+                s = valor;
+        }
+
+        return s;
+    }
+
+    public static String concatenarColumnas(String separador, String ... valores) {
+        String s = "";
+        int i = 0;
+
+        for(String valor : valores ){
+            if (valor == null)
+                valor = "";
+
+            if (i == 0)
+                s = valor;
+            else
+                s = s + separador + valor;
+
+            i++;
+        }
+
+        return s;
+    }
+
+    public static int getInt(Cursor c, String columnName, int defaultValue)  throws Exception{
+        int idx;
+
+        if (c == null)
+            throw new Exception("No se proporcionó el cursor");
+
+        idx = c.getColumnIndex(columnName);
+
+        if (idx < 0)
+            throw new Exception("No existe la columna '" + columnName + "'");
+
+        return c.getInt(idx);
+    }
+
+    public static long getLong(Cursor c, String columnName, long defaultValue)  throws Exception{
+        int idx;
+        long value;
+
+        if (c == null)
+            throw new Exception("No se proporcionó el cursor");
+
+        idx = c.getColumnIndex(columnName);
+
+        if (idx < 0)
+            throw new Exception("No existe la columna '" + columnName + "'");
+
+        return c.getLong(idx);
+    }
+
+    public static String getString(Cursor c, String columnName, String defaultValue)  throws Exception{
+        int idx;
+        String value;
+
+        if (c == null)
+            throw new Exception("No se proporcionó el cursor");
+
+        idx = c.getColumnIndex(columnName);
+
+        if (idx < 0)
+            throw new Exception("No existe la columna '" + columnName + "'");
+
+        value = c.getString(idx);
+
+        if (value == null)
+            value = defaultValue;
+
+        return value;
+    }
+
+    public static byte[] getBlob(Cursor c, String columnName) throws Exception {
+        int idx;
+
+        if (c == null)
+            throw new Exception("No se proporcionó el cursor");
+
+        idx = c.getColumnIndex(columnName);
+
+        if (idx < 0)
+            throw new Exception("No existe la columna '" + columnName + "'");
+
+        return c.getBlob(idx);
     }
 }

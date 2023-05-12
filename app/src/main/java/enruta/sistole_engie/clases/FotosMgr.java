@@ -6,9 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 
-public class FotosMgr {
+public class FotosMgr extends BaseMgr {
     private byte[] imagen = null;
     private SQLiteDatabase mDb;
     private final long MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB
@@ -19,9 +18,9 @@ public class FotosMgr {
 
         try {
             if (imageSize <= MAX_IMAGE_SIZE)
-                return guardarFoto1(nombreFoto);        // Para guardar fotos menores a 2MB
+                return obtenerFoto1(nombreFoto);        // Para guardar fotos menores a 2MB
             else
-                return guardarFoto2(nombreFoto, imageSize);        // Para guardar fotos mayores a 2MB, hacerlo por bloques
+                return obtenerFoto2(nombreFoto, imageSize);        // Para guardar fotos mayores a 2MB, hacerlo por bloques
         }
         catch (Exception e)
         {
@@ -29,7 +28,7 @@ public class FotosMgr {
         }
     }
 
-    private byte[] guardarFoto1(String nombreFotoPadre) throws Exception
+    private byte[] obtenerFoto1(String nombreFotoPadre) throws Exception
     {
         String query;
         Cursor cFoto = null;
@@ -44,9 +43,9 @@ public class FotosMgr {
 
             while (cFoto.moveToNext()) {
 
-                nombreFoto = cFoto.getString(cFoto.getColumnIndex("nombre"));
+                nombreFoto = getString(cFoto, "nombre", "");
 
-                imagen = cFoto.getBlob(cFoto.getColumnIndex("foto"));
+                imagen = getBlob(cFoto, "foto");
             }
         } catch (Exception e) {
             throw new Exception("Error al obtener foto :" + e.getMessage());
@@ -62,7 +61,7 @@ public class FotosMgr {
         }
     }
 
-    private byte[] guardarFoto2(String nombreFoto, long imageSize) throws Exception
+    private byte[] obtenerFoto2(String nombreFoto, long imageSize) throws Exception
     {
         String query;
         Cursor cFoto = null;
@@ -93,9 +92,9 @@ public class FotosMgr {
 
                 while (cFoto.moveToNext()) {
 
-                    nombreFoto = cFoto.getString(cFoto.getColumnIndex("nombre"));
+                    nombreFoto = getString(cFoto, "nombre", "");
 
-                    outputStream.write(cFoto.getBlob(cFoto.getColumnIndex("fotoParcial")));
+                    outputStream.write(getBlob(cFoto, "fotoParcial"));
                 }
 
                 cFoto.close();

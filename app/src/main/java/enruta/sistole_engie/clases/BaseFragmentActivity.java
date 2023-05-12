@@ -26,18 +26,7 @@ public class BaseFragmentActivity extends FragmentActivity {
 
     protected WebApiManager getWebApiManager() throws Exception {
         try {
-            TransmitionObject to= new TransmitionObject();
-            TomaDeLecturasGenerica tdlg;
             String servidor = "";
-
-            tdlg =globales.tdlg;
-
-            if (tdlg != null){
-                if(!tdlg.getEstructuras( to, trasmisionDatos.TRANSMISION, TransmisionesPadre.WIFI).equals("")){
-                    //throw new Exception("Error al leer configuración");
-                    servidor = to.ls_servidor.trim();
-                }
-            }
 
             if (servidor.trim().equals(""))
                 servidor = DbConfigMgr.getInstance().getServidor(this);
@@ -45,8 +34,7 @@ public class BaseFragmentActivity extends FragmentActivity {
             if (servidor.trim().equals(""))
                 servidor = globales.defaultServidorGPRS;
 
-
-            return WebApiManager.getInstance(servidor);
+            return WebApiManager.getInstance(this);
         } catch (Exception ex) {
             throw ex;
         }

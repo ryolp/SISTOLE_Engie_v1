@@ -10,6 +10,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.SpannableStringBuilder;
+
+import enruta.sistole_engie.clases.Utils;
+import enruta.sistole_engie.entities.InfoFotoEntity;
 
 /**
  * Esta clase crea las validaciones y los campos a mostrar
@@ -97,7 +101,9 @@ public abstract class TomaDeLecturasGenerica {
      */
     public abstract String getNombreFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia);
 
-    public abstract Vector<String> getInformacionDelMedidor(Lectura lectura);
+    public abstract InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia);
+
+    public abstract Vector<String> getInformacionDelMedidor(Lectura lectura) throws Exception;
 
     public abstract MensajeEspecial getMensaje();
 
@@ -146,7 +152,7 @@ public abstract class TomaDeLecturasGenerica {
      * @param me        Mensaje especial que se mostró
      * @param respuesta la respuesta de seleccionada
      */
-    public abstract void RespuestaMensajeSeleccionada(MensajeEspecial me, int respuesta);
+    public abstract void RespuestaMensajeSeleccionada(MensajeEspecial me, int respuesta) throws Exception;
 
     /**
      * Genera un campo apartir de una clave
@@ -181,7 +187,7 @@ public abstract class TomaDeLecturasGenerica {
      *
      * @param bu_params Parametros regresados por la pantalla de input generico
      */
-    public abstract void regresaDeCamposGenericos(Bundle bu_params, String anomalia);
+    public abstract void regresaDeCamposGenericos(Bundle bu_params, String anomalia) throws Exception;
 
     /**
      * Inicializa campos que no se encuentran en el archivo
@@ -436,10 +442,10 @@ public abstract class TomaDeLecturasGenerica {
      * @param tipo Tipo de archivo
      * @return
      */
-    public String getNombreArchvio(int tipo) {
+    public String getNombreArchvio(int tipo) throws Exception {
 
         //Por default es el numero de CPL
-        String ls_extension = "TPL2";
+        String ls_extension = "TPL";
         String ls_archivo = "";
 
         switch (tipo) {
@@ -610,7 +616,7 @@ public abstract class TomaDeLecturasGenerica {
      * @param db
      * @return
      */
-    public Vector<EstructuraResumen> getResumen(SQLiteDatabase db) {
+    public Vector<EstructuraResumen> getResumen(SQLiteDatabase db) throws Exception {
 
         Cursor c;
         long ll_total;
@@ -778,7 +784,7 @@ public abstract class TomaDeLecturasGenerica {
 
     }
 
-    public String getEstructuras(TransmitionObject to, int tipo, int tipoTransmision) {
+    public String getEstructuras(TransmitionObject to, int tipo, int tipoTransmision) throws Exception {
         String ls_subcarpeta;
         openDatabase();
 
@@ -883,17 +889,17 @@ public abstract class TomaDeLecturasGenerica {
         return globales.letraPais + ls_carpeta + "\\" + ls_categoria + Main.obtieneFecha("d/m/y  h:i:s");
     }
 
-    public byte[] encabezadoAMandar(SQLiteDatabase db) {
+    public byte[] encabezadoAMandar(SQLiteDatabase db) throws Exception {
         Cursor c = db.rawQuery("Select registro from encabezado", null);
 
         c.moveToFirst();
-        byte[] bytesAEnviar = c.getBlob(c.getColumnIndex("registro"));
+        byte[] bytesAEnviar = Utils.getBlob(c, "registro");
         c.close();
 
         return bytesAEnviar;
     }
 
-    public void noRegistradosinMedidor() {
+    public void noRegistradosinMedidor() throws Exception {
 
     }
 
@@ -921,7 +927,7 @@ public abstract class TomaDeLecturasGenerica {
         return "";
     }
 
-    public Vector<EstructuraResumen> getPrincipal(SQLiteDatabase db) {
+    public Vector<EstructuraResumen> getPrincipal(SQLiteDatabase db) throws Exception {
 
 
         String lote = "";

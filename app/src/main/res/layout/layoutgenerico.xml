@@ -131,6 +131,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
+        style="@style/AppTheme.RoundedCornerMaterialButton.Keyboard"
         android:text="@string/continuar"
         android:visibility="gone" />
 

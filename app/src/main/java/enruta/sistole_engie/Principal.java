@@ -18,6 +18,8 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import enruta.sistole_engie.clases.Utils;
+
 public class Principal extends Fragment {
 
     private DBHelper dbHelper;
@@ -64,20 +66,20 @@ public class Principal extends Fragment {
     }
 
     public void actualizaResumen() {
+        try {
+
+            String lote = "";
+            String cpl = "";
+            String mac_bt = "";
+            String mac_impr = "";
 
 
-        String lote = "";
-        String cpl = "";
-        String mac_bt = "";
-        String mac_impr = "";
+            String ls_resumen;
 
+            tv_resumen = (TextView) rootView.findViewById(R.id.tv_resumen);
 
-        String ls_resumen;
-
-        tv_resumen = (TextView) rootView.findViewById(R.id.tv_resumen);
-
-        Cursor c;
-        openDatabase();
+            Cursor c;
+            openDatabase();
 
 //		    		try{
 //		    			c=db.rawQuery("Select value from config where key='cpl'", null);
@@ -152,24 +154,26 @@ public class Principal extends Fragment {
 ////		        	tv_resumen.setText(ls_resumen);
 //		        	
 //		        	//Establecemos el adaptador
-        GridView gv_resumen = (GridView) rootView.findViewById(R.id.gv_resumen);
+            GridView gv_resumen = (GridView) rootView.findViewById(R.id.gv_resumen);
 
-        Vector<EstructuraResumen> resumen = ma_papa.globales.tdlg.getPrincipal(db);
+            Vector<EstructuraResumen> resumen = ma_papa.globales.tdlg.getPrincipal(db);
 
-        gv_resumen.setAdapter(new ResumenGridAdapter(getActivity(), resumen, ma_papa.infoFontSize * ma_papa.porcentaje));
+            gv_resumen.setAdapter(new ResumenGridAdapter(getActivity(), resumen, ma_papa.infoFontSize * ma_papa.porcentaje));
 
-        if (tv_mensajeLecturista == null)
-            tv_mensajeLecturista=(TextView)rootView.findViewById(R.id.tv_MensajeLecturista);
+            if (tv_mensajeLecturista == null)
+                tv_mensajeLecturista = (TextView) rootView.findViewById(R.id.tv_MensajeLecturista);
 
-        if (globales != null)
-        {
-            if (globales.sesionEntity != null)
-                tv_mensajeLecturista.setText(globales.sesionEntity.MensajeLecturista);
+            if (globales != null) {
+                if (globales.sesionEntity != null)
+                    tv_mensajeLecturista.setText(globales.sesionEntity.MensajeLecturista);
+            }
+
+            tv_resumen.setVisibility(View.GONE);
+            gv_resumen.setVisibility(View.VISIBLE);
+            closeDatabase();
+        } catch (Throwable t) {
+            Utils.showMessageLong(this.getActivity(), t.getMessage());
         }
-
-        tv_resumen.setVisibility(View.GONE);
-        gv_resumen.setVisibility(View.VISIBLE);
-        closeDatabase();
     }
 
 //    @Override
@@ -218,8 +222,9 @@ public class Principal extends Fragment {
 
                 runner.execute(globales.sesionEntity.empleado.FotoURL);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Throwable t) {
+            Utils.showMessageLong(this.getActivity(), t.getMessage());
+            t.printStackTrace();
         }
     }
 

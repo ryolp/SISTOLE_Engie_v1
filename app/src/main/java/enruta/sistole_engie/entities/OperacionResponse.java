@@ -15,4 +15,5 @@ public class OperacionResponse {
     public String Archivo;
     public boolean RequiereCheckIn = false;
     public boolean RequiereCheckSeguridad = false;
+    public boolean RequiereCheckOut = false;
 }

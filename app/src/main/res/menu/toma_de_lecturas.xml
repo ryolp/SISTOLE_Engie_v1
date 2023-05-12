@@ -13,14 +13,14 @@
         android:id="@+id/m_correccion"
         android:icon="@drawable/ic_action_correccion"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:title="@string/m_str_correccion" />
 
     <item
         android:id="@+id/m_orden"
         android:icon="@drawable/ic_action_descendente"
         android:orderInCategory="4"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:title="@string/m_str_descendente"/>
 
     <item
@@ -78,5 +78,12 @@
         android:orderInCategory="21"
         android:showAsAction="always"
         android:title="@string/str_lbl_escaner"/>
+
+    <item
+        android:id="@+id/m_MostrarUbicacionGPS"
+        android:icon="@drawable/ic_scanner_24"
+        android:orderInCategory="22"
+        android:showAsAction="never"
+        android:title="@string/str_mostrar_ubicacion_gps"/>
 
 </menu>

@@ -116,7 +116,8 @@ public class SupervisorMgr {
             resp = new SupervisorLogResponse();
 
         resp.NumError = codigo;
-        resp.MensajeError = mensajeError;
+        resp.Mensaje = mensajeError;
+        resp.MensajeError = msg;
 
         if (mCallback != null)
             mCallback.enFallo(req, resp);

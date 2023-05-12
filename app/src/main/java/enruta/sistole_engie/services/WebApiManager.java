@@ -49,7 +49,7 @@ public class WebApiManager {
     }
 
     // Para crear una sola instancia de esta clase que será de gestión para solicitar la autenticación
-    public static WebApiManager getInstance(String servidor) throws Exception {
+    private static WebApiManager getInstance(String servidor) throws Exception {
         if (apiManager == null)
             apiManager = new WebApiManager(servidor);
         else
@@ -60,34 +60,15 @@ public class WebApiManager {
 
     // Para crear una sola instancia de esta clase que será de gestión para solicitar la autenticación
     public static WebApiManager getInstance(Context context) throws Exception {
-        TransmitionObject to = new TransmitionObject();
-        TomaDeLecturasGenerica tdlg;
         String servidor = "";
 
         if (context == null)
             throw new Exception("No se ha definido un contexto");
 
-        if (globales == null)
-            globales = (Globales) context.getApplicationContext();
-
-        tdlg = globales.tdlg;
-
-        if (tdlg != null) {
-            if (!tdlg.getEstructuras(to, trasmisionDatos.TRANSMISION, TransmisionesPadre.WIFI).equals("")) {
-                //throw new Exception("Error al leer configuración");
-                servidor = to.ls_servidor.trim();
-            }
-        }
-
-        if (servidor.trim().equals(""))
-            servidor = DbConfigMgr.getInstance().getServidor(context);
-        else
-            globales.defaultServidorGPRS = servidor;
+        servidor = DbConfigMgr.getInstance().getServidor(context);
 
         if (servidor.trim().equals(""))
             servidor = globales.defaultServidorGPRS;
-        else
-            globales.defaultServidorGPRS = servidor;
 
         if (apiManager == null)
             apiManager = new WebApiManager(servidor);
@@ -160,6 +141,12 @@ public class WebApiManager {
 
     public void marcarArchivoDescargado(ArchivosLectRequest request, Callback<ArchivosLectResponse> callBack){
         Call<ArchivosLectResponse> call = service.marcarArchivoDescargado(request);
+
+        call.enqueue(callBack);
+    }
+
+    public void descargarArchivo(ArchivosLectRequest request, Callback<ArchivosLectResponse> callBack){
+        Call<ArchivosLectResponse> call = service.descargarArchivo(request);
 
         call.enqueue(callBack);
     }

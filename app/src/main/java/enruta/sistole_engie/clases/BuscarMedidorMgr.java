@@ -41,9 +41,25 @@ public class BuscarMedidorMgr {
 
     private final int CANT_MIN_DIGITOS_MEDIDOR = 6;
 
+    // Definición de interfaces
+
+    public interface BuscarMedidorCallback {
+        public void enExito(String codigo, int secuencia);
+        public void enFallo(String codigo, String mensajeError);
+    }
+
+    public interface BuscarMedidorEnWebCallback {
+        public void enExito(BuscarMedidorResponse resp);
+        public void enFallo(BuscarMedidorResponse resp);
+        public void enFalloComunicacion(BuscarMedidorRequest req, BuscarMedidorResponse resp, int numError,
+                                        String mensajeError, String detalleError);
+    }
+
     public BuscarMedidorMgr(Context context) {
         mContext = context;
     }
+
+    // Asignación de los eventos
 
     public void setOnBuscarMedidorListener(BuscarMedidorCallback callback) {
         mCallback = callback;
@@ -164,12 +180,17 @@ public class BuscarMedidorMgr {
             resp.NumError = 0;
         }
 
-        if (mCallbackEnWeb != null)
-            mCallbackEnWeb.enExito(resp);
+        if (mCallbackEnWeb != null) {
+            if (resp.Exito)
+                mCallbackEnWeb.enExito(resp);
+            else
+                mCallbackEnWeb.enFallo(resp);
+        }
     }
 
     private void fallo(BuscarMedidorRequest req, BuscarMedidorResponse resp, int codigo, String mensajeError, Throwable t) {
         String msg = "";
+        String detalleError = "";
 
         if (!mensajeError.trim().equals("") && codigo >= ERROR_ENVIAR_1) {
             if (t != null)
@@ -178,12 +199,16 @@ public class BuscarMedidorMgr {
             Log.d("CPL", mensajeError + " : " + msg);
         }
 
+        if (t != null)
+            detalleError = t.getMessage();
+
         if (resp != null) {
             resp.NumError = codigo;
-            resp.MensajeError = mensajeError;
+            resp.Mensaje = mensajeError;
+            resp.MensajeError = t.getMessage();
         }
         if (mCallbackEnWeb != null)
-            mCallbackEnWeb.enFallo(req, resp, codigo, mensajeError);
+            mCallbackEnWeb.enFalloComunicacion(req, resp, codigo, mensajeError, detalleError);
     }
 
 }

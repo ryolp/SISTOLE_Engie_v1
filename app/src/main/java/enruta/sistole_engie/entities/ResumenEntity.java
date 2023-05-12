@@ -12,4 +12,5 @@ public class ResumenEntity {
     public long conDir = 0;
     public long ordenesSinEnviar = 0;
     public long fotosSinEnviar = 0;
+    public long cantAcuses = 0;
 }

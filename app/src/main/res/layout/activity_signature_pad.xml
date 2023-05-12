@@ -52,6 +52,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
+            style="@style/AppTheme.RoundedCornerMaterialButton"
             android:text="Limpiar"
             android:enabled="false" />
 
@@ -60,6 +61,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
+            style="@style/AppTheme.RoundedCornerMaterialButton"
             android:text="Guardar Firma"
             android:enabled="false" />
     </LinearLayout>

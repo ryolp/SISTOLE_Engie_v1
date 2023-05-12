@@ -41,6 +41,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import enruta.sistole_engie.entities.InfoFotoEntity;
+
 public class CamaraActivity extends Activity {
 
     public static int TEMPORAL = 1;
@@ -57,23 +59,23 @@ public class CamaraActivity extends Activity {
 
     private Camera mCamera;
     private CamaraPreview mPreview;
-    TextView tv_indicador;
+    private TextView tv_indicador;
     private Button captureButton, backButton, otraButton;
     private FrameLayout fotoPreview, cPreview;
     long secuencial;
     String is_terminacion = "-A", is_anomalia = "";
-    ContentValues cv_datos;
+    private ContentValues cv_datos;
     boolean otraFoto = false;
-    String ls_nombre, caseta;
-    byte[] foto;
+    private String caseta;
+    private byte[] foto;
     int temporal;
     static String mensajeDeErrorCamera = "";
-    Globales globales;
-    ImageButton ib_flash;
-    boolean tieneFlash = true;
-    boolean tieneZoom = true;
-    boolean tieneCamaraFrontal = false;
-    AlertDialog alert;
+    private Globales globales;
+    private ImageButton ib_flash;
+    private boolean tieneFlash = true;
+    private boolean tieneZoom = true;
+    private boolean tieneCamaraFrontal = false;
+    private AlertDialog alert;
     /**
      * Cantidad de fotos
      */
@@ -91,6 +93,12 @@ public class CamaraActivity extends Activity {
     protected ImageButton btnSubirResolucion;
     protected ImageButton btnCambiarCamara;
     protected ImageButton btnFirmar;
+
+
+    // RL, 2022-10-04, Etiqueta para mostrar la serie del medidor o su código de barras
+
+    protected TextView lblNumMedidor;
+    protected TextView txtNumMedidor;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,6 +126,8 @@ public class CamaraActivity extends Activity {
         ca = this;
 
         tv_indicador = (TextView) findViewById(R.id.tv_indicador);
+        tv_indicador.setVisibility(View.GONE);
+
         captureButton = (Button) findViewById(R.id.camara_b_capture);
         backButton = (Button) findViewById(R.id.camara_b_regresa);
         otraButton = (Button) findViewById(R.id.camara_b_otra);
@@ -127,6 +137,9 @@ public class CamaraActivity extends Activity {
         btnSubirResolucion = (ImageButton) findViewById(R.id.ib_subirResolucion);
         btnCambiarCamara = (ImageButton) findViewById(R.id.ib_cambiarCamara);
         btnFirmar = (ImageButton) findViewById(R.id.ib_firmar);
+
+        lblNumMedidor = (TextView) findViewById(R.id.lblMedidor);
+        txtNumMedidor = (TextView) findViewById(R.id.txtMedidor);
 
         fotoPreview = (FrameLayout) findViewById(R.id.camera_preview_foto);
         cPreview = (FrameLayout) findViewById(R.id.camera_preview);
@@ -152,6 +165,7 @@ public class CamaraActivity extends Activity {
         }
         iniciaCamara();
         mostrarInformacion();
+
         captureButton.setOnClickListener(
                 new View.OnClickListener() {
                     @SuppressLint("NewApi")
@@ -172,6 +186,8 @@ public class CamaraActivity extends Activity {
                             btnSubirResolucion.setVisibility(View.GONE);
                             btnBajarResolucion.setVisibility(View.GONE);
                             btnCambiarCamara.setVisibility(View.GONE);
+                            txtNumMedidor.setVisibility(View.GONE);
+                            lblNumMedidor.setVisibility(View.GONE);
                         } else {
                             iniciaCamara();
                             mostrarInformacion();
@@ -484,6 +500,8 @@ public class CamaraActivity extends Activity {
         DBHelper dbHelper = new DBHelper(this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         String ls_unicom, ls_nisrad;
+        String ls_nombre;
+        InfoFotoEntity infoFoto = new InfoFotoEntity();
 
 //    	Cursor c= db.rawQuery("Select registro from encabezado", null);
 //    	
@@ -515,8 +533,9 @@ public class CamaraActivity extends Activity {
             ls_nombre += Main.obtieneFecha("ymd");
             ls_nombre += Main.obtieneFecha("his");
             ls_nombre += ".JPG";
+            infoFoto.nombreFoto = ls_nombre;
         }else{
-            ls_nombre = globales.tdlg.getNombreFoto(globales, db, secuencial, is_terminacion, is_anomalia);
+            infoFoto = globales.tdlg.getInfoFoto(globales, db, secuencial, is_terminacion, is_anomalia);
         }
         db.close();
         dbHelper.close();
@@ -533,10 +552,11 @@ public class CamaraActivity extends Activity {
         byte[] fotoAGuardar = out.toByteArray();
 
         cv_datos.put("secuencial", secuencial);
-        cv_datos.put("nombre", ls_nombre);
+        cv_datos.put("nombre", infoFoto.nombreFoto);
         cv_datos.put("foto", fotoAGuardar);
         cv_datos.put("envio", TomaDeLecturas.NO_ENVIADA);
         cv_datos.put("temporal", temporal);
+        cv_datos.put("idLectura", infoFoto.idLectura);
         this.foto = foto;
     }
 
@@ -820,6 +840,12 @@ public class CamaraActivity extends Activity {
             tv_indicador.setVisibility(View.VISIBLE);
             tv_indicador.setText((fotosTomadas + 1) + " " + getString(R.string.de) + " " + cantidad + " " + getString(R.string.msj_fotos));
         }
+        else
+            tv_indicador.setVisibility(View.GONE);
+
+        txtNumMedidor.setText(caseta);
+        txtNumMedidor.setVisibility(View.VISIBLE);
+        lblNumMedidor.setVisibility(View.VISIBLE);
     }
 
     public void flashMode(View view) {
@@ -939,12 +965,20 @@ public class CamaraActivity extends Activity {
 //        Utils.showMessageLong(this, "Cambiar cámara");
     }
 
+    /*
+        Función para iniciar el activity para que el cliente firme.
+        RL, 2023-01-02, Se regresa estructura con información adicional de la foto.
+     */
+
     protected void hacerFirmar() {
+        InfoFotoEntity infoFoto;
+
         // Sustituir por el código que permita llamar el Activity para firmar
 
         DBHelper dbHelper = new DBHelper(this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        ls_nombre = globales.tdlg.getNombreFoto(globales, db, secuencial, is_terminacion, is_anomalia);
+
+        infoFoto = globales.tdlg.getInfoFoto(globales, db, secuencial, is_terminacion, is_anomalia);
         db.close();
         dbHelper.close();
 
@@ -955,7 +989,8 @@ public class CamaraActivity extends Activity {
         padParaFirmar.putExtra("temporal", temporal);
         padParaFirmar.putExtra("cantidad", cantidad);
         padParaFirmar.putExtra("anomalia", is_anomalia);
-        padParaFirmar.putExtra("ls_nombre", ls_nombre);
+        padParaFirmar.putExtra("ls_nombre", infoFoto.nombreFoto);
+        padParaFirmar.putExtra("idLectura", infoFoto.idLectura);
         // vengoDeFotos = true;
         startActivityForResult(padParaFirmar, 1);
 //        startActivity(padParaFirmar);

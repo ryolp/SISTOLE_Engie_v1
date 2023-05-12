@@ -11,9 +11,12 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/im_clearText"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:inputType="textVisiblePassword"
         android:ems="10"
         android:imeActionLabel="Buscar"
-        android:inputType="number">
+        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789-/+_">
 
     </EditText>
 

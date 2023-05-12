@@ -318,23 +318,48 @@
                 </LinearLayout>
 
             </LinearLayout>
-              
 
-        
+
+	<LinearLayout
+		android:id="@+id/celdaMedidor"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:orientation="horizontal" >
+
+		<TextView
+			android:id="@+id/tv_tituloMedidor"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:ellipsize="marquee"
+			android:focusableInTouchMode="true"
+			android:lines="1"
+			android:marqueeRepeatLimit="marquee_forever"
+			android:scrollHorizontally="true"
+			android:text="M:"
+			android:textAppearance="?android:attr/textAppearanceLarge"
+			android:textColor="@color/white"
+			android:textSize="43sp"
+			android:typeface="normal" />
+
         <TextView
             android:id="@+id/tv_caseta"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="marquee"
+            android:ellipsize="start"
             android:focusableInTouchMode="true"
             android:lines="1"
+			android:maxLines="1"
+			android:singleLine="true"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
-            android:text="M:0000000000"
+			android:gravity="right"
+            android:text="0000000000"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/white"
             android:textSize="43sp"
             android:typeface="normal" />
+	</LinearLayout>
 
         <!-- quite el android:focusable="true" por si hay algun problema -->
 		<TextView

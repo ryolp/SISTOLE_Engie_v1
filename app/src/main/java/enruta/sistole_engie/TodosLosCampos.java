@@ -57,7 +57,7 @@ public class TodosLosCampos {
         db.insert(is_tabla, null, cv_params);
     }
 
-	public long strToBD(SQLiteDatabase db, String datos, int secuenciaReal) {
+	public long strToBD(SQLiteDatabase db, String datos, int secuenciaReal) throws Exception {
 		ContentValues cv_params = new ContentValues(this.cv_params);
 		Enumeration<Campo> e;
 		String[] camposStr = datos.split("\\|", -1);
@@ -80,7 +80,7 @@ public class TodosLosCampos {
 
 		numCampos = Utils.convToInt(camposStr[1]);
 
-		if (numCampos < 24)  // Si la 2a columna viene una cantidad de campos menor a la esperada, entonces la estructura del dato no es correcta.
+		if (numCampos < 33)  // Si la 2a columna viene una cantidad de campos menor a la esperada, entonces la estructura del dato no es correcta.
 			return 0;
 
 		try {
@@ -106,15 +106,14 @@ public class TodosLosCampos {
 					cv_params.put(nombreCampo, valor);
 				}
 				else
-					throw new Exception("Campo incorrecto");
+					throw new Exception("Campo incorrecto '" + campo.getNombre() +"' indice = " + numColumna);
 				i++;
 			}
 			cv_params.put("secuenciaReal", secuenciaReal);
-			db.insert(is_tabla, null, cv_params);
+			db.insertOrThrow(is_tabla, null, cv_params);
+            return idArchivo;
 		} catch (Exception exp) {
-			throw exp;
-		} finally {
-			return idArchivo;
+			throw new Exception(exp);
 		}
 	}
 

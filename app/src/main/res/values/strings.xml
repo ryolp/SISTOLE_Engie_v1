@@ -305,4 +305,8 @@
     <string name="str_no_hay_conexion_internet_2">No hay conexión a internet. Intente nuevamente. (2)</string>
     <string name="str_no_hay_conexion_internet_3">No hay conexión a internet. Intente nuevamente. (3)</string>
     <string name="str_nivel_bateria">Nivel de batería: </string>
+    <string name="str_ejemplo">Ejemplo</string>
+    <string name="str_alerta">Alerta</string>
+    <string name="str_telefono_enruta">+52&#8211;81&#8211;8298&#8211;9980</string>
+    <string name="str_mostrar_ubicacion_gps">Ubicación medidor (GPS)</string>
 </resources>

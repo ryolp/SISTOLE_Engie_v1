@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import enruta.sistole_engie.R;
+import enruta.sistole_engie.entities.InfoFotoEntity;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -166,7 +167,7 @@ public class TomaDeLecturasComapaTampico extends TomaDeLecturasGenerica {
 		globales.defaultRuta="03";
 		globales.defaultItinerario="4480";
 //		globales.defaultServidorGPRS="http://horus.sistoleweb.com";
-		globales.defaultServidorGPRS="https://engie.sistoleweb.com";
+		globales.defaultServidorGPRS= BuildConfig.BASE_URL;
 //		globales.defaultServidorGPRS="http://www.espinosacarlos.com";
 		globales.defaultServidorWIFI="http://10.240.225.11/1120";
 		globales.defaultServidorDeActualizacion="";
@@ -353,6 +354,44 @@ public class TomaDeLecturasComapaTampico extends TomaDeLecturasGenerica {
     	ls_nombre+=Main.obtieneFecha("his");
     	ls_nombre+=".JPG";
     	return ls_nombre;
+	}
+
+	/*
+    	Obtiene el nombre de la foto que se utilizará para guardarla
+    	RL, 2023-01-02, Se agrega porque en la clase padre se define como un método abstracto que tiene que ser implementado.
+	*/
+
+	public InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia ){
+		String ls_nombre="", ls_unicom;
+		Cursor c;
+		InfoFotoEntity infoFoto = new InfoFotoEntity();
+
+		/**
+		 * Este es el fotmato del nombre de la foto
+		 *
+		 * NumMedidor a 10 posiciones,
+		 * fecha	  a YYYYMMDD
+		 * hora		  a HHMMSS
+		 */
+
+		ls_nombre = Main.rellenaString(globales.tll.getLecturaActual().sinUso3.trim(), "0", globales.tlc.getLongCampo("sinUso3"), true) + "-";
+		ls_nombre += Main.rellenaString(globales.tll.getLecturaActual().is_serieMedidor, "0", globales.tlc.getLongCampo("serieMedidor"), true) + "-";
+//    	if (ls_anomalia.equals("")){
+//    		if (!globales.is_lectura.equals("")){
+//    			ls_nombre =Main.rellenaString(globales.is_lectura, "0", globales.tlc.getLongCampo("lectura"), true) + "-";
+//    		}
+//
+//    	}
+//    	else{
+//    		ls_nombre =Main.rellenaString(ls_anomalia, "0", globales.tlc.getLongCampo("anomalia"), true) + "-";
+//    	}
+		ls_nombre+=Main.obtieneFecha("ymd");
+		ls_nombre+=Main.obtieneFecha("his");
+		ls_nombre+=".JPG";
+
+		infoFoto.nombreFoto = ls_nombre;
+
+		return infoFoto;
 	}
 
 // CE, REVISAR
@@ -1019,7 +1058,7 @@ public class TomaDeLecturasComapaTampico extends TomaDeLecturasGenerica {
 		return new int[0];
 	}
 	
-	public String getNombreArchvio(int tipo){
+	public String getNombreArchvio(int tipo) throws  Exception {
 		
 		String ls_archivo="";
 		TransmitionObject to= new TransmitionObject();

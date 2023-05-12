@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import enruta.sistole_engie.DBHelper;
+import enruta.sistole_engie.DialogoMensaje;
 import enruta.sistole_engie.Globales;
 import enruta.sistole_engie.entities.SesionEntity;
 
@@ -15,6 +16,7 @@ public abstract class BaseActivity extends Activity {
     protected DBHelper dbHelper;
     protected SQLiteDatabase db;
     protected Globales globales  = null;
+    private DialogoMensaje mDialogoMsg = null;
 
     protected Date getDateTime() {
         Calendar calendar = Calendar.getInstance();
@@ -56,6 +58,23 @@ public abstract class BaseActivity extends Activity {
         db.close();
         dbHelper.close();
 
+    }
+
+        /* -------------------------------------------------------------------------------------------
+    Muestra el diálogo o ventana para mostrar mensajes.
+    ------------------------------------------------------------------------------------------- */
+
+    protected void mostrarMensaje(String titulo, String mensaje, String detalleError, DialogoMensaje.Resultado resultado) {
+        if (mDialogoMsg == null) {
+            mDialogoMsg = new DialogoMensaje(this);
+        }
+
+        mDialogoMsg.setOnResultado(resultado);
+        mDialogoMsg.mostrarMensaje(titulo, mensaje, detalleError);
+    }
+
+    protected void mostrarMensaje(String titulo, String mensaje) {
+        mostrarMensaje(titulo, mensaje, "", null);
     }
 
 }

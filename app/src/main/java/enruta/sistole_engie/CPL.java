@@ -2,12 +2,9 @@ package enruta.sistole_engie;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -32,15 +29,10 @@ import android.graphics.drawable.ColorDrawable;
 import java.util.Calendar;
 import java.util.Date;
 
-import enruta.sistole_engie.entities.OperacionRequest;
-import enruta.sistole_engie.entities.OperacionResponse;
+import enruta.sistole_engie.clases.AutenticadorMgr;
 import enruta.sistole_engie.entities.LoginRequestEntity;
 import enruta.sistole_engie.entities.LoginResponseEntity;
 import enruta.sistole_engie.entities.SesionEntity;
-import enruta.sistole_engie.services.WebApiManager;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class CPL extends Activity {
 
@@ -84,8 +76,9 @@ public class CPL extends Activity {
     private EditText txtCodigoSMS;
     private Button btnAutenticar;
     private Button btnValidarSMS;
-    private int intentosAutenticacion = 0;
-    private int intentosCodigoSMS = 0;
+    private int mIntentosAutenticacion = 0;
+    private int mIntentosCodigoSMS = 0;
+    private boolean mRegresarPantallaInicial = false;
 
     // RL, 2022-09-13, Se agrega referencia al logo de Enruta
     private ImageView iv_nosotros;
@@ -105,6 +98,10 @@ public class CPL extends Activity {
     private Button btnAdministrador;
     private Button btnLecturista;
 
+    // RL, 2022-12-31, Diálogo para mostrar el detalle de un error.
+
+    private DialogoMensaje mDialogoMsg = null;
+    private AutenticadorMgr mAutenticadorMgr = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,7 +124,7 @@ public class CPL extends Activity {
         }
 
         estableceVariablesDePaises();
-        validarPermisos();
+        //validarPermisos();
     }
 
 //    protected void onStart() {
@@ -148,7 +145,7 @@ public class CPL extends Activity {
         btnAdministrador = (Button) findViewById(R.id.b_admon);
         btnLecturista = (Button) findViewById(R.id.b_lecturista);
 
-        if (btnAdministrador != null)
+        if (btnAdministrador != null) {
             btnAdministrador.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -156,13 +153,30 @@ public class CPL extends Activity {
                 }
             });
 
-        if (btnLecturista != null)
+            btnAdministrador.setEnabled(true);
+        }
+
+        if (btnLecturista != null) {
             btnLecturista.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     entrarLecturista(view);
                 }
             });
+
+            btnLecturista.setEnabled(true);
+        }
+
+        if (lblMensaje != null) {
+            lblMensaje.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
+            lblMensaje.setText("");
+            lblMensaje.setVisibility(View.GONE);
+        }
     }
 
         /*
@@ -233,7 +247,26 @@ public class CPL extends Activity {
 
         if (!tienePermisos) {
             showMessageLong("Faltan permisos");
-            lblMensaje.setText("Faltan permisos");
+            if (lblMensaje != null) {
+                lblMensaje.setText("Faltan permisos");
+                lblMensaje.setVisibility(View.VISIBLE);
+            }
+            if (btnAdministrador != null)
+                btnAdministrador.setEnabled(false);
+
+            if (btnLecturista != null)
+                btnLecturista.setEnabled(false);
+        } else {
+            if (lblMensaje != null) {
+                lblMensaje.setText("");
+                lblMensaje.setVisibility(View.GONE);
+            }
+
+            if (btnAdministrador != null)
+                btnAdministrador.setEnabled(true);
+
+            if (btnLecturista != null)
+                btnLecturista.setEnabled(true);
         }
     }
 
@@ -289,54 +322,75 @@ public class CPL extends Activity {
     }
 
     public void entrarAdministrador2(View v, boolean bForzarAdministrador) {
+        String secuencia = "";
         ii_perfil = ADMINISTRADOR;
-
-        setContentView(R.layout.p_login);
         ii_pantallaActual = LOGIN;
-        getObjetosLogin();
-        et_contrasena.setFilters(new InputFilter[]{new InputFilter.LengthFilter(globales.longCampoContrasena)});
-        tv_msj_login.setText(R.string.str_login_msj_admon);
+
+        secuencia = getSecuenciaSuperUsuario();
 
         if (!esSesionActiva()) {
-            if (globales.tipoDeValidacion == globales.CON_SMS && !bForzarAdministrador)
-                habilitarControlesAutenticacionSMS();
-            else {
-                tv_usuario.setVisibility(View.VISIBLE);
-                et_usuario.setVisibility(View.GONE);
+            if (!secuencia.equals("A")) {
+                setContentView(R.layout.p_login);
+                getObjetosLogin();
 
-                et_contrasena.setVisibility(View.VISIBLE);
-                tv_contrasena.setVisibility(View.GONE);
-
-                deshabilitarControlesAutenticacionSMS();
-
-                et_contrasena.requestFocus();
+                et_contrasena.setFilters(new InputFilter[]{new InputFilter.LengthFilter(globales.longCampoContrasena)});
+                tv_msj_login.setText(R.string.str_login_msj_admon);
             }
 
+            if (globales.tipoDeValidacion == globales.CON_SMS && !bForzarAdministrador) {
+                habilitarControlesAutenticacionSMS();
+                esSuperUsuario = false;
+            }
+            else {
+                if (secuencia.equals("")){
+                    tv_usuario.setVisibility(View.GONE);
+                    et_usuario.setVisibility(View.GONE);
 
-            globales.secuenciaSuperUsuario = "A";
+                    et_contrasena.setVisibility(View.VISIBLE);
+                    tv_contrasena.setVisibility(View.VISIBLE);
+
+                    deshabilitarControlesAutenticacionSMS();
+
+                    et_contrasena.setFocusable(true);
+                    et_contrasena.requestFocus();
+
+                    globales.secuenciaSuperUsuario = "A";
+                    esSuperUsuario = false;
+                }
+                else if (esSuperUsuario() && secuencia.equals("A"))
+                {
+                    globales.secuenciaSuperUsuario = "";
+                    esSuperUsuario = true;
+                    irActivityMain();
+                    return;
+                }
+            }
+
             mostrarTeclado();
 
-            intentosAutenticacion = 0;
+            mIntentosAutenticacion = 0;
 
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-        } else
+        } else {
+            globales.secuenciaSuperUsuario = "";
             irActivityMain();
+        }
     }
 
     public void entrarLecturista(View v) {
-        ii_perfil = LECTURISTA;
-        ii_pantallaActual = LOGIN;
-        setContentView(R.layout.p_login);
-        getObjetosLogin();
-        globales.secuenciaSuperUsuario += "C";
-
-        et_usuario.setFilters(new InputFilter[]{new InputFilter.LengthFilter(globales.longCampoUsuario)});
-        et_contrasena.setFilters(new InputFilter[]{new InputFilter.LengthFilter(globales.longCampoContrasena)});
-        et_usuario.setInputType(globales.tipoDeEntradaUsuarioLogin);
-
         //Hay que adaptar según el tipo de validacion
+        ii_pantallaActual = LOGIN;
+        ii_perfil = LECTURISTA;
 
         if (!esSesionActiva()) {
+            setContentView(R.layout.p_login);
+            getObjetosLogin();
+            globales.secuenciaSuperUsuario = "";
+
+            et_usuario.setFilters(new InputFilter[]{new InputFilter.LengthFilter(globales.longCampoUsuario)});
+            et_contrasena.setFilters(new InputFilter[]{new InputFilter.LengthFilter(globales.longCampoContrasena)});
+            et_usuario.setInputType(globales.tipoDeEntradaUsuarioLogin);
+
             deshabilitarControlesAutenticacionSMS();
             switch (globales.tipoDeValidacion) {
 
@@ -389,7 +443,7 @@ public class CPL extends Activity {
 
             mostrarTeclado();
 
-            intentosAutenticacion = 0;
+            mIntentosAutenticacion = 0;
 
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         } else
@@ -457,7 +511,7 @@ public class CPL extends Activity {
             switch (ii_perfil) {
                 case ADMINISTRADOR:
                     Toast.makeText(this, getString(R.string.msj_cpl_verifique_contrasena), Toast.LENGTH_LONG).show();
-                    globales.secuenciaSuperUsuario += "B";
+                    globales.secuenciaSuperUsuario = "";
                     break;
                 case LECTURISTA:
                     if (globales.tipoDeValidacion == Globales.CONTRASEÑA)
@@ -636,6 +690,7 @@ public class CPL extends Activity {
         ii_pantallaActual = ENTRADA;
         ii_perfil = NINGUNO;
         globales.setUsuario("");
+        globales.secuenciaSuperUsuario = "";
         TextView tv_version = (TextView) findViewById(R.id.tv_version_lbl);
 
         try {
@@ -652,6 +707,7 @@ public class CPL extends Activity {
         globales.subAnomaliaARepetir = "";
 
         globales.tdlg.procesosAlEntrar();
+
         inicializarControles();
         inicializarEventosControles();
     }
@@ -742,14 +798,22 @@ public class CPL extends Activity {
         et_contrasena.setOnEditorActionListener(new OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                String valor;
+                String password;
+                String secuenciaSuperUsuario;
 
-                valor = et_contrasena.getText().toString().trim();
+                password = getPassword();
+                secuenciaSuperUsuario = getSecuenciaSuperUsuario();
 
-                if (valor.equals(""))
-                    showMessageShort("Falta capturar la contraseña");
+                if (!secuenciaSuperUsuario.equals("A"))
+                {
+                    if (password.equals(""))
+                        showMessageShort("Falta capturar la contraseña");
+                    else
+                        autenticar(btnValidarSMS);
+                }
                 else
-                    autenticar(btnValidarSMS);
+                    entrarAdministrador2(btnAutenticar, true);
+
                 return false;
             }
         });
@@ -848,90 +912,130 @@ public class CPL extends Activity {
 //    }
 
     private boolean esSuperUsuario() {
-        String usuario = "";
+        String usuario = getUsuario();
+        String password = getPassword();
+        String secuencia = getSecuenciaSuperUsuario();
 
-        usuario = et_usuario.getText().toString().trim();
+        if (ii_perfil != ADMINISTRADOR)
+            return false;
 
         if (usuario.contains("*9776"))
+            return true;
+        else if (secuencia.equals("A") && password.contains("9776"))
             return true;
         else
             return false;
     }
 
+    private void inicializarAutenticador() {
+        if (mAutenticadorMgr == null) {
+            mAutenticadorMgr = new AutenticadorMgr(this);
+
+            mAutenticadorMgr.setAutenticadorCallback(new AutenticadorMgr.AutenticadorCallback() {
+                @Override
+                public void enExitoAutenticacion(LoginRequestEntity request, LoginResponseEntity resp) {
+                    procesarAutenticacion(resp);
+                }
+
+                @Override
+                public void enFalloAutenticacion(LoginRequestEntity request, LoginResponseEntity resp) {
+                    falloAutenticacion(request, resp);
+                }
+
+                @Override
+                public void enErrorAutenticacion(LoginRequestEntity request, LoginResponseEntity resp) {
+                    errorAutenticacion(request, resp);
+                }
+
+                @Override
+                public void enExitoValidarSMS(LoginRequestEntity request, LoginResponseEntity resp) {
+                    procesarValidacionSMS(resp);
+                }
+
+                @Override
+                public void enFalloValidarSMS(LoginRequestEntity request, LoginResponseEntity resp) {
+                    falloValidacionSMS(request, resp);
+                }
+
+                @Override
+                public void enErrorValidarSMS(LoginRequestEntity request, LoginResponseEntity resp) {
+                    errorValidacionSMS(request, resp);
+                }
+            });
+        }
+    }
+
+    private String getUsuario() {
+        if (et_usuario != null)
+            return et_usuario.getText().toString().trim();
+        else
+            return "";
+    }
+
+    private String getPassword() {
+        if (et_contrasena != null)
+            return et_contrasena.getText().toString().trim();
+        else
+            return "";
+    }
+
+    private String getSecuenciaSuperUsuario() {
+        if (globales == null)
+            return "";
+
+        if (globales.secuenciaSuperUsuario == null)
+            return "";
+
+        return globales.secuenciaSuperUsuario;
+    }
+
     private void autenticar(View view) {
         String usuario = "";
         String password = "";
-        boolean superUsuario = false;
 
         usuario = "";
         password = "";
         try {
-            usuario = et_usuario.getText().toString().trim();
-            password = et_contrasena.getText().toString().trim();
+            usuario = getUsuario();
+            password = getPassword();
 
             if (esSuperUsuario()) {
-                superUsuario = true;
-
+                globales.esSuperUsuario = true;
                 entrarAdministrador2(null, true);
                 return;
             } else if (usuario.equals("") || password.equals("")) {
-                showMessageLong("Falta capturar el usuario y/o contraseña");
+                mostrarMensaje("Alerta", "Falta capturar el usuario o la contraseña", "", null);
                 return;
             }
 
-            boolean finalEsSuperUsuario = superUsuario;
+            globales.esSuperUsuario = false;
+            mRegresarPantallaInicial = false;
 
-            LoginRequestEntity loginRequestEntity = new LoginRequestEntity();
-            loginRequestEntity.Usuario = usuario;
-            loginRequestEntity.Password = password;
-            loginRequestEntity.VersionName = getVersionName();
-            loginRequestEntity.VersionCode = getVersionCode();
+            inicializarAutenticador();
 
-            showMessageLong("Autenticando");
+            showMessageShort("Autenticando");
 
-            WebApiManager.getInstance(this).autenticarEmpleado(loginRequestEntity, new Callback<LoginResponseEntity>() {
-                        @Override
-                        public void onResponse(Call<LoginResponseEntity> call, Response<LoginResponseEntity> response) {
-                            String valor;
-                            LoginResponseEntity loginResponseEntity;
-
-                            if (response.isSuccessful())
-                                procesarAutenticacion(response.body(), finalEsSuperUsuario);
-                            else
-                                showMessageLong("No hay conexión a internet. Intente nuevamente (1)");
-                        }
-
-                        @Override
-                        public void onFailure(Call<LoginResponseEntity> call, Throwable t) {
-                            showMessageLong("No hay conexión a internet. Intente nuevamente. (2)");
-                            Log.d("CPL", "No hay conexión a internet. Intente nuevamente. (2):" + t.getMessage());
-
-                            if (finalEsSuperUsuario)
-                                entrarAdministrador2(null, true);
-                        }
-                    }
-            );
-        } catch (Exception ex) {
-            boolean finalEsSuperUsuario = superUsuario;
-
-            showMessageLong("No hay conexión a internet. Intente nuevamente. (3)");
-            Log.d("CPL", "No hay conexión a internet. Intente nuevamente. (3):" + ex.getMessage());
-
-            if (finalEsSuperUsuario)
-                entrarAdministrador2(null, true);
-
+            if (mAutenticadorMgr != null)
+                mAutenticadorMgr.autenticar(usuario, password);
+            else
+                errorAutenticacion("Error inesperado");
+        } catch (Throwable t) {
+            mostrarMensaje("Alerta", "No hay conexión a internet. Intente nuevamente. (3)", t.getMessage(), null);
+            Log.d("CPL", "No hay conexión a internet. Intente nuevamente. (3):" + t.getMessage());
         }
     }
 
-    private void procesarAutenticacion(LoginResponseEntity loginResponseEntity, boolean esSuperUsuario) {
-        intentosCodigoSMS = 0;
-
-        if (loginResponseEntity.Error) {
-            showMessageLong("No hay conexión a internet. Intente nuevamente. (3):" + loginResponseEntity.Mensaje);
-            if (esSuperUsuario)
-                entrarAdministrador2(null, true);
-            return;
+    private void mostrarMensaje(String titulo, String mensaje, String detalleError, DialogoMensaje.Resultado resultado) {
+        if (mDialogoMsg == null) {
+            mDialogoMsg = new DialogoMensaje(this);
         }
+
+        mDialogoMsg.setOnResultado(resultado);
+        mDialogoMsg.mostrarMensaje(titulo, mensaje, detalleError);
+    }
+
+    private void procesarAutenticacion(LoginResponseEntity loginResponseEntity) {
+        mIntentosCodigoSMS = 0;
 
         if (loginResponseEntity.Exito) {
             globales.sesionEntity = new SesionEntity(loginResponseEntity);
@@ -948,21 +1052,53 @@ public class CPL extends Activity {
                 et_contrasena.setEnabled(false);
             } else {
                 globales.sesionEntity.Autenticado = true;
+                globales.secuenciaSuperUsuario = "";
                 irActivityMain();
             }
-        } else {
-            if (esSuperUsuario)
-                entrarAdministrador2(null, true);
-
-            globales.sesionEntity = null;
-            intentosAutenticacion++;
-
-            if (intentosAutenticacion >= 5) {
-                showMessageLong("Máximo de intentos");
-                deshabilitarAutenticacion();
-            } else
-                showMessageLong(loginResponseEntity.Mensaje + ". Intento " + intentosAutenticacion + " de 5");
         }
+    }
+
+    private void falloAutenticacion(LoginRequestEntity req, LoginResponseEntity resp) {
+        String msg;
+
+        globales.sesionEntity = null;
+        mIntentosAutenticacion++;
+
+        if (mIntentosAutenticacion >= 5) {
+            msg = resp.Mensaje + ". Máximo de intentos.";
+            globales.sesionEntity = null;
+            deshabilitarAutenticacion();
+            mRegresarPantallaInicial = true;
+        } else
+            msg = resp.Mensaje + ". Intento " + mIntentosAutenticacion + " de 5";
+
+        mostrarMensaje("Alerta", msg, "", new DialogoMensaje.Resultado() {
+            @Override
+            public void Aceptar(boolean EsOk) {
+                if (mRegresarPantallaInicial) {
+                    globales.sesionEntity = null;
+                    cambiarUsuario();
+                }
+            }
+        });
+    }
+
+    private void errorAutenticacion(String mensaje) {
+        mostrarMensaje("Alerta", mensaje, "", new DialogoMensaje.Resultado() {
+            @Override
+            public void Aceptar(boolean EsOk) {
+
+            }
+        });
+    }
+
+    private void errorAutenticacion(LoginRequestEntity req, LoginResponseEntity resp) {
+        mostrarMensaje("Alerta", resp.Mensaje, resp.MensajeError, new DialogoMensaje.Resultado() {
+            @Override
+            public void Aceptar(boolean EsOk) {
+
+            }
+        });
     }
 
     private void validarSMS(View view) {
@@ -974,48 +1110,66 @@ public class CPL extends Activity {
             codigoSMS = txtCodigoSMS.getText().toString().trim();
 
             if (usuario.equals("") || codigoSMS.equals("")) {
-                showMessageLong("Falta capturar elcódigo SMS");
+                mostrarMensaje("Alerta", "Falta capturar el código SMS", "", null);
                 return;
             }
 
-            LoginRequestEntity loginRequestEntity = new LoginRequestEntity();
+            mRegresarPantallaInicial = false;
+            inicializarAutenticador();
 
-            loginRequestEntity.Usuario = usuario;
-            loginRequestEntity.CodigoSMS = codigoSMS;
-            loginRequestEntity.VersionName = getVersionName();
-            loginRequestEntity.VersionCode = getVersionCode();
-
-            showMessageLong("Validando código SMS");
-            WebApiManager.getInstance(this).validarEmpleadoSMS(loginRequestEntity, new Callback<LoginResponseEntity>() {
-                        @Override
-                        public void onResponse(Call<LoginResponseEntity> call, Response<LoginResponseEntity> response) {
-                            String valor;
-                            LoginResponseEntity loginResponseEntity;
-
-                            if (response.isSuccessful())
-                                procesarValidacionSMS(response.body());
-                            else {
-                                globales.sesionEntity = null;
-                                showMessageLong("No hay conexión a internet. Intente nuevamente. (1).");
-                                Log.d("CPL", "No hay conexión a internet. Intente nuevamente. (1).");
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<LoginResponseEntity> call, Throwable t) {
-                            globales.sesionEntity = null;
-                            showMessageLong("No hay conexión a internet. Intente nuevamente. (2).");
-                            Log.d("CPL", "No hay conexión a internet. Intente nuevamente. (2) :" + t.getMessage());
-                        }
-                    }
-            );
+            if (mAutenticadorMgr != null)
+                mAutenticadorMgr.validarSMS(usuario, codigoSMS);
+            else
+                errorValidacionSMS("Error inesperado");
         } catch (Exception ex) {
             globales.sesionEntity = null;
-            showMessageLong("No hay conexión a internet. Intente nuevamente. (3).");
+            errorValidacionSMS("No hay conexión a internet. Intente nuevamente. (3).");
             Log.d("CPL", "No hay conexión a internet. Intente nuevamente. (3) : " + ex.getMessage());
         }
     }
 
+    private void falloValidacionSMS(LoginRequestEntity req, LoginResponseEntity resp) {
+        String msg;
+
+        mIntentosCodigoSMS++;
+
+        if (mIntentosCodigoSMS >= 5) {
+            msg = "Se alcanzó el máximo de intentos de valicación del código SMS";
+            deshabilitarAutenticacionSMS();
+            globales.sesionEntity = null;
+            mRegresarPantallaInicial = true;
+        } else {
+            msg = resp.Mensaje + ". Intento " + mIntentosCodigoSMS + " de 5";
+        }
+
+        mostrarMensaje("Alerta", msg, "", new DialogoMensaje.Resultado() {
+            @Override
+            public void Aceptar(boolean EsOk) {
+                if (mRegresarPantallaInicial) {
+                    globales.sesionEntity = null;
+                    cambiarUsuario();
+                }
+            }
+        });
+    }
+
+    private void errorValidacionSMS(String mensaje) {
+        mostrarMensaje("Alerta", mensaje, "", new DialogoMensaje.Resultado() {
+            @Override
+            public void Aceptar(boolean EsOk) {
+
+            }
+        });
+    }
+
+    private void errorValidacionSMS(LoginRequestEntity req, LoginResponseEntity resp) {
+        mostrarMensaje("Alerta", resp.Mensaje, resp.MensajeError, new DialogoMensaje.Resultado() {
+            @Override
+            public void Aceptar(boolean EsOk) {
+
+            }
+        });
+    }
 
     private void procesarValidacionSMS(LoginResponseEntity loginResponseEntity) {
         if (loginResponseEntity.Error) {
@@ -1027,16 +1181,8 @@ public class CPL extends Activity {
         if (loginResponseEntity.Exito) {
             globales.sesionEntity = new SesionEntity(loginResponseEntity);
             globales.sesionEntity.Autenticado = true;
+            globales.secuenciaSuperUsuario = "";
             irActivityMain();
-        } else {
-            intentosCodigoSMS++;
-
-            if (intentosCodigoSMS >= 5) {
-                showMessageLong("Se alcanzó el máximo de intentos");
-                deshabilitarAutenticacionSMS();
-                globales.sesionEntity = null;
-            } else
-                showMessageLong("Código SMS incorrecto. Intento " + intentosCodigoSMS + " de 5");
         }
     }
 
@@ -1068,20 +1214,31 @@ public class CPL extends Activity {
     }
 
     private void irActivityMain() {
+        boolean esAdministrador = false;
+        boolean esLecturista = false;
+
         deshabilitarAutenticacion();
 
-        esSuperUsuario = globales.sesionEntity.EsSuperUsuario;
-        is_nombre_Lect = globales.sesionEntity.Usuario;
+        if (globales != null) {
+            if (globales.sesionEntity != null) {
+                esSuperUsuario = globales.sesionEntity.EsSuperUsuario;
+                esAdministrador = globales.sesionEntity.EsAdministrador;
+                esLecturista = globales.sesionEntity.EsLecturista;
+                is_nombre_Lect = globales.sesionEntity.Usuario;
+            }
+        }
+        else
+            esAdministrador = esSuperUsuario;
 
         switch (ii_perfil) {
             case ADMINISTRADOR:
-                if (!globales.sesionEntity.EsAdministrador && !globales.sesionEntity.EsSuperUsuario) {
+                if (!esAdministrador && !esSuperUsuario) {
                     showMessageLong("No tiene permisos de administrador");
                     return;
                 }
                 break;
             case LECTURISTA:
-                if (!globales.sesionEntity.EsAdministrador && !globales.sesionEntity.EsSuperUsuario && !globales.sesionEntity.EsLecturista) {
+                if (!esAdministrador && !esSuperUsuario && !esLecturista) {
                     showMessageLong("No tiene permisos de administrador o lecturista");
                     return;
                 }
@@ -1122,6 +1279,7 @@ public class CPL extends Activity {
 
         inicializarControles();
         inicializarEventosControles();
+        validarPermisos();
 
         if (globales == null)
             return;
@@ -1143,9 +1301,7 @@ public class CPL extends Activity {
             case LOGIN:
                 cambiarUsuario();
                 break;
-
         }
-
     }
 
 

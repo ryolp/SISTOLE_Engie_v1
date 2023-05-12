@@ -6,4 +6,6 @@ public class ArchivosLectResponse {
     public String Mensaje="";
     public String  MensajeError ="";
     public long idArchivo =0;
+    public String NombreArchivo="";
+    public String Contenido="";
 }

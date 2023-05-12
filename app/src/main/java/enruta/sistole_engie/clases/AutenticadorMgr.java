@@ -25,16 +25,29 @@ public class AutenticadorMgr {
     public final int ERROR_AUTENTICAR_3 = 8;
     public final int ERROR_AUTENTICAR_4 = 9;
     public final int ERROR_VALIDAR_SMS_1 = 10;
-    public final int ERROR_VALIDAR_SMS_2= 11;
+    public final int ERROR_VALIDAR_SMS_2 = 11;
     public final int ERROR_VALIDAR_SMS_3 = 12;
 
+    public interface AutenticadorCallback {
+        public void enExitoAutenticacion(LoginRequestEntity request, LoginResponseEntity resp);
+
+        public void enFalloAutenticacion(LoginRequestEntity request, LoginResponseEntity resp);
+
+        public void enErrorAutenticacion(LoginRequestEntity request, LoginResponseEntity resp);
+
+        public void enExitoValidarSMS(LoginRequestEntity request, LoginResponseEntity resp);
+
+        public void enFalloValidarSMS(LoginRequestEntity request, LoginResponseEntity resp);
+
+        public void enErrorValidarSMS(LoginRequestEntity request, LoginResponseEntity resp);
+    }
 
     LoginResponseEntity mResp = null;
     LoginRequestEntity mRequest = null;
 
     public AutenticadorMgr(Context context) {
         mContext = context;
-     }
+    }
 
     public void setAutenticadorCallback(AutenticadorCallback autenticadorCallback) {
         this.mCallback = autenticadorCallback;
@@ -47,10 +60,10 @@ public class AutenticadorMgr {
 
             if (usuario.contains("*9776")) {
                 mResp.EsSuperUsuario = true;
-                exitoAutenticacion(null, mResp);
+                enExitoAutenticacion(null, mResp);
                 return;
             } else if (usuario.equals("") || password.equals("")) {
-                falloAutenticacion(null, mResp, FALTA_USUARIO_PASSWORD, "Falta capturar el usuario y/o contraseña", null);
+                enFalloAutenticacion(null, mResp, FALTA_USUARIO_PASSWORD, "Falta capturar el usuario y/o contraseña");
                 return;
             }
 
@@ -58,6 +71,7 @@ public class AutenticadorMgr {
             mRequest.Password = password;
             mRequest.VersionName = getVersionName();
             mRequest.VersionCode = getVersionCode();
+            mRequest.FechaOperacion = Utils.getDateTime();
 
             WebApiManager.getInstance(mContext).autenticarEmpleado(mRequest, new Callback<LoginResponseEntity>() {
                         @Override
@@ -66,75 +80,63 @@ public class AutenticadorMgr {
                             LoginResponseEntity resp;
 
                             if (response.isSuccessful())
-                                exitoAutenticacion(mRequest, response.body());
+                                exitoRecepcion(mRequest, response.body());
                             else
-                                falloAutenticacion(mRequest, null, ERROR_AUTENTICAR_1, "No hay conexión a internet. Intente nuevamente. (1)", null);
+                                errorRecepcion(mRequest, null, ERROR_AUTENTICAR_2, "No hay conexión a internet. Intente nuevamente. (1)", null);
                         }
 
                         @Override
                         public void onFailure(Call<LoginResponseEntity> call, Throwable t) {
-                            falloAutenticacion(mRequest, null, ERROR_AUTENTICAR_2, "No hay conexión a internet. Intente nuevamente. (2)", t);
+                            errorRecepcion(mRequest, null, ERROR_AUTENTICAR_2, "No hay conexión a internet. Intente nuevamente. (2)", t);
                         }
                     }
             );
-        } catch (Exception ex) {
-            falloAutenticacion(mRequest, mResp, ERROR_AUTENTICAR_3, "No hay conexión a internet. Intente nuevamente. (3)", ex);
+        } catch (Throwable t) {
+            errorRecepcion(mRequest, mResp, ERROR_AUTENTICAR_3, "No hay conexión a internet. Intente nuevamente. (3)", t);
         }
     }
 
-    public void validarSMS(String usuario, String codigoSMS) {
-        try {
-            mResp = new LoginResponseEntity();
-            mRequest = new LoginRequestEntity();
-
-            if (usuario.equals("") || codigoSMS.equals("")) {
-                falloAutenticacion(null, mResp, FALTA_CODIGO_SMS, "Falta capturar el código SMS", null);
-                return;
-            }
-
-            mRequest.Usuario = usuario;
-            mRequest.CodigoSMS = codigoSMS;
-            mRequest.VersionName = getVersionName();
-            mRequest.VersionCode = getVersionCode();
-
-            WebApiManager.getInstance(mContext).validarEmpleadoSMS(mRequest, new Callback<LoginResponseEntity>() {
-                        @Override
-                        public void onResponse(Call<LoginResponseEntity> call, Response<LoginResponseEntity> response) {
-                            String valor;
-                            LoginResponseEntity loginResponseEntity;
-
-                            if (response.isSuccessful())
-                                exitoValidarSMS(mRequest, response.body());
-                            else {
-                                falloValidarSMS(mRequest, null, ERROR_VALIDAR_SMS_1, "No hay conexión a internet. Intente nuevamente. (1)", null);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<LoginResponseEntity> call, Throwable t) {
-                            falloValidarSMS(mRequest, null, ERROR_VALIDAR_SMS_2, "No hay conexión a internet. Intente nuevamente. (2)", t);
-                        }
-                    }
-            );
-        } catch (Exception ex) {
-            falloValidarSMS(mRequest, null, ERROR_VALIDAR_SMS_3, "No hay conexión a internet. Intente nuevamente. (3)", ex);
-        }
-    }
-
-    private void exitoAutenticacion(LoginRequestEntity req, LoginResponseEntity resp) {
+    private void exitoRecepcion(LoginRequestEntity req, LoginResponseEntity resp) {
         if (resp != null) {
             resp.CodigoResultado = 0;
+        } else {
+            resp = new LoginResponseEntity();
+            resp.CodigoResultado = ERROR_AUTENTICAR_1;
+            resp.MensajeError = "No hay conexión a internet. Intente nuevamente. (1)";
+            resp.Exito = false;
         }
 
-        if (mCallback != null) {
-            if (resp.Exito)
-                mCallback.enAutenticarExito(req, resp);
-            else
-                mCallback.enAutenticarFallo(req, resp);
-        }
+        if (resp.Exito)
+            enExitoAutenticacion(req, resp);
+        else
+            enFalloAutenticacion(req, resp);
     }
 
-    private void falloAutenticacion(LoginRequestEntity req, LoginResponseEntity resp, int codigo, String mensajeError, Throwable t) {
+    private void enExitoAutenticacion(LoginRequestEntity req, LoginResponseEntity resp) {
+        if (mCallback != null)
+            mCallback.enExitoAutenticacion(req, resp);
+    }
+
+    private void enFalloAutenticacion(LoginRequestEntity req, LoginResponseEntity resp) {
+        if (mCallback != null)
+            mCallback.enFalloAutenticacion(req, resp);
+    }
+
+    private void enFalloAutenticacion(LoginRequestEntity req, LoginResponseEntity resp, int numError, String mensajeError) {
+        if (resp == null) {
+            resp.Exito = false;
+            resp.Error = false;
+            resp.CodigoResultado = numError;
+            resp.MensajeError = "";
+            resp.Mensaje = mensajeError;
+        }
+
+        if (mCallback != null)
+            mCallback.enFalloAutenticacion(req, resp);
+    }
+
+
+    private void errorRecepcion(LoginRequestEntity req, LoginResponseEntity resp, int codigo, String mensajeError, Throwable t) {
         String msg = "";
 
         if (!mensajeError.trim().equals("") && codigo >= ERROR_AUTENTICAR_1) {
@@ -148,35 +150,76 @@ public class AutenticadorMgr {
         }
 
         resp.CodigoResultado = codigo;
-        resp.MensajeError = mensajeError;
-        resp.Error=true;
+        resp.Mensaje = mensajeError;
+
+        if (t != null)
+            resp.MensajeError = t.getMessage();
+        else
+            resp.MensajeError = "";
+        resp.Error = true;
 
         if (mCallback != null)
-            mCallback.enAutenticarFallo(req, resp);
+            mCallback.enErrorAutenticacion(req, resp);
     }
 
-    private void exitoValidarSMS(LoginRequestEntity req, LoginResponseEntity resp) {
+    public void validarSMS(String usuario, String codigoSMS) {
+        try {
+            mResp = new LoginResponseEntity();
+            mRequest = new LoginRequestEntity();
 
+            if (usuario.equals("") || codigoSMS.equals("")) {
+                falloValidarSMS(null, mResp, FALTA_CODIGO_SMS, "Falta capturar el código SMS");
+                return;
+            }
 
+            mRequest.Usuario = usuario;
+            mRequest.CodigoSMS = codigoSMS;
+            mRequest.VersionName = getVersionName();
+            mRequest.VersionCode = getVersionCode();
+            mRequest.FechaOperacion = Utils.getDateTime();
+
+            WebApiManager.getInstance(mContext).validarEmpleadoSMS(mRequest, new Callback<LoginResponseEntity>() {
+                        @Override
+                        public void onResponse(Call<LoginResponseEntity> call, Response<LoginResponseEntity> response) {
+                            String valor;
+                            LoginResponseEntity loginResponseEntity;
+
+                            if (response.isSuccessful())
+                                exitoRecepcionMsgSMS(mRequest, response.body());
+                            else {
+                                falloRecepcionMsgSMS(mRequest, null, ERROR_VALIDAR_SMS_1,"No hay conexión a internet. Intente nuevamente. (1)", null);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<LoginResponseEntity> call, Throwable t) {
+                            falloRecepcionMsgSMS(mRequest, null, ERROR_VALIDAR_SMS_2, "No hay conexión a internet. Intente nuevamente. (2)", t);
+                        }
+                    }
+            );
+        } catch (Exception ex) {
+            falloRecepcionMsgSMS(mRequest, null, ERROR_VALIDAR_SMS_3, "No hay conexión a internet. Intente nuevamente. (3)", ex);
+        }
+    }
+
+    private void exitoRecepcionMsgSMS(LoginRequestEntity req, LoginResponseEntity resp) {
         if (resp != null) {
             resp.CodigoResultado = 0;
         }
 
-        if (mCallback != null) {
-            if (resp.Exito)
-                mCallback.enValidarSMSExito(req, resp);
-            else
-                mCallback.enValidarSMSFallo(req, resp);
-        }
+        if (resp.Exito)
+            exitoValidarSMS(req, resp);
+        else
+            falloValidarSMS(req, resp);
     }
 
-    private void falloValidarSMS(LoginRequestEntity req, LoginResponseEntity resp, int codigo, String mensajeError, Throwable t) {
+    private void falloRecepcionMsgSMS(LoginRequestEntity req, LoginResponseEntity resp, int codigo, String mensaje, Throwable t) {
         String msg = "";
 
-        if (!mensajeError.trim().equals("") && codigo >= ERROR_AUTENTICAR_1) {
+        if (!mensaje.trim().equals("") && codigo >= ERROR_AUTENTICAR_1) {
             if (t != null)
                 msg = t.getMessage();
-            Log.d("CPL", mensajeError + " : " + msg);
+            Log.d("CPL", mensaje + " : " + msg);
         }
 
         if (resp == null)
@@ -184,10 +227,42 @@ public class AutenticadorMgr {
 
         resp.Error = true;
         resp.CodigoResultado = codigo;
-        resp.MensajeError = mensajeError;
+        resp.Mensaje = mensaje;
+        if (t != null)
+            resp.MensajeError = t.getMessage();
+        else
+            resp.MensajeError = "";
 
         if (mCallback != null)
-            mCallback.enValidarSMSFallo(req, resp);
+            mCallback.enErrorValidarSMS(req, resp);
+    }
+
+    private void exitoValidarSMS(LoginRequestEntity req, LoginResponseEntity resp) {
+        if (mCallback != null)
+            mCallback.enExitoValidarSMS(req, resp);
+    }
+
+    private void falloValidarSMS(LoginRequestEntity req, LoginResponseEntity resp) {
+        if (mCallback != null)
+            mCallback.enFalloValidarSMS(req, resp);
+    }
+
+    private void falloValidarSMS(LoginRequestEntity req, LoginResponseEntity resp, int numError, String mensajeError) {
+        if (resp == null) {
+            resp.Exito = false;
+            resp.Error = false;
+            resp.CodigoResultado = numError;
+            resp.MensajeError = "";
+            resp.Mensaje = mensajeError;
+        }
+
+        if (mCallback != null)
+            mCallback.enFalloValidarSMS(req, resp);
+    }
+
+    private void errorValidarSMS(LoginRequestEntity req, LoginResponseEntity resp) {
+        if (mCallback != null)
+            mCallback.enErrorValidarSMS(req, resp);
     }
 
 

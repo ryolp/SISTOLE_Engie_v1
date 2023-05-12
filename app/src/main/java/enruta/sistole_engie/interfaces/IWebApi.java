@@ -55,6 +55,9 @@ public interface IWebApi {
     @POST("api/operaciones/marcarArchivoDescargado")
     Call<ArchivosLectResponse>marcarArchivoDescargado(@Body ArchivosLectRequest request);
 
+    @POST("api/operaciones/descargarArchivo")
+    Call<ArchivosLectResponse>descargarArchivo(@Body ArchivosLectRequest request);
+
     @POST("api/operaciones/marcarArchivoTerminado")
     Call<ArchivosLectResponse>marcarArchivoTerminado(@Body ArchivosLectRequest request);
 

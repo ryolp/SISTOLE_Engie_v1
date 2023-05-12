@@ -7,11 +7,20 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.location.Location;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 
-public class Lectura {
+import enruta.sistole_engie.clases.BateriaMgr;
+import enruta.sistole_engie.services.DbBaseMgr;
+import enruta.sistole_engie.services.DbConfigMgr;
+
+public class Lectura extends DbBaseMgr {
 
     public final static int SIN_FOTO_AL_FINAL = 0;
     public final static int FOTO_AL_FINAL = 1;
@@ -41,11 +50,12 @@ public class Lectura {
     long lecturaAnterior, consAnoAnt, consBimAnt, ilr;
     String poliza, is_ubicacion, is_estimaciones, contadorAlterno;
 
+
     private DBHelper dbHelper;
 
     private SQLiteDatabase db;
 
-    private Context context;
+    private Context mContext;
 
     private int FotoAlFinal;
 
@@ -65,20 +75,27 @@ public class Lectura {
     String nota1;           // RL, 2022-10-03,
     String nota2;           // RL, 2022-10-03,
 
-    String miLatitud;            // CE, 10/10/22, Geolocalizacion del Medidor
-    String miLongitud;           // CE, 10/10/22, Geolocalizacion del Medidor
+    private String mMiLatitud;            // CE, 10/10/22, Geolocalizacion del Medidor
+    private String mMiLongitud;           // CE, 10/10/22, Geolocalizacion del Medidor
     String estimacionesEngie;    // CE, 10/10/22, Numero de Estimaciones
     String tipoDeCliente;        // CE, 10/10/22, Tipo de Cliente
     String tipoDeAcuse;          // CE, 10/10/22, Motivo por el que se pide Acuse
+
+    public String mPorcion;        // RL, 2023-01-02, ID de la porcion
+    public String mRegional;    // RL, 2023-01-02, Nombre de la regional
+    public int mIdUnidadLect;   // RL, 2023-01-02, id de la Unidad
+    private int mIdRegionalLect; // RL, 2023-01-02, id de la Regional
+    private int mIntercambiarSerieMedidor;  // RL, 2023-01-17, Indicar de si se intercambia la serieMedidor por el código de barras del
+    // ... medidor en la pantalla de Toma de Lecturas, Input y Búsqueda de Medidor.
+    private String mCodigoRespuestaEncuesta = "";
 
     private Resources res;
 
     Globales globales;
     boolean requiereGPS = false;
 
-
     Lectura(Context context, int secuencial) throws Throwable {
-        this.context = context;
+        this.mContext = context;
         this.secuencia = secuencial;
         res = context.getResources();
 
@@ -104,118 +121,89 @@ public class Lectura {
         if (c.getCount() > 0) {
             c.moveToFirst();
 
-            try {
-                sinUso1 = c.getString(c
-                        .getColumnIndex("sinUso1"));
-            } catch (Throwable e) {
+            sinUso1 = getString(c, "sinUso1", "");
+            sinUso2 = getString(c, "sinUso2", "");
+            sinUso3 = getString(c, "sinUso3", "");
+            sinUso4 = getString(c, "sinUso4", "");
+            is_toma = getString(c, "toma", "");
+            is_giro = getString(c, "giro", "");
+            selloRetNumero = getString(c, "selloRetNumero", "");
+            ls_codigoObservacion = getString(c, "codigoObservacion", "");
+            is_anomaliaDeInstalacion = getString(c, "anomaliaDeInstalacion", "");
+            is_advertenciasTipoAdicionales = getString(c, "advertenciasTipoAdicionales", "");
+            is_supervisionLectura = getString(c, "supervisionLectura", "");
 
-            }
-
-            try {
-                sinUso2 = c.getString(c
-                        .getColumnIndex("sinUso2"));
-            } catch (Throwable e) {
-
-            }
-
-            try {
-                sinUso3 = c.getString(c
-                        .getColumnIndex("sinUso3"));
-            } catch (Throwable e) {
-
-            }
-
-            try {
-                sinUso4 = c.getString(c
-                        .getColumnIndex("sinUso4"));
-            } catch (Throwable e) {
-
-            }
-
-            is_toma = c.getString(c
-                    .getColumnIndex("toma"));
-
-            is_giro = c.getString(c
-                    .getColumnIndex("giro"));
-
-            selloRetNumero = c.getString(c
-                    .getColumnIndex("selloRetNumero"));
-
-            ls_codigoObservacion = c.getString(c
-                    .getColumnIndex("codigoObservacion"));
-
-            is_anomaliaDeInstalacion = c.getString(c
-                    .getColumnIndex("anomaliaDeInstalacion"));
-
-            is_advertenciasTipoAdicionales = c.getString(c
-                    .getColumnIndex("advertenciasTipoAdicionales"));
-
-            is_supervisionLectura = c.getString(c
-                    .getColumnIndex("supervisionLectura"));
-            is_reclamacionLectura = c.getString(c
-                    .getColumnIndex("reclamacionLectura"));
             //lamacion = c.getString(c.getColumnIndex("reclamacion")).trim();
-            is_sectorLargo = c.getString(c.getColumnIndex("sectorlargo"));
-            is_sectorCorto = c.getString(c.getColumnIndex("sectorCorto"));
-            is_tarifa = c.getString(c.getColumnIndex("tarifa"));
-            is_ilr = c.getString(c.getColumnIndex("ilr"));
-            is_ism = c.getString(c.getColumnIndex("ism"));
-            is_saldoEnMetros = c.getString(c.getColumnIndex("saldoEnMetros"));
-            is_marcaMedidor = c.getString(c.getColumnIndex("marcaMedidor"));
-            is_serieMedidor = c.getString(c.getColumnIndex("serieMedidor")).trim();
-            is_tipoMedidor = c.getString(c.getColumnIndex("tipoMedidor"));
-            is_aviso = c.getString(c.getColumnIndex("aviso"));
-            is_comollegar1 = c.getString(c.getColumnIndex("comoLlegar1"));
-            is_comoLlegar2 = c.getString(c.getColumnIndex("comoLlegar2"));
-            contadorAlterno = c.getString(c.getColumnIndex("rowid"));
-            serieMedidorReal = c.getString(c.getColumnIndex("serieMedidorReal"));
-            secuenciaReal = toInteger(c.getString(c
-                    .getColumnIndex("secuenciaReal")));
 
-            is_cliente = c.getString(c.getColumnIndex("cliente"));
-            is_colonia = c.getString(c.getColumnIndex("colonia"));
-            is_direccion = c.getString(c.getColumnIndex("direccion"));
-            is_lectura = c.getString(c.getColumnIndex("lectura")).trim();
-            String ls_anomalia = c.getString(c.getColumnIndex("anomalia"));
+            is_reclamacionLectura = getString(c, "reclamacionLectura", "");
+            is_sectorLargo = getString(c, "sectorlargo", "");
+            is_sectorCorto = getString(c, "sectorCorto", "");
+            is_tarifa = getString(c, "tarifa", "");
+            is_ilr = getString(c, "ilr", "");
+            is_ism = getString(c, "ism", "");
+
+            is_saldoEnMetros = getString(c, "saldoEnMetros", "");
+            is_marcaMedidor = getString(c, "marcaMedidor", "");
+            is_serieMedidor = getString(c, "serieMedidor", "").trim();
+            is_tipoMedidor = getString(c, "tipoMedidor", "");
+            is_aviso = getString(c, "aviso", "");
+            is_comollegar1 = getString(c, "comoLlegar1", "");
+            is_comoLlegar2 = getString(c, "comoLlegar2", "");
+
+            contadorAlterno = getString(c, "rowid", "");
+            serieMedidorReal = getString(c, "serieMedidorReal", "");
+            secuenciaReal = getInt(c, "secuenciaReal", 0);
+
+            is_cliente = getString(c, "cliente", "");
+            is_colonia = getString(c, "colonia", "");
+
+            is_direccion = getString(c, "direccion", "");
+            is_lectura = getString(c, "lectura", "").trim();
+
+            String ls_anomalia = getString(c, "anomalia", "");
+
             //is_texto = c.getString(c.getColumnIndex("texto"));
-            is_fecha = c.getString(c.getColumnIndex("fecha"));
-            is_hora = c.getString(c.getColumnIndex("hora"));
-            String ls_subAnomalia = c.getString(c.getColumnIndex("subAnomalia"));
-            is_comentarios = c.getString(c.getColumnIndex("comentarios")).trim();
-            is_advertencias = c.getString(c.getColumnIndex("advertencias"));
-            is_consumo = c.getString(c.getColumnIndex("consumo"));
-            is_tipoLectura = c.getString(c.getColumnIndex("tipoLectura"));
-            is_estadoDelSuministroReal = c.getString(c.getColumnIndex("estadoDelSuministroReal"));
+
+            is_fecha = getString(c, "fecha", "");
+            is_hora = getString(c, "hora", "");
+
+            String ls_subAnomalia = getString(c, "subAnomalia", "");
+
+            is_comentarios = getString(c, "comentarios", "").trim();
+            is_advertencias = getString(c, "advertencias", "");
+            is_consumo = getString(c, "consumo", "");
+            is_tipoLectura = getString(c, "tipoLectura", "");
+            is_estadoDelSuministroReal = getString(c, "estadoDelSuministroReal", "");
 
             if (is_comentarios == null) {
                 is_comentarios = "";
             }
 
-            is_escalera = c.getString(c.getColumnIndex("escalera"));
-            is_piso = c.getString(c.getColumnIndex("piso"));
-            is_puerta = c.getString(c.getColumnIndex("puerta"));
-            is_ubicacion = c.getString(c.getColumnIndex("ubicacion"));
-            is_estimaciones = c.getString(c.getColumnIndex("estimaciones")).trim();
-            is_fechaAviso = c.getString(c.getColumnIndex("fechaAviso")).trim();
+            is_escalera = getString(c, "escalera", "");
+            is_piso = getString(c, "piso", "");
+            is_puerta = getString(c, "puerta", "");
+            is_ubicacion = getString(c, "ubicacion", "");
+            is_estimaciones = getString(c, "estimaciones", "").trim();
+            is_fechaAviso = getString(c, "fechaAviso", "").trim();
 
+            nis_rad = getInt(c, "nisRad", 0);
+            poliza = getString(c, "poliza", "");
+            numerodeesferas = getInt(c, "numEsferas", 0);
+            numerodeesferasReal = getString(c, "numEsferasReal", "").trim();
 
-            nis_rad = toInteger(c.getString(c.getColumnIndex("nisRad")));
-            poliza = c.getString(c.getColumnIndex("poliza"));
-            numerodeesferas = toInteger(c.getString(c.getColumnIndex("numEsferas")));
-            numerodeesferasReal = c.getString(c.getColumnIndex("numEsferasReal")).trim();
-            numeroDePortal = c.getString(c.getColumnIndex("numPortal"));
-            numeroDeEdificio = c.getString(c.getColumnIndex("numEdificio"));
-            secuencia = toInteger(c.getString(c
-                    .getColumnIndex("secuencia")));
-            intentos = c.getString(c.getColumnIndex("intentos")).trim();
-            sospechosa = c.getString(c.getColumnIndex("sospechosa")).trim();
+            numeroDePortal = getString(c, "numPortal", "");
+            numeroDeEdificio = getString(c, "numEdificio", "");
 
-            lecturaAnterior = toLong(c.getString(c.getColumnIndex("lecturaAnterior")));
-            consBimAnt = toLong(c.getString(c.getColumnIndex("consBimAnt")));
-            consAnoAnt = toLong(c.getString(c.getColumnIndex("consAnoAnt")));
-            ilr = toLong(c.getString(c.getColumnIndex("ilr")));
+            secuencia = getInt(c, "secuencia", 0);
+            intentos = getString(c, "intentos", "").trim();
+            sospechosa = getString(c, "sospechosa", "").trim();
 
-            baremo = toInteger(c.getString(c.getColumnIndex("baremo")));
+            lecturaAnterior = getLong(c, "lecturaAnterior", 0);
+            consBimAnt = getLong(c, "consBimAnt", 0);
+            consAnoAnt = getLong(c, "consAnoAnt", 0);
+            ilr = getLong(c, "ilr", 0);
+
+            baremo = getInt(c, "baremo", 0);
 
 //			if (secuencia % 2 == 0)
 //				requiereGPS = true;
@@ -224,91 +212,52 @@ public class Lectura {
 
 //			requiereGPS = true;
 
-            requiereGPS = toInteger(c.getString(c.getColumnIndex("indicadorGPS"))) == 1;
+            requiereGPS = getInt(c, "indicadorGPS", 0) == 1;
+
+            ordenDeLectura = getString(c, "ordenDeLectura", "");
+
+            intento1 = getString(c, "intento1", "");
+            intento2 = getString(c, "intento2", "");
+            intento3 = getString(c, "intento3", "");
+            intento4 = getString(c, "intento4", "");
+            intento5 = getString(c, "intento5", "");
+            intento6 = getString(c, "intento6", "");
+            intento7 = getString(c, "intento7", "");
+
+            FotoAlFinal = getInt(c, "fotoAlFinal", 0);
+
+            terminacion = getString(c, "terminacion", "");
+
+            is_latitud = getString(c, "latitud", "");
+            is_longitud = getString(c, "longitud", "");
+
+            ls_mensaje = getString(c, "mensaje", "");
 
 
-            ordenDeLectura = c.getString(c.getColumnIndex("ordenDeLectura"));
+            estadoDelSuministro = getString(c, "estadoDelSuministro", "").trim();
+            dondeEsta = getString(c, "dondeEsta", "");
 
-            intento1 = c.getString(c.getColumnIndex("intento1"));
-            intento2 = c.getString(c.getColumnIndex("intento2"));
-            intento3 = c.getString(c.getColumnIndex("intento3"));
-            intento4 = c.getString(c.getColumnIndex("intento4"));
-            intento5 = c.getString(c.getColumnIndex("intento5"));
-            intento6 = c.getString(c.getColumnIndex("intento6"));
-            intento7 = c.getString(c.getColumnIndex("intento7"));
-
-            FotoAlFinal = c.getInt(c.getColumnIndex("fotoAlFinal"));
-
-            terminacion = c.getString(c.getColumnIndex("terminacion"));
-
-            is_latitud = c.getString(c.getColumnIndex("latitud"));
-            is_longitud = c.getString(c.getColumnIndex("longitud"));
-
-            ls_mensaje = c.getString(c.getColumnIndex("mensaje"));
-
-            estadoDelSuministro = c.getString(c
-                    .getColumnIndex("estadoDelSuministro")).trim();
             //registro = c.getBlob(c.getColumnIndex("registro"));
-            dondeEsta = c.getString(c.getColumnIndex("dondeEsta"));
 
             // Obtener el idArchivo de donde se obtuvieron los datos
 
-            try {
-                idArchivo = c.getLong(c.getColumnIndex("idArchivo"));
-            } catch (Throwable e) {
-                idArchivo = 0;
-            }
-
-            try {
-                codigoBarras = c.getString(c.getColumnIndex("codigoBarras"));
-            } catch (Throwable e) {
-                codigoBarras = "";
-            }
-
-            try {
-                nota1 = c.getString(c.getColumnIndex("nota1"));
-            } catch (Throwable e) {
-                nota1 = "";
-            }
-
-            try {
-                nota2 = c.getString(c.getColumnIndex("nota2"));
-            } catch (Throwable e) {
-                nota2 = "";
-            }
-
-            try {
-                miLatitud = c.getString(c.getColumnIndex("miLatitud"));
-            } catch (Throwable e) {
-                miLatitud = "";
-            }
-
-            try {
-                miLongitud = c.getString(c.getColumnIndex("miLongitud"));
-            } catch (Throwable e) {
-                miLongitud = "";
-            }
-
-            try {
-                estimacionesEngie = c.getString(c.getColumnIndex("EstimacionesEngie"));
-            } catch (Throwable e) {
-                estimacionesEngie = "";
-            }
-
-            try {
-                tipoDeCliente = c.getString(c.getColumnIndex("TipoDeCliente"));
-            } catch (Throwable e) {
-                tipoDeCliente = "";
-            }
-
-            try {
-                tipoDeAcuse = c.getString(c.getColumnIndex("TipoDeAcuse"));
-            } catch (Throwable e) {
-                tipoDeAcuse = "";
-            }
+            idArchivo = getLong(c, "idArchivo", 0);
+            codigoBarras = getString(c, "codigoBarras", "");
+            nota1 = getString(c, "nota1", "");
+            nota2 = getString(c, "nota2", "");
+            mMiLatitud = getString(c, "miLatitud", "");
+            mMiLongitud = getString(c, "miLongitud", "");
+            estimacionesEngie = getString(c, "EstimacionesEngie", "");
+            tipoDeCliente = getString(c, "TipoDeCliente", "");
+            tipoDeAcuse = getString(c, "TipoDeAcuse", "");
 
             unidad = is_sectorCorto;
 
+            mRegional = getString(c, "Regional", "");
+            mPorcion = getString(c, "Porcion", "");
+            mIdUnidadLect = getInt(c, "idUnidadLect", 0);
+            mIdRegionalLect = getInt(c, "idRegionalLect", 0);
+            mIntercambiarSerieMedidor = getInt(c, "IntercambiarSerieMedidor", 0);
 
 //			if (ls_anomalia.equals("") && secuencia%3==0)
 //				ls_anomalia="AC*";
@@ -353,7 +302,7 @@ public class Lectura {
     }
 
     private void openDatabase() {
-        dbHelper = new DBHelper(context);
+        dbHelper = new DBHelper(mContext);
 
         db = dbHelper.getReadableDatabase();
     }
@@ -420,9 +369,13 @@ public class Lectura {
         guardar(true, ordenDeLectura);
     }
 
+    /*
+        Guarda la lectura capturada con sus datos asociados.
+     */
     public void guardar(boolean agregarOrdenDeLectura, int ordenDeLectura) {
 
         ContentValues cv_params = new ContentValues();
+        int nivelBateria;
 
         //globales.tdlg.setConsumo();
 
@@ -517,6 +470,8 @@ public class Lectura {
 
         openDatabase();
 
+        nivelBateria = BateriaMgr.getBatteryPercentage(mContext);
+
         cv_params.put("lectura", is_lectura);
         cv_params.put("consumo", is_consumo);
         cv_params.put("anomalia", is_anomalia);
@@ -554,14 +509,17 @@ public class Lectura {
         cv_params.put("piso", is_piso);
         cv_params.put("puerta", is_puerta);
         cv_params.put("lecturista", globales.getUsuario());
+        cv_params.put("idEmpleado", globales.getIdEmpleado());
         cv_params.put("fechaAviso", is_fechaAviso);
         cv_params.put("aviso", is_aviso);
         cv_params.put("tipoLectura", is_tipoLectura);
         cv_params.put("estadoDelSuministroReal", is_estadoDelSuministroReal);
         cv_params.put("latitud", is_latitud);
         cv_params.put("longitud", is_longitud);
+        cv_params.put("nivelBateria", nivelBateria);
         cv_params.put("fix", is_fix);
         cv_params.put("codigoObservacion", ls_codigoObservacion);
+        cv_params.put("codigoRespuestaEncuesta", mCodigoRespuestaEncuesta);
         cv_params.put("envio", 1);
 
         String params[] = {String.valueOf(secuenciaReal)};
@@ -675,9 +633,9 @@ public class Lectura {
         for (int i = comienzo; i < tope; i++) {
 
             if (globales.multiplesAnomalias) {
-                anomalia = new Anomalia(context, ls_anomalia.substring(i, i + 1), "", false);
+                anomalia = new Anomalia(mContext, ls_anomalia.substring(i, i + 1), "", false);
             } else {
-                anomalia = new Anomalia(context, ls_anomalia, "", false);
+                anomalia = new Anomalia(mContext, ls_anomalia, "", false);
 
                 if (globales.DiferirEntreAnomInstYMed && anomalia.is_tipo.equals("I")) {
                     is_anomalia = "";
@@ -770,9 +728,9 @@ public class Lectura {
 //			if (!ls_anomalia.equals(""))
 
             if (globales.multiplesAnomalias)
-                subAnomalia = new Anomalia(context, subanomaliasArray[i], "", true);
+                subAnomalia = new Anomalia(mContext, subanomaliasArray[i], "", true);
             else {
-                subAnomalia = new Anomalia(context, subanomaliasArray[i], is_anomalia, true);
+                subAnomalia = new Anomalia(mContext, subanomaliasArray[i], is_anomalia, true);
             }
 //			else
 //			{
@@ -1005,7 +963,7 @@ public class Lectura {
         ls_preview = globales.tdlg.getDescripcionDeBuscarMedidor(this,
                 tipoDeBusqueda, textoBuscado);
 
-        ls_preview += "<br>" + (globales.mostrarRowIdSecuencia ? contadorAlterno : secuencia) + " " + context.getString(R.string.de) + " " + totalMedidores;
+        ls_preview += "<br>" + (globales.mostrarRowIdSecuencia ? contadorAlterno : secuencia) + " " + mContext.getString(R.string.de) + " " + totalMedidores;
 
         // ls_preview +="\n"+ getDireccion();
         // ls_preview += "<br>" +is_colonia.trim();
@@ -1040,6 +998,26 @@ public class Lectura {
         }
 
         return ls_preview;
+    }
+
+    public static SpannableStringBuilder marcarTextoColor(String texto, String textoBuscado,
+                                                          boolean restarUnEspacio) {
+        int antes = 0;
+        SpannableStringBuilder sb = new SpannableStringBuilder(texto);
+        final ForegroundColorSpan fcs = new ForegroundColorSpan(Color.parseColor("red"));
+        final StyleSpan bss = new StyleSpan(android.graphics.Typeface.BOLD);
+        int inicio = -1;
+        int fin = -1;
+
+        inicio = texto.toString().indexOf(textoBuscado);
+
+        if (inicio >= 0) {
+            fin = textoBuscado.length();
+            sb.setSpan(fcs, inicio, fin, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            sb.setSpan(bss, inicio, fin, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        }
+
+        return sb;
     }
 
     // public String formatedInfoReadMetter(){
@@ -1629,67 +1607,97 @@ public class Lectura {
         setSubAnomalia(ls_anomalia);
     }
 
-    public String getUnidad(){
+    public String getUnidad() {
         return unidad;
     }
 
-    public long getIdArchivo(){
+    public long getIdArchivo() {
         return idArchivo;
     }
 
-    public String getCodigoBarras(){
+    public String getCodigoBarras() {
         return codigoBarras;
     }
 
-    public String getSerieMedidor(){
+    public String getCodigoBarrasCorregido() {
+        return codigoBarras.replace("&", "/");
+    }
+
+    public String getSerieMedidor() {
         return is_serieMedidor;
     }
 
-    public String getNota1(){
+    public String getSerieMedidorCorregido() {
+        return is_serieMedidor.replace("&", "/");
+    }
+
+    public String getNumMedidor() throws Exception {
+        if (!getIntercambiarSerieMedidor())
+            return getSerieMedidorCorregido();
+        else
+            return getCodigoBarrasCorregido();
+    }
+
+    public String getNota1() {
         return nota1;
     }
 
-    public String getNota2(){
+    public String getNota2() {
         return nota2;
     }
 
-    public String getMiLatitud(){
-        return miLatitud;
+    public String getMiLatitud() {
+        return mMiLatitud;
     }
 
-    public String getMiLongitud(){
-        return miLongitud;
+    public String getMiLongitud() {
+        return mMiLongitud;
     }
 
-    public String getEstimacionesEngie(){
+    public String getEstimacionesEngie() {
         return estimacionesEngie;
     }
 
-    public String getTipoDeCliente(){
+    public String getTipoDeCliente() {
         return tipoDeCliente;
     }
 
-    public String getTipoDeAcuse(){
+    public String getTipoDeAcuse() {
         return tipoDeAcuse;
     }
 
-    public boolean getIntercambiarSerieMedidor() {
-        String valor;
+    public boolean getIntercambiarSerieMedidor() throws Exception {
+        int valor;
 
-        if (unidad.length() >= 4)
-        {
-            valor = unidad.substring(3, 4).toUpperCase();
-            if (valor.equals("G") || valor.equals("Q") )
-                return true;
-            else {
-                valor = unidad.substring(2, 4).toUpperCase();
-                if (valor.equals("3T"))
-                    return true;
-                else
-                    return false;
-            }
-        }
+        valor = DbConfigMgr.getInstance().getIntercambiarSerieMedidor(mContext);
+
+        if (valor >= 1)
+            return true;
+        else if (valor == 0)
+            return false;
+        else if (mIntercambiarSerieMedidor != 0)
+            return true;
         else
             return false;
     }
+
+    public boolean getAlinearDerechaNumMedidor() throws Exception {
+        int valor;
+
+        valor = DbConfigMgr.getInstance().getAlinearDerechaNumMedidor(mContext);
+
+        if (valor != 0)
+            return true;
+        else
+            return false;
+    }
+
+    public String getCodigoRespuestaEncuesta() {
+        return mCodigoRespuestaEncuesta;
+    }
+
+    public void setCodigoRespuestaEncuesta(String valor) {
+        mCodigoRespuestaEncuesta = valor;
+    }
+
 }

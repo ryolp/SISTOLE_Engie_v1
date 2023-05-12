@@ -428,7 +428,7 @@ public class TodasLasLecturas {
 		Cursor c;
 		Vector <Lectura> lecturas= new Vector();
 		
-		c=db.rawQuery("Select "+("secuenciaReal")+ "from ruta where serieMedidor='"+ serieMedidor+"' and fotoAlFinal=" + 1 , null);
+		c=db.rawQuery("Select "+("secuenciaReal")+ " from ruta where serieMedidor='"+ serieMedidor+"' and fotoAlFinal=" + 1 , null);
 		c.moveToFirst();
 		if (c.getCount()>0){
 			try{

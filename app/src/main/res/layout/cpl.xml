@@ -8,8 +8,8 @@
         android:id="@+id/tv_titulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:background="@color/SteelBlue"
         android:gravity="center_horizontal"
@@ -22,8 +22,8 @@
         android:id="@+id/relativeLayout1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true" >
 
         <ImageView
@@ -43,8 +43,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tv_nosotros"
-            android:layout_alignLeft="@+id/iv_logo"
-            android:layout_alignRight="@+id/iv_logo"
+            android:layout_alignStart="@+id/iv_logo"
+            android:layout_alignEnd="@+id/iv_logo"
             android:layout_marginTop="14dp"
             android:adjustViewBounds="true"
             android:contentDescription="@string/str_logo_enruta"
@@ -54,10 +54,10 @@
             android:id="@+id/tv_titilo2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginLeft="16dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="16dp"
             android:text="@string/str_titulo2"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -65,7 +65,7 @@
             android:id="@+id/tv_nosotros"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/tv_titilo2"
+            android:layout_alignStart="@+id/tv_titilo2"
             android:layout_below="@+id/iv_logo"
             android:layout_marginTop="18dp"
             android:text="@string/str_nosotros"
@@ -76,10 +76,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/iv_nosotros"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
             android:gravity="center"
-            android:text="+52-81-8298-9980"
+            android:text="@string/str_telefono_enruta"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
@@ -87,12 +87,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tv_telefono"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
             android:layout_marginTop="20dp"
             android:gravity="center"
-            android:text=""
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/str_ejemplo"
+            android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/Red"
             android:textStyle="bold" />
 
@@ -102,8 +102,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
         android:orientation="horizontal" >
 
         <Button
@@ -132,9 +132,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tv_titulo"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:gravity="right"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:gravity="end"
         android:text="@string/version"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 </RelativeLayout>

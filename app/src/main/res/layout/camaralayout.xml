@@ -30,16 +30,88 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_indicador"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:text="Medium Text"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/red"
-        android:visibility="gone" />
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/ib_cambiarCamara"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignParentLeft="true"
+            android:adjustViewBounds="true"
+            android:onClick="flashMode"
+            android:padding="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_cambiar_camara" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_indicador"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:text="Medium Text"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/red" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/lblMedidor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/ib_cambiarCamara"
+                    android:gravity="center_horizontal"
+                    android:text="@string/lbl_tdl_indica_medidor"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/white"
+                    android:textSize="24dp" />
+
+                <TextView
+                    android:id="@+id/txtMedidor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/ib_cambiarCamara"
+                    android:gravity="center_horizontal"
+                    android:text="@string/str_ejemplo"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/white"
+                    android:textSize="24dp" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <ImageButton
+            android:id="@+id/ib_firmar"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignParentRight="true"
+            android:adjustViewBounds="true"
+            android:onClick="flashMode"
+            android:padding="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_lecturas" />
+    </RelativeLayout>
+
 
     <LinearLayout
         android:id="@+id/controles"
@@ -55,18 +127,18 @@
 
             <Button
                 android:id="@+id/camara_b_capture"
+                style="@style/AppTheme.RoundedCornerMaterialButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight=".3333"
                 android:layout_marginRight="2dp"
-                style="@style/AppTheme.RoundedCornerMaterialButton"
+                android:layout_weight=".3333"
                 android:text="@string/str_captura" />
 
             <Button
                 android:id="@+id/camara_b_otra"
+                style="@style/AppTheme.RoundedCornerMaterialButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/AppTheme.RoundedCornerMaterialButton"
                 android:layout_marginLeft="2dp"
                 android:layout_marginRight="2dp"
                 android:layout_weight=".3333"
@@ -74,9 +146,9 @@
 
             <Button
                 android:id="@+id/camara_b_regresa"
+                style="@style/AppTheme.RoundedCornerMaterialButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/AppTheme.RoundedCornerMaterialButton"
                 android:layout_marginLeft="2dp"
                 android:layout_weight=".3333"
                 android:text="@string/lbl_regresar"
@@ -118,27 +190,6 @@
         android:scaleType="fitCenter"
         android:src="@drawable/ic_con_flash" />
 
-    <ImageButton
-        android:id="@+id/ib_firmar"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_alignParentRight="true"
-        android:adjustViewBounds="true"
-        android:onClick="flashMode"
-        android:padding="5dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_lecturas" />
-
-    <ImageButton
-        android:id="@+id/ib_cambiarCamara"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_alignParentLeft="true"
-        android:adjustViewBounds="true"
-        android:onClick="flashMode"
-        android:padding="5dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_cambiar_camara" />
 
     <ImageButton
         android:id="@+id/ib_subirResolucion"
