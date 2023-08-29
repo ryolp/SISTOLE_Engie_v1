@@ -48,7 +48,9 @@ import enruta.sistole_engie.clases.BuscarMedidorMgr;
 import enruta.sistole_engie.clases.EmergenciaCallback;
 import enruta.sistole_engie.clases.EmergenciaMgr;
 import enruta.sistole_engie.clases.Utils;
+import enruta.sistole_engie.entities.NoRegistradoEntity;
 import enruta.sistole_engie.entities.OperacionResponse;
+import enruta.sistole_engie.services.DbLecturasMgr;
 
 public class TomaDeLecturas extends TomaDeLecturasPadre implements
         OnGestureListener {
@@ -522,6 +524,9 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
                             mostrarMensaje("Error", "Error inesperado. Contacte soporte", t.getMessage(), null);
                         }
                     }
+                    break;
+                case FOTO_NO_REGISTRADO:
+                    procesarFotoNoRegistrado();
                     break;
             }
 
@@ -3656,6 +3661,8 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 
     protected void procesarNoRegistrados(final Intent data, final int resultCode) {
         Bundle bu_params;
+        long idNoRegistrado;
+        NoRegistradoEntity reg;
 
         try {
             if (data == null)
@@ -3664,7 +3671,15 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
             bu_params = data.getExtras();
 
             if (resultCode == Activity.RESULT_OK) {
-                globales.tdlg.regresaDeCamposGenericos(bu_params, "noregistrados");
+                idNoRegistrado = globales.tdlg.regresaDeCamposGenericos(bu_params, "noregistrados");
+
+                if (idNoRegistrado != 0) {
+                    reg = DbLecturasMgr.getInstance().getNoRegistrado(this, idNoRegistrado);
+
+                    if (reg != null)
+                        FotoNoRegistrado(reg);
+                }
+
                 // if (globales.tomarFotoNoRegistrados)
                 //this.tomarFoto(0, 1); no puedo
             }
@@ -3672,6 +3687,22 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
             t.printStackTrace();
             mostrarMensaje("Error", "Error inesperado. Contacte soporte", t.getMessage(), null);
         }
+    }
+
+    public void FotoNoRegistrado(NoRegistradoEntity reg) {
+        Intent camara = new Intent(this, CamaraActivity.class);
+        camara.putExtra("secuencial", reg.idLectura);
+        camara.putExtra("caseta", String.valueOf(reg.idNoRegistrado));
+        camara.putExtra("terminacion", "NoReg");
+        camara.putExtra("temporal", 1);
+        camara.putExtra("cantidad", 1);
+        camara.putExtra("anomalia", "SinAnomalia");
+        // vengoDeFotos = true;
+        startActivityForResult(camara, FOTO_NO_REGISTRADO);
+    }
+
+    private void procesarFotoNoRegistrado() {
+
     }
 
     /*

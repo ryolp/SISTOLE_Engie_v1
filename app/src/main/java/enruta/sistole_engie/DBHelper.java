@@ -27,7 +27,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private static DBHelper mInstance = null;
 
-    private static int version = 37;
+    private static int version = 40;
 
     /**
      * Constructor Toma referencia hacia el contexto de la aplicación que lo
@@ -203,9 +203,10 @@ public class DBHelper extends SQLiteOpenHelper {
         //Usuarios
         db.execSQL("CREATE TABLE usuarios (usuario , contrasena , nombre, rol default 1, fotosControlCalidad default 1, baremo default 75)");
         //fotos
-        db.execSQL("CREATE TABLE fotos (secuencial, nombre , foto, envio default 0, temporal, idLectura default 0)");
+        db.execSQL("CREATE TABLE fotos (secuencial, nombre , foto, envio default 0, temporal, idLectura default 0, idEmpleado default 0, "
+            + " idArchivo default 0, NumId default 0)");
         //Encabezado
-        db.execSQL("CREATE TABLE encabezado (cpl , centro , lote , descargada, lecturista, registro, ultimoSeleccionado default 0)");
+        db.execSQL("CREATE TABLE encabezado (cpl, centro, lote, descargada, lecturista, registro, ultimoSeleccionado default 0)");
         //Configuraciones globales y extras
         db.execSQL("CREATE TABLE config (key, value, selected)");
         //Configuraciones globales y extras
@@ -446,6 +447,9 @@ public class DBHelper extends SQLiteOpenHelper {
         verifyColumnInTable(db, "ruta", "CodigoRespuestaEncuesta", "''");
 
         verifyColumnInTable(db, "fotos", "idLectura", "0");
+        verifyColumnInTable(db, "fotos", "idArchivo", "0");
+        verifyColumnInTable(db, "fotos", "idEmpleado", "0");
+        verifyColumnInTable(db, "fotos", "NumId", "0");
 
         verifyColumnInTable(db, "NoRegistrados", "idLectura", "0");
         verifyColumnInTable(db, "NoRegistrados", "idUnidadLect", "0");
@@ -457,6 +461,7 @@ public class DBHelper extends SQLiteOpenHelper {
         verifyColumnInTable(db, "NoRegistrados", "Lectura", "''");
         verifyColumnInTable(db, "NoRegistrados", "Observaciones", "''");
         verifyColumnInTable(db, "NoRegistrados", "TipoRegistro", "''");
+        //verifyColumnInTableAutoincrement(db, "NoRegistrados", "idNoRegistrado");
     }
 
     /*
@@ -467,6 +472,11 @@ public class DBHelper extends SQLiteOpenHelper {
     private void verifyColumnInTable(SQLiteDatabase inDatabase, String inTable, String columnToCheck, String defaultValue) {
         if (!existsColumnInTable(inDatabase, inTable, columnToCheck))
             inDatabase.execSQL("ALTER TABLE "+inTable + " add column "+columnToCheck +" default " + defaultValue);
+    }
+
+    private void verifyColumnInTableAutoincrement(SQLiteDatabase inDatabase, String inTable, String columnToCheck) {
+        if (!existsColumnInTable(inDatabase, inTable, columnToCheck))
+            inDatabase.execSQL("ALTER TABLE "+inTable + " add column "+columnToCheck +" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL");
     }
 
     /*

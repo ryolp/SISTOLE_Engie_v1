@@ -46,6 +46,8 @@ public abstract class TomaDeLecturasPadre extends Activity {
     final static int NO_SOSPECHOSA = 0;
     final static int SOSPECHOSA = 1;
 
+    // Activity results
+
     final static int FOTOS = 3;
     final static int BUSCAR_MEDIDOR = 4;
     final static int NO_REGISTADOS = 5;
@@ -53,6 +55,9 @@ public abstract class TomaDeLecturasPadre extends Activity {
     final static int INPUT_CAMPOS_GENERICO_ME = 7;
     final static int CAMBIAR_MEDIDOR = 8;
     final static int RESULTADO_ACTIVITY_ENTRAR_SUPERVISOR = 9;
+
+    //RL, 2023-08-28, Foto de no registrado
+    protected final static int FOTO_NO_REGISTRADO = 10;
 
     final static int LECTURA = 0;
     final static int PRESION = 1;

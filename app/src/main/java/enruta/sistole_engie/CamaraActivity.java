@@ -41,6 +41,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import enruta.sistole_engie.clases.Utils;
 import enruta.sistole_engie.entities.InfoFotoEntity;
 
 public class CamaraActivity extends Activity {
@@ -62,7 +63,7 @@ public class CamaraActivity extends Activity {
     private TextView tv_indicador;
     private Button captureButton, backButton, otraButton;
     private FrameLayout fotoPreview, cPreview;
-    long secuencial;
+    private long secuencial;
     String is_terminacion = "-A", is_anomalia = "";
     private ContentValues cv_datos;
     boolean otraFoto = false;
@@ -114,7 +115,7 @@ public class CamaraActivity extends Activity {
         try {
             globales = ((Globales) getApplicationContext());
             Bundle bu_params = getIntent().getExtras();
-            secuencial = bu_params.getInt("secuencial");
+            secuencial = bu_params.getLong("secuencial");
             caseta = bu_params.getString("caseta");
             is_terminacion = bu_params.getString("terminacion");
             try {
@@ -559,14 +560,29 @@ public class CamaraActivity extends Activity {
                 ls_nombre += Main.obtieneFecha("ymd");
                 ls_nombre += Main.obtieneFecha("his");
                 ls_nombre += ".JPG";
+
+                infoFoto = globales.tdlg.getInfoFoto(globales, db);
+
                 infoFoto.nombreFoto = ls_nombre;
-            } else {
+            } else if (is_terminacion.equals("NoReg")) {
+                ls_nombre = Main.rellenaString(is_terminacion, "x", 10, true) + "-";
+                ls_nombre += Main.rellenaString(String.valueOf(secuencial), "0", 10, true) + "-";
+                ls_nombre += Main.rellenaString(caseta, "0", 5, true) + "-";
+                ls_nombre += Main.obtieneFecha("ymd");
+                ls_nombre += Main.obtieneFecha("his");
+                ls_nombre += ".JPG";
+
+                infoFoto = globales.tdlg.getInfoFoto(globales, db);
+                infoFoto.NumId = Utils.convToInt(caseta);
+
+                infoFoto.nombreFoto = ls_nombre;
+            }  else {
                 infoFoto = globales.tdlg.getInfoFoto(globales, db, secuencial, is_terminacion, is_anomalia);
             }
             db.close();
             dbHelper.close();
 
-            cv_datos = new ContentValues(4);
+            cv_datos = new ContentValues(8);
 
             ByteArrayInputStream imageStream = new ByteArrayInputStream(foto);
             Bitmap theImage = rotateImage(imageStream);
@@ -583,6 +599,9 @@ public class CamaraActivity extends Activity {
             cv_datos.put("envio", TomaDeLecturas.NO_ENVIADA);
             cv_datos.put("temporal", temporal);
             cv_datos.put("idLectura", infoFoto.idLectura);
+            cv_datos.put("idEmpleado", infoFoto.idEmpleado);
+            cv_datos.put("idArchivo", infoFoto.idArchivo);
+            cv_datos.put("NumId", infoFoto.NumId);
             this.foto = foto;
         } catch (Throwable t) {
             throw new Exception("Error al guardar foto", t);
@@ -629,11 +648,13 @@ public class CamaraActivity extends Activity {
     }
 
     public void guardarFotoBD() throws Exception {
+        long id;
+
         try {
             DBHelper dbHelper = new DBHelper(this);
             SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-            db.insert("fotos", null, cv_datos);
+            id = db.insertOrThrow("fotos", null, cv_datos);
 
             //Guardar las fotos en la memoria del telefono, si me piden esto despues lo habilito pero por mientras vamos a quitarlo, ya que no tenemos control de esto.
     	/*File pictureFile = getOutputMediaFile(1, ls_nombre);
@@ -1141,6 +1162,8 @@ public class CamaraActivity extends Activity {
     }
 
     private void mostrarMensaje(String titulo, String mensaje, Throwable t, DialogoMensaje.Resultado resultado) {
+        String msg;
+
         if (mDialogoMsg == null) {
             mDialogoMsg = new DialogoMensaje(this);
         }

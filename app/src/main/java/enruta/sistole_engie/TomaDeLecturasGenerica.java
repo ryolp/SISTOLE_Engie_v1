@@ -103,6 +103,8 @@ public abstract class TomaDeLecturasGenerica {
 
     public abstract InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia);
 
+    public abstract InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db) throws Exception;
+
     public abstract Vector<String> getInformacionDelMedidor(Lectura lectura) throws Exception;
 
     public abstract MensajeEspecial getMensaje();
@@ -187,7 +189,7 @@ public abstract class TomaDeLecturasGenerica {
      *
      * @param bu_params Parametros regresados por la pantalla de input generico
      */
-    public abstract void regresaDeCamposGenericos(Bundle bu_params, String anomalia) throws Exception;
+    public abstract long regresaDeCamposGenericos(Bundle bu_params, String anomalia) throws Exception;
 
     /**
      * Inicializa campos que no se encuentran en el archivo

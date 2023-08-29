@@ -10,12 +10,17 @@ import enruta.sistole_engie.entities.OperacionRequest;
 import enruta.sistole_engie.entities.OperacionResponse;
 import enruta.sistole_engie.entities.LoginRequestEntity;
 import enruta.sistole_engie.entities.LoginResponseEntity;
+import enruta.sistole_engie.entities.SubirFotoResponse;
 import enruta.sistole_engie.entities.SupervisorLogRequest;
 import enruta.sistole_engie.entities.SupervisorLogResponse;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 
 public interface IWebApi {
@@ -72,4 +77,15 @@ public interface IWebApi {
 
     @POST("api/operaciones/OperacionGenerica")
     Call<OperacionGenericaResponse> operacionGenerica(@Body OperacionGenericaRequest request);
+
+    @Multipart
+    @POST("api/operaciones/subirFoto2")
+    Call<SubirFotoResponse> subirFoto(@Part MultipartBody.Part file, @Part("ruta") RequestBody ruta,
+                                      @Part("carpeta") RequestBody carpeta,
+                                      @Part("nombreArchivo") RequestBody nombreArchivo,
+                                      @Part("serieMedidor") RequestBody serieMedidor,
+                                      @Part("idLectura") RequestBody idLectura,
+                                      @Part("idEmpleado") RequestBody idEmpleado,
+                                      @Part("idArchivo") RequestBody idArchivo,
+                                      @Part("NumId") RequestBody NumId);
 }

@@ -17,6 +17,7 @@ import android.util.Log;
 import enruta.sistole_engie.clases.FotosMgr;
 import enruta.sistole_engie.clases.GeneradorDatosEnvioTPL;
 import enruta.sistole_engie.clases.Utils;
+import enruta.sistole_engie.entities.InfoFotoEntity;
 
 public class ThreadTransmitirWifi extends TimerTask {
     final static int TRANSMITIR_FOTOS = 1;
@@ -42,8 +43,8 @@ public class ThreadTransmitirWifi extends TimerTask {
     boolean transmiteFotos = true;
     String ls_carpeta;
     String ls_servidor;
-    DBHelper dbHelper;
-    SQLiteDatabase db;
+    private DBHelper dbHelper;
+    private SQLiteDatabase db;
     Handler handler;
 
     boolean prioridadFotos = false;
@@ -123,6 +124,10 @@ public class ThreadTransmitirWifi extends TimerTask {
         String fechaAnio = "";
         String fechaAnioMes = "";
         String fechaAnioMesDia = "";
+        InfoFotoEntity infoFoto = new InfoFotoEntity();
+//        long idLectura = 0;
+//        long idArchivo = 0;
+//        long idEmpleado = 0;
 
         mostrarNotificacion(MENSAJE_PROGRESO, R.drawable.ic_action_exportar, "Iniciando el envio", "");
 
@@ -176,7 +181,8 @@ public class ThreadTransmitirWifi extends TimerTask {
                 if (fotoMgr == null)
                     fotoMgr = new FotosMgr();
 
-                ls_query = "SELECT F.nombre, F.rowid, length(F.foto) imageSize, L.sectorCorto Unidad, L.Regional, L.ciclo ";
+                ls_query = "SELECT F.nombre, F.rowid, length(F.foto) imageSize, L.sectorCorto Unidad, L.Regional, L.ciclo, ";
+                ls_query += "   F.idLectura, F.idEmpleado, F.idArchivo, F.NumId ";
                 ls_query += "FROM fotos F";
                 ls_query += "   LEFT JOIN ruta L ON F.idLectura = cast(L.poliza as Long) ";
                 if (globales.enviarSoloLoMarcado)
@@ -227,14 +233,20 @@ public class ThreadTransmitirWifi extends TimerTask {
                         unidad = Utils.getString(c, "Unidad", "");
                         ciclo =  Utils.getString(c, "ciclo", "");
 
+                        if (infoFoto != null) {
+                            infoFoto.idLectura = Utils.getLong(c, "idLectura", 0);
+                            infoFoto.idArchivo = Utils.getLong(c, "idArchivo", 0);
+                            infoFoto.idEmpleado = Utils.getLong(c, "idEmpleado", 0);
+                            infoFoto.NumId = Utils.getInt(c, "NumId", 0);
+                        }
+
                         if (unidad.equals("") || regional.equals("") || ciclo.equals("") || nombreFoto.toLowerCase().contains("xxxxxcheck"))
                             subCarpeta = fechaAnio + "/" + fechaAnioMes + "/" + fecha + "/";
                         else
                             subCarpeta = ciclo + "/" + regional + "/" + unidad + "/";
 
                         serial.open(ls_servidor, ls_capertaFotos + subCarpeta, "",
-                                Serializacion.ESCRITURA, 0, 0);
-
+                                Serializacion.ESCRITURA, 0, 0, infoFoto, globales);
 
                         // RL, 2022-10-27, Se obtendrá la foto a través de una clase que hará que si la foto es menor a 2MB.
                         // ... la regrese tal cual, y si es mayor a 2MB la obtendrá en partes, debido a que el SQLLite al usar...
@@ -485,9 +497,8 @@ public class ThreadTransmitirWifi extends TimerTask {
                         + globales.tdlg
                         .getNombreArchvio(TomaDeLecturasGenerica.SALIDA));
 
-            serial.open(ls_servidor, ls_carpeta, globales.tdlg
-                            .getNombreArchvio(TomaDeLecturasGenerica.SALIDA),
-                    Serializacion.ESCRITURA, 0, 0);
+            serial.open(ls_servidor, ls_carpeta, globales.tdlg.getNombreArchvio(TomaDeLecturasGenerica.SALIDA),
+                    Serializacion.ESCRITURA, 0, 0, null, globales);
 
             for (int i = 0; i < cantidad; i++) {
                 if (mostrarMensajes)
@@ -693,7 +704,7 @@ public class ThreadTransmitirWifi extends TimerTask {
                 cantidad = c.getCount();
 
                 serial.open(ls_servidor, ls_carpeta, ls_nombre_final,
-                        Serializacion.ESCRITURA, 0, 0);
+                        Serializacion.ESCRITURA, 0, 0, null, globales);
 
                 if (mostrarMensajes) {
                     dt.mHandler.post(new Runnable() {

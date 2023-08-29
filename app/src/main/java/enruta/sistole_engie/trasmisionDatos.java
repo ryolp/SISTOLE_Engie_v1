@@ -648,7 +648,7 @@ public class trasmisionDatos extends TransmisionesPadre {
                         case Globales.TRANSMION_NORMAL:
                             nombreArchivo = globales.tdlg.getNombreArchvio(TomaDeLecturasGenerica.ENTRADA);
                             serial.open(ls_servidor, ls_carpeta, nombreArchivo,
-                                    Serializacion.LECTURA, 0, 0);
+                                    Serializacion.LECTURA, 0, 0, null, globales);
                             context.stop();
                             // lby_cadena= new
                             // byte[context.getResources().getInteger(R.integer.LONG_DATOS_MEDIDOR)];

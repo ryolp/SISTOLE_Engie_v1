@@ -16,12 +16,18 @@ import enruta.sistole_engie.entities.OperacionRequest;
 import enruta.sistole_engie.entities.OperacionResponse;
 import enruta.sistole_engie.entities.LoginRequestEntity;
 import enruta.sistole_engie.entities.LoginResponseEntity;
+import enruta.sistole_engie.entities.SubirFotoRequest;
+import enruta.sistole_engie.entities.SubirFotoResponse;
 import enruta.sistole_engie.entities.SupervisorLogRequest;
 import enruta.sistole_engie.entities.SupervisorLogResponse;
 import enruta.sistole_engie.interfaces.IWebApi;
 import enruta.sistole_engie.trasmisionDatos;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 
 public class WebApiManager {
     private IWebApi service = null;
@@ -185,6 +191,33 @@ public class WebApiManager {
         Call<OperacionGenericaResponse> call = service.operacionGenerica(request);
 
         call.enqueue(callBack);
+    }
+
+    public SubirFotoResponse subirFoto(SubirFotoRequest req, byte[] foto) throws Exception {
+        try {
+            // RequestBody fileRequestBody = RequestBody.create(MediaType.parse("image/jpeg"), foto);
+
+            MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", req.nombre, RequestBody.create(MediaType.parse("image/*"), foto));
+
+            RequestBody ruta = RequestBody.create(MediaType.parse("text/plain"), req.ruta);
+            RequestBody carpeta = RequestBody.create(MediaType.parse("text/plain"), req.carpeta);
+            RequestBody nombreArchivo = RequestBody.create(MediaType.parse("text/plain"), req.nombre);
+            RequestBody serieMedidor = RequestBody.create(MediaType.parse("text/plain"), req.serieMedidor);
+            RequestBody idOrden= RequestBody.create(MediaType.parse("text/plain"), String.valueOf(req.idLectura));
+            RequestBody idArchivo= RequestBody.create(MediaType.parse("text/plain"), String.valueOf(req.idArchivo));
+            RequestBody idEmpleado = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(req.idEmpleado));
+            RequestBody NumId = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(req.NumId));
+
+            Call<SubirFotoResponse> call = service.subirFoto(filePart, ruta, carpeta, nombreArchivo, serieMedidor, idOrden,
+                    idEmpleado, idArchivo, NumId);
+
+            Response<SubirFotoResponse> resp = call.execute();
+
+            return resp.body();
+        } catch (Throwable t)
+        {
+            throw new Exception("Error al subir foto: " + t.getMessage());
+        }
     }
 
 //    public String echoPing(){

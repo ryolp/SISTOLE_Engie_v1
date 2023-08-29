@@ -58,7 +58,8 @@ public class GeneradorDatosEnvioTPL {
                 getString("Colonia"),
                 getString("NumMedidor"),
                 getString("Lectura"),
-                getString("Observaciones")
+                getString("Observaciones"),
+                getString("rowid")
         );
 
         return dato;

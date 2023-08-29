@@ -406,9 +406,54 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
         infoFoto.nombreFoto = ls_nombre;
         infoFoto.idLectura = Utils.convToLong(lect.poliza);
+        infoFoto.idArchivo = lect.idArchivo;
+        infoFoto.idEmpleado = globales.getIdEmpleado();
         infoFoto.Unidad = lect.unidad;
         infoFoto.Regional = lect.mRegional;
         infoFoto.Porcion = lect.mPorcion;
+
+        return infoFoto;
+    }
+
+    // RL, 2023-01-02, Regresar una estructura de datos, con la información suficiente para transmitir la foto con sus datos relacionados.
+
+    public InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db) throws Exception {
+        String ls_nombre = "", ls_unicom;
+        Cursor c;
+        InfoFotoEntity infoFoto = new InfoFotoEntity();
+        Lectura lect;
+
+        /**
+         * Este es el fotmato del nombre de la foto
+         *
+         * NumMedidor a 10 posiciones,
+         * fecha	  a YYYYMMDD
+         * hora		  a HHMMSS
+         */
+
+        try {
+            infoFoto.nombreFoto = "";
+            infoFoto.idEmpleado = globales.getIdEmpleado();
+
+            if (globales == null)
+                return infoFoto;
+
+            if (globales.tll == null)
+                return infoFoto;
+
+            lect = globales.tll.getLecturaActual();
+
+            if (lect == null)
+                return infoFoto;
+
+            infoFoto.idLectura = Utils.convToLong(lect.poliza);
+            infoFoto.idArchivo = lect.idArchivo;
+            infoFoto.Unidad = lect.unidad;
+            infoFoto.Regional = lect.mRegional;
+            infoFoto.Porcion = lect.mPorcion;
+        } catch (Exception e){
+            throw new Exception("Error al obtener inforrmación de la lectura");
+        }
 
         return infoFoto;
     }
@@ -722,10 +767,11 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
     }
 
     @Override
-    public void regresaDeCamposGenericos(Bundle bu_params, String anomalia) throws Exception {
+    public long regresaDeCamposGenericos(Bundle bu_params, String anomalia) throws Exception {
         String cadena =/*globales.lote*/"";
         Lectura lectura;
         ContentValues cv_datos = new ContentValues();
+        long idValorInsertado = 0;
 
         if (anomalia.equals("noregistrados")) {
             lectura = globales.tll.getLecturaActual();
@@ -758,7 +804,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
             //Guardamos en la bd
             //db.execSQL("insert into noRegistrados (envio, poliza) values(1, '" + cadena + "')");
 
-            db.insert("noRegistrados", null, cv_datos);
+            idValorInsertado = db.insert("noRegistrados", null, cv_datos);
 
             closeDatabase();
         } else if (anomalia.equals("cambiomedidor")) {
@@ -780,7 +826,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
             // db.execSQL("insert into noRegistrados(envio, poliza) values(1, '" + cadena + "')");
 
-            db.insert("noRegistrados", null, cv_datos);
+            idValorInsertado = db.insert("noRegistrados", null, cv_datos);
 
             closeDatabase();
         } else if (anomalia.equals("sellos")) {
@@ -804,6 +850,8 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
             globales.tll.getLecturaActual().ls_codigoObservacion = "OB032";
             globales.tll.getLecturaActual().setComentarios(bu_params.getString("input"));
         }
+
+        return idValorInsertado;
     }
 
     // CE, REVISAR

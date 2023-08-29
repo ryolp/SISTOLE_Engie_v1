@@ -361,6 +361,11 @@ public class TomaDeLecturasArgentina extends TomaDeLecturasGenerica {
 
 	}
 
+	public InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db) {
+		// No implementado en esta clase
+		return null;
+	}
+
 	public  Vector<String> getInformacionDelMedidor(Lectura lectura) {
 		
 		
@@ -941,7 +946,7 @@ public class TomaDeLecturasArgentina extends TomaDeLecturasGenerica {
 	}
 
 	@Override
-	public void regresaDeCamposGenericos(Bundle bu_params, String anomalia) {
+	public long regresaDeCamposGenericos(Bundle bu_params, String anomalia) {
 		// TODO Auto-generated method stub
 		if (anomalia.equals("C")) {
 			globales.tll.getLecturaActual().setComentarios("MA:" +bu_params.getString(String.valueOf(MEDIDOR_ANTERIOR)) +",MP:"+bu_params.getString(String.valueOf(MEDIDOR_POSTERIOR)));
@@ -975,7 +980,9 @@ public class TomaDeLecturasArgentina extends TomaDeLecturasGenerica {
 		} 
 		else if (anomalia.equals("V")) {
 			globales.tll.getLecturaActual().setComentarios("AC:" +bu_params.getString("input"));
-		} 
+		}
+
+		return 0;
 	}
 	
 

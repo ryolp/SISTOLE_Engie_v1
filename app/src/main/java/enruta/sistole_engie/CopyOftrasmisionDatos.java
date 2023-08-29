@@ -236,7 +236,8 @@ public class CopyOftrasmisionDatos extends Activity {
 		   				
 		   				for (int i=0;i<c.getCount();i++){
 		   					c.moveToPosition(i);
-		   					serial.open(ls_servidor, "maxigas/lecturas",ls_nombre_final, Serializacion.ESCRITURA, 0, 0);
+		   					serial.open(ls_servidor, "maxigas/lecturas",ls_nombre_final, Serializacion.ESCRITURA, 0, 0,
+									null, context);
 		   					
 		   					ls_cadena=generaCadenaAEnviar(c);
 		   					serial.write(ls_cadena);
@@ -280,7 +281,8 @@ public class CopyOftrasmisionDatos extends Activity {
 			   				c.moveToFirst();
 			   				
 			   				for (int i=0;i<c.getCount();i++){
-			   					serial.open(ls_servidor, "maxigas/lecturas/fotos", ls_categoria, Serializacion.ESCRITURA, 0, 0);
+			   					serial.open(ls_servidor, "maxigas/lecturas/fotos", ls_categoria, Serializacion.ESCRITURA,
+										0, 0, null, context);
 			   					
 			   					//ls_cadena=generaCadenaAEnviar(c);
 			   					serial.write(c.getString(c.getColumnIndex("nombre")),c.getBlob(c.getColumnIndex("foto")));
@@ -392,7 +394,8 @@ public class CopyOftrasmisionDatos extends Activity {
 		   				});*/
 		   						   				//mostrarMensaje(PROGRESO, "Generando datos a importar");
 		   				//mostrarMensaje(MENSAJE, "Espere...");
-		   				serial.open(ls_servidor,  "maxigas/lecturas", ls_categoria, Serializacion.LECTURA, 0, 0);
+		   				serial.open(ls_servidor,  "maxigas/lecturas", ls_categoria, Serializacion.LECTURA,
+								0, 0, null, context);
 		   				
 		   				lby_cadena= new byte[serial.longitudDelArchivo];
 		   				serial.read(lby_cadena);

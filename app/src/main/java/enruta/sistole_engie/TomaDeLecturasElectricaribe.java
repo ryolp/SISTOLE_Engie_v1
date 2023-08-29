@@ -555,6 +555,11 @@ public class TomaDeLecturasElectricaribe extends TomaDeLecturasGenerica {
 		return infoFotoEntity;
 	}
 
+	public InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db) {
+		// No implementado en esta clase
+		return null;
+	}
+
 // CE, REVISAR
 	public  Vector<String> getInformacionDelMedidor(Lectura lectura) {
 		Vector <String> datos= new Vector<String>();
@@ -759,8 +764,9 @@ public class TomaDeLecturasElectricaribe extends TomaDeLecturasGenerica {
 	}
 
 	@Override
-	public void regresaDeCamposGenericos(Bundle bu_params, String anomalia) {
+	public long regresaDeCamposGenericos(Bundle bu_params, String anomalia) {
 		String cadena=/*globales.lote*/"";
+
 		if (anomalia.equals("noregistrados")) {
 			
 			cadena +=globales.ultimoBloqueCapturado;
@@ -797,7 +803,7 @@ public class TomaDeLecturasElectricaribe extends TomaDeLecturasGenerica {
 		else{
 			globales.tll.getLecturaActual().setComentarios(bu_params.getString("input"));
 		}
-		
+		return 0;
 	}
 
 // CE, REVISAR

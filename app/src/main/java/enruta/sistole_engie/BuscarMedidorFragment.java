@@ -582,14 +582,19 @@ public class BuscarMedidorFragment extends Fragment {
         mDialogoMsg.mostrarMensaje(titulo, mensaje, detalleError);
     }
 
-    private void mostrarMensaje(String titulo, String mensaje, Throwable
-            t, DialogoMensaje.Resultado resultado) {
+    private void mostrarMensaje(String titulo, String mensaje,
+                                Throwable t, DialogoMensaje.Resultado resultado) {
+        String msg = "";
+
+        if (t != null)
+            msg = t.getMessage();
+
         if (mDialogoMsg == null) {
             mDialogoMsg = new DialogoMensaje(this.getActivity());
         }
 
         mDialogoMsg.setOnResultado(resultado);
-        mDialogoMsg.mostrarMensaje(titulo, mensaje, t.getMessage());
+        mDialogoMsg.mostrarMensaje(titulo, mensaje, msg);
     }
 
     private void mostrarMensaje(String titulo, String mensaje) {
