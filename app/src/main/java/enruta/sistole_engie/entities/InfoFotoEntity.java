@@ -9,5 +9,6 @@ public class InfoFotoEntity {
     public String Regional = "";
     public String Porcion = "";
     public String SerieMedidor = "";
+    public String Lectura = "";
     public int NumId = 0;
 }

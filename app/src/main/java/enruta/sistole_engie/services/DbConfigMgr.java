@@ -262,4 +262,109 @@ public class DbConfigMgr extends  DbBaseMgr {
             mDb.update("config", cv_params, whereClause, whereArgs);
         }
     }
+
+    public void setFrecuenciaFotoCalidad(Context context, int value) throws Exception {
+        Cursor c;
+        ContentValues cv_params = new ContentValues(2);
+
+        try {
+            openDatabase(context);
+
+            c = mDb.rawQuery("Select value from config where key='FrecuenciaFotoCalidad'", null);
+            c.moveToFirst();
+
+            if (c.getCount() == 0) {
+
+                cv_params.put("key", "FrecuenciaFotoCalidad");
+                cv_params.put("value", value);
+
+                mDb.insert("config", null, cv_params);
+            } else {
+                String whereClause = "key=?";
+                String[] whereArgs = {"FrecuenciaFotoCalidad"};
+
+                cv_params.put("value", value);
+
+                mDb.update("config", cv_params, whereClause, whereArgs);
+            }
+            closeDatabase();
+        } catch (Throwable e) {
+            closeDatabase();
+            throw new Exception("Error en setFrecuenciaFotoCalidad");
+        }
+    }
+
+    public int getFrecuenciaFotoCalidad(Context context) throws Exception {
+        int valor;
+
+        try {
+            openDatabase(context);
+            Cursor c = mDb.rawQuery("SELECT value FROM config WHERE key='FrecuenciaFotoCalidad'", null);
+            c.moveToFirst();
+
+            if (c.getCount() == 0) {
+                closeDatabase();
+                return 0;
+            } else {
+                valor =  Utils.getInt(c, "value", 0);
+                closeDatabase();
+                return valor;
+            }
+        } catch (Throwable e) {
+            closeDatabase();
+            throw new Exception("Error en getFrecuenciaFotoCalidad");
+        }
+    }
+
+    public void setAgregarEtiquetasFotos(Context context, boolean value) throws Exception {
+        Cursor c;
+        ContentValues cv_params = new ContentValues(2);
+
+        try {
+            openDatabase(context);
+            c = mDb.rawQuery("Select value from config where key='AgregarEtiquetasFotos'", null);
+            c.moveToFirst();
+
+            if (c.getCount() == 0) {
+
+                cv_params.put("key", "AgregarEtiquetasFotos");
+                cv_params.put("value", (value? 1: 0));
+
+                mDb.insert("config", null, cv_params);
+            } else {
+                String whereClause = "key=?";
+                String[] whereArgs = {"AgregarEtiquetasFotos"};
+
+                cv_params.put("value", value);
+
+                mDb.update("config", cv_params, whereClause, whereArgs);
+            }
+            closeDatabase();
+        } catch (Throwable e) {
+            closeDatabase();
+            throw new Exception("Error en setAgregarEtiquetasFotos");
+        }
+    }
+
+    public boolean getAgregarEtiquetasFotos(Context context) throws Exception {
+        int valor;
+
+        try {
+            openDatabase(context);
+            Cursor c = mDb.rawQuery("SELECT value FROM config WHERE key='FrecuenciaFotoCalidad'", null);
+            c.moveToFirst();
+
+            if (c.getCount() == 0) {
+                closeDatabase();
+                return false;
+            } else {
+                valor =  Utils.getInt(c, "value", 0);
+                closeDatabase();
+                return (valor != 0) ? true : false;
+            }
+        } catch (Throwable e) {
+            closeDatabase();
+            throw new Exception("Error en getFrecuenciaFotoCalidad");
+        }
+    }
 }

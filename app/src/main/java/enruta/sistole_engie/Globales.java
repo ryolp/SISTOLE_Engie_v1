@@ -433,9 +433,48 @@ public class Globales extends Application {
 
     public void setUsuario(String s) {
         usuario = s;
-
     }
 
+    public int getFrecuenciaFotoCalidad() {
+        boolean existeSesion = true;
+
+        if (sesionEntity == null)
+            return 0;
+
+        if (sesionEntity.Parametros == null)
+            return 0;
+
+        return sesionEntity.Parametros.FrecuenciaFotoCalidad;
+    }
+
+    public void ActivarControlCalidadFotos() {
+        this.controlCalidadFotos = getFrecuenciaFotoCalidad();
+
+        if (this.controlCalidadFotos != 0)
+            this.ignorarContadorControlCalidad = false;
+        else
+            this.ignorarContadorControlCalidad = true;
+    }
+
+    public boolean getAgregarEtiquetaFotos() {
+        if (sesionEntity == null)
+            return false;
+
+        if (sesionEntity.Parametros == null)
+            return false;
+
+        return sesionEntity.Parametros.AgregarEtiquetaFoto;
+    }
+
+    public boolean getTomarFotoCambioMedidor() {
+        if (sesionEntity == null)
+            return false;
+
+        if (sesionEntity.Parametros == null)
+            return false;
+
+        return sesionEntity.Parametros.TomarFotoCambioMedidor;
+    }
 
     public String traducirAnomalia() {
         String anomaliaTraducida;

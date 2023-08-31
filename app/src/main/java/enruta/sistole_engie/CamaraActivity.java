@@ -20,8 +20,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.Size;
@@ -56,6 +60,13 @@ public class CamaraActivity extends Activity {
     public final static int CON_FLASH = 1;
     public final static int AUTO = 3;
 
+    /*TIPOS DE FOTOS*/
+
+    public final static int TIPO_FOTO_LECTURA = 0;
+    public final static int TIPO_FOTO_EMPLEADO = 1;
+    public final static int TIPO_FOTO_MEDIDOR_NO_REGISTRADO = 2;
+    public final static int TIPO_FOTO_MEDIDOR_CAMBIO_MEDIDOR = 3;
+
     CamaraActivity ca;
 
     private Camera mCamera;
@@ -65,7 +76,7 @@ public class CamaraActivity extends Activity {
     private FrameLayout fotoPreview, cPreview;
     private long secuencial;
     String is_terminacion = "-A", is_anomalia = "";
-    private ContentValues cv_datos;
+    private ContentValues mCv_datos;
     boolean otraFoto = false;
     private String caseta;
     private byte[] foto;
@@ -104,6 +115,13 @@ public class CamaraActivity extends Activity {
     // RL, 2023-05-11, diálogo para mostrar mensajes de error
     private DialogoMensaje mDialogoMsg = null;
 
+    // RL, 2023-08-30, Para saber el tipo de la foto: Lectura o de Empleado (Check-Seguridad)
+
+    private int mTipoFoto = 0;
+
+    /**
+     * Inicialización del Activity
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -128,6 +146,8 @@ public class CamaraActivity extends Activity {
 
             temporal = bu_params.getInt("temporal");
             cantidad = bu_params.getInt("cantidad");
+
+            mTipoFoto = bu_params.getInt("TipoFoto");
 
             ca = this;
 
@@ -175,7 +195,13 @@ public class CamaraActivity extends Activity {
 
         iniciaCamara();
         mostrarInformacion();
+        inicializarEventosBotones();
+    }
 
+    /**
+     * Inicializa los eventos de los botones
+     */
+    private void inicializarEventosBotones() {
         captureButton.setOnClickListener(
                 new View.OnClickListener() {
                     @SuppressLint("NewApi")
@@ -334,8 +360,11 @@ public class CamaraActivity extends Activity {
                 hacerFirmar();
             }
         });
-
     }
+
+    /**
+     * Inicialización de la cámara
+     */
 
     public void iniciaCamara() {
         mensajeEspere();
@@ -432,6 +461,10 @@ public class CamaraActivity extends Activity {
         preview.addView(mPreview);
         ca.alert.dismiss();
     }
+
+    /**
+     * Cambio de la resolución
+     */
 
     protected int seleccionarResolucionModerada(Camera.Parameters cp, int width, int height) {
         List<Size> resolutions = cp.getSupportedPictureSizes();
@@ -554,38 +587,17 @@ public class CamaraActivity extends Activity {
 //    	//Hay que preguntar por la terminacion
 //    	ls_nombre+= "_" + is_terminacion +".jpg";
 
-            if (is_terminacion.equals("Check")) {
-                ls_nombre = Main.rellenaString(is_terminacion, "x", 10, true) + "-";
-                ls_nombre += Main.rellenaString(caseta, "0", 20, true) + "-";
-                ls_nombre += Main.obtieneFecha("ymd");
-                ls_nombre += Main.obtieneFecha("his");
-                ls_nombre += ".JPG";
+            infoFoto = getInfoFoto();
 
-                infoFoto = globales.tdlg.getInfoFoto(globales, db);
-
-                infoFoto.nombreFoto = ls_nombre;
-            } else if (is_terminacion.equals("NoReg")) {
-                ls_nombre = Main.rellenaString(is_terminacion, "x", 10, true) + "-";
-                ls_nombre += Main.rellenaString(String.valueOf(secuencial), "0", 10, true) + "-";
-                ls_nombre += Main.rellenaString(caseta, "0", 5, true) + "-";
-                ls_nombre += Main.obtieneFecha("ymd");
-                ls_nombre += Main.obtieneFecha("his");
-                ls_nombre += ".JPG";
-
-                infoFoto = globales.tdlg.getInfoFoto(globales, db);
-                infoFoto.NumId = Utils.convToInt(caseta);
-
-                infoFoto.nombreFoto = ls_nombre;
-            }  else {
-                infoFoto = globales.tdlg.getInfoFoto(globales, db, secuencial, is_terminacion, is_anomalia);
-            }
             db.close();
             dbHelper.close();
 
-            cv_datos = new ContentValues(8);
+            mCv_datos = new ContentValues(8);
 
             ByteArrayInputStream imageStream = new ByteArrayInputStream(foto);
             Bitmap theImage = rotateImage(imageStream);
+
+            agregarInfoImagen(theImage, infoFoto);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -593,15 +605,15 @@ public class CamaraActivity extends Activity {
 
             byte[] fotoAGuardar = out.toByteArray();
 
-            cv_datos.put("secuencial", secuencial);
-            cv_datos.put("nombre", infoFoto.nombreFoto);
-            cv_datos.put("foto", fotoAGuardar);
-            cv_datos.put("envio", TomaDeLecturas.NO_ENVIADA);
-            cv_datos.put("temporal", temporal);
-            cv_datos.put("idLectura", infoFoto.idLectura);
-            cv_datos.put("idEmpleado", infoFoto.idEmpleado);
-            cv_datos.put("idArchivo", infoFoto.idArchivo);
-            cv_datos.put("NumId", infoFoto.NumId);
+            mCv_datos.put("secuencial", secuencial);
+            mCv_datos.put("nombre", infoFoto.nombreFoto);
+            mCv_datos.put("foto", fotoAGuardar);
+            mCv_datos.put("envio", TomaDeLecturas.NO_ENVIADA);
+            mCv_datos.put("temporal", temporal);
+            mCv_datos.put("idLectura", infoFoto.idLectura);
+            mCv_datos.put("idEmpleado", infoFoto.idEmpleado);
+            mCv_datos.put("idArchivo", infoFoto.idArchivo);
+            mCv_datos.put("NumId", infoFoto.NumId);
             this.foto = foto;
         } catch (Throwable t) {
             throw new Exception("Error al guardar foto", t);
@@ -654,7 +666,7 @@ public class CamaraActivity extends Activity {
             DBHelper dbHelper = new DBHelper(this);
             SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-            id = db.insertOrThrow("fotos", null, cv_datos);
+            id = db.insertOrThrow("fotos", null, mCv_datos);
 
             //Guardar las fotos en la memoria del telefono, si me piden esto despues lo habilito pero por mientras vamos a quitarlo, ya que no tenemos control de esto.
     	/*File pictureFile = getOutputMediaFile(1, ls_nombre);
@@ -738,8 +750,53 @@ public class CamaraActivity extends Activity {
         }
     };
 
+    private InfoFotoEntity getInfoFoto() throws Exception {
+        try {
+            InfoFotoEntity infoFoto = new InfoFotoEntity();
+            DBHelper dbHelper = new DBHelper(this);
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+            String ls_nombre = "";
+
+            if (is_terminacion.equals("Check")) {
+                ls_nombre = Main.rellenaString(is_terminacion, "x", 10, true) + "-";
+                ls_nombre += Main.rellenaString(caseta, "0", 20, true) + "-";
+                ls_nombre += Main.obtieneFecha("ymd");
+                ls_nombre += Main.obtieneFecha("his");
+                ls_nombre += ".JPG";
+
+                infoFoto = globales.tdlg.getInfoFoto(globales, db);
+
+                infoFoto.nombreFoto = ls_nombre;
+            } else if (is_terminacion.equals("NoReg")) {
+                ls_nombre = Main.rellenaString(is_terminacion, "x", 10, true) + "-";
+                ls_nombre += Main.rellenaString(String.valueOf(secuencial), "0", 10, true) + "-";
+                ls_nombre += Main.rellenaString(caseta, "0", 5, true) + "-";
+                ls_nombre += Main.obtieneFecha("ymd");
+                ls_nombre += Main.obtieneFecha("his");
+                ls_nombre += ".JPG";
+
+                infoFoto = globales.tdlg.getInfoFoto(globales, db);
+                infoFoto.NumId = Utils.convToInt(caseta);
+
+                infoFoto.nombreFoto = ls_nombre;
+            } else {
+                infoFoto = globales.tdlg.getInfoFoto(globales, db, secuencial, is_terminacion, is_anomalia);
+                infoFoto.Lectura = globales.is_lectura;
+            }
+
+            return infoFoto;
+        } catch (Throwable t) {
+            throw new Exception("Error al obtener información para la foto");
+        }
+    }
+
     public void muestraPreview() throws Exception {
         try {
+            InfoFotoEntity infoFoto = new InfoFotoEntity();
+            DBHelper dbHelper = new DBHelper(this);
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+
             ImageView imageView = new ImageView(this);
             int padding = /*context.getResources().getDimensionPixelSize(R.dimen.padding_medium)*/0;
             imageView.setPadding(padding, padding, padding, padding);
@@ -749,6 +806,11 @@ public class CamaraActivity extends Activity {
             ByteArrayInputStream imageStream = new ByteArrayInputStream(foto);
             Bitmap theImage = rotateImage(imageStream);
             //theImage =resizeImage(imageStream);
+
+            infoFoto = getInfoFoto();
+
+            agregarInfoImagen(theImage, infoFoto);
+
             imageView.setImageBitmap(theImage);
 
             fotoPreview.removeAllViews();
@@ -1145,6 +1207,84 @@ public class CamaraActivity extends Activity {
         }
 //                break;
 //        }
+    }
+
+    private void agregarInfoImagen(Bitmap bitmap, InfoFotoEntity info) {
+        Canvas canvas;
+        int width;
+        int height;
+        int width_rect;
+        int height_rect;
+        String texto1 = "Serie Medidor";
+        String texto2 = "Lectura";
+        int x = 0;
+        int y = 0;
+        int margenTop = 30;
+        int margen = 5;
+        int top = 0;
+        int left = 0;
+        int right = 0;
+        int bottom = 0;
+        Rect rect = new Rect();
+
+        if (mTipoFoto != TIPO_FOTO_LECTURA)
+            return;
+
+        if (info == null)
+            return;
+
+        texto1 = "M: " + info.SerieMedidor;
+        texto2 = "L: " + info.Lectura;
+
+        canvas = new Canvas(bitmap);
+
+        width = bitmap.getWidth();
+        height = bitmap.getHeight();
+
+        Paint paintTexto = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paintTexto.setColor(Color.BLACK);
+        paintTexto.setTextSize(16);
+        paintTexto.setShadowLayer(1f, 0f, 1f, Color.DKGRAY);
+
+        Rect boundsTexto1 = new Rect();
+        paintTexto.getTextBounds(texto1, 0, texto1.length(), boundsTexto1);
+
+        Rect boundsTexto2 = new Rect();
+        paintTexto.getTextBounds(texto2, 0, texto2.length(), boundsTexto2);
+
+        Paint paintRectContorno = new Paint();
+        paintRectContorno.setAntiAlias(true);
+        paintRectContorno.setColor(Color.RED);
+        paintRectContorno.setStyle(Paint.Style.STROKE);
+        paintRectContorno.setStrokeWidth(4);
+
+        Paint paintRectRelleno = new Paint();
+        paintRectContorno.setAntiAlias(true);
+        paintRectContorno.setColor(Color.WHITE);
+        paintRectContorno.setStyle(Paint.Style.FILL);
+
+        width_rect = Math.max(boundsTexto1.width(), boundsTexto2.width());
+        height_rect = boundsTexto1.height() + margen + boundsTexto2.height();
+
+        x = (bitmap.getWidth() - width_rect) / 2;
+
+        left = x - margen;
+        top = margenTop - margen - boundsTexto1.height();
+        right = left + width_rect + 2 * margen;
+        bottom = top + height_rect + 2 * margen;
+
+        canvas.drawRect(left, top, right, bottom, paintRectRelleno);
+        canvas.drawRect(left - 4, top - 4, right + 8, bottom + 8, paintRectContorno);
+
+        // y = (bitmap.getHeight() + boundsTexto1.height())/5;
+
+        y = margenTop;
+
+        canvas.drawText(texto1, x, y, paintTexto);
+
+        y += margen + boundsTexto1.height();
+
+        canvas.drawText(texto2, x, y, paintTexto);
     }
 
        /* -------------------------------------------------------------------------------------------

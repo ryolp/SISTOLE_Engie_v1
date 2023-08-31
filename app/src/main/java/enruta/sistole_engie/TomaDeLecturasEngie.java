@@ -16,7 +16,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
@@ -405,12 +404,14 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         ls_nombre += ".JPG";
 
         infoFoto.nombreFoto = ls_nombre;
+        infoFoto.SerieMedidor = lect.getSerieMedidorCorregido();
         infoFoto.idLectura = Utils.convToLong(lect.poliza);
         infoFoto.idArchivo = lect.idArchivo;
         infoFoto.idEmpleado = globales.getIdEmpleado();
         infoFoto.Unidad = lect.unidad;
         infoFoto.Regional = lect.mRegional;
         infoFoto.Porcion = lect.mPorcion;
+        infoFoto.Lectura = lect.getLectura();
 
         return infoFoto;
     }
@@ -939,7 +940,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         globales.tlc.add(new Campo(22, "miLatitud", 424, 5, Campo.I, " "));
         globales.tlc.add(new Campo(23, "miLongitud", 429, 5, Campo.I, " "));
         globales.tlc.add(new Campo(24, "Estimaciones", 434, 10, Campo.I, " "));
-        globales.tlc.add(new Campo(25, "TipoDeCliente", 444, 10, Campo.I, " "));
+        globales.tlc.add(new Campo(25, "MotivoLectura", 444, 10, Campo.I, " "));
         globales.tlc.add(new Campo(26, "nota1", 404, 10, Campo.I, " "));
 
         // RL, 13/12/22, Columnas nuevas
@@ -1789,7 +1790,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
 
         } catch (Throwable e) {
-
+            e.printStackTrace();
         }
 
         try {
@@ -1797,7 +1798,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
             c.moveToFirst();
             cpl = Utils.getString(c, "value", "");
         } catch (Throwable e) {
-
+            e.printStackTrace();
         }
 
         try {
@@ -1805,7 +1806,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
             c.moveToFirst();
             mac_bt = Utils.getString(c, "value", "");
         } catch (Throwable e) {
-
+            e.printStackTrace();
         }
 
 

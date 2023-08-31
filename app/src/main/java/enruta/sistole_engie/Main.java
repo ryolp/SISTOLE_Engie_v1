@@ -1449,6 +1449,7 @@ public class Main extends FragmentActivity implements TabListener {
         camara.putExtra("temporal", 1);
         camara.putExtra("cantidad", 1);
         camara.putExtra("anomalia", "SinAnomalia");
+        camara.putExtra("TipoFoto", CamaraActivity.TIPO_FOTO_EMPLEADO);
         // vengoDeFotos = true;
         startActivityForResult(camara, FOTO_CHECK_SEGURIDAD);
     }

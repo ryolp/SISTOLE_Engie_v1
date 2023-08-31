@@ -33,6 +33,7 @@ import enruta.sistole_engie.clases.AutenticadorMgr;
 import enruta.sistole_engie.entities.LoginRequestEntity;
 import enruta.sistole_engie.entities.LoginResponseEntity;
 import enruta.sistole_engie.entities.SesionEntity;
+import enruta.sistole_engie.services.DbConfigMgr;
 
 public class CPL extends Activity {
 
@@ -340,9 +341,8 @@ public class CPL extends Activity {
             if (globales.tipoDeValidacion == globales.CON_SMS && !bForzarAdministrador) {
                 habilitarControlesAutenticacionSMS();
                 esSuperUsuario = false;
-            }
-            else {
-                if (secuencia.equals("")){
+            } else {
+                if (secuencia.equals("")) {
                     tv_usuario.setVisibility(View.GONE);
                     et_usuario.setVisibility(View.GONE);
 
@@ -356,9 +356,7 @@ public class CPL extends Activity {
 
                     globales.secuenciaSuperUsuario = "A";
                     esSuperUsuario = false;
-                }
-                else if (esSuperUsuario() && secuencia.equals("A"))
-                {
+                } else if (esSuperUsuario() && secuencia.equals("A")) {
                     globales.secuenciaSuperUsuario = "";
                     esSuperUsuario = true;
                     irActivityMain();
@@ -804,14 +802,12 @@ public class CPL extends Activity {
                 password = getPassword();
                 secuenciaSuperUsuario = getSecuenciaSuperUsuario();
 
-                if (!secuenciaSuperUsuario.equals("A"))
-                {
+                if (!secuenciaSuperUsuario.equals("A")) {
                     if (password.equals(""))
                         showMessageShort("Falta capturar la contraseña");
                     else
                         autenticar(btnValidarSMS);
-                }
-                else
+                } else
                     entrarAdministrador2(btnAutenticar, true);
 
                 return false;
@@ -1034,27 +1030,49 @@ public class CPL extends Activity {
         mDialogoMsg.mostrarMensaje(titulo, mensaje, detalleError);
     }
 
+    private void mostrarMensaje(String titulo, String mensaje, Throwable t, DialogoMensaje.Resultado resultado) {
+        String msg = "";
+
+        if (t != null)
+            msg = t.getMessage();
+
+        mostrarMensaje(titulo, mensaje, msg, resultado);
+    }
+
     private void procesarAutenticacion(LoginResponseEntity loginResponseEntity) {
         mIntentosCodigoSMS = 0;
 
-        if (loginResponseEntity.Exito) {
-            globales.sesionEntity = new SesionEntity(loginResponseEntity);
+        try {
+            if (loginResponseEntity.Exito) {
+                globales.sesionEntity = new SesionEntity(loginResponseEntity);
 
-            if (loginResponseEntity.AutenticarConSMS) {
-                lblCodigoSMS.setVisibility(View.VISIBLE);
-                txtCodigoSMS.setVisibility(View.VISIBLE);
-                btnValidarSMS.setVisibility(View.VISIBLE);
-                btnAutenticar.setVisibility(View.GONE);
-                btnAutenticar.setEnabled(false);
-                et_usuario.setFocusable(false);
-                et_usuario.setEnabled(false);
-                et_contrasena.setFocusable(false);
-                et_contrasena.setEnabled(false);
-            } else {
-                globales.sesionEntity.Autenticado = true;
-                globales.secuenciaSuperUsuario = "";
-                irActivityMain();
+                if (loginResponseEntity.AutenticarConSMS) {
+                    lblCodigoSMS.setVisibility(View.VISIBLE);
+                    txtCodigoSMS.setVisibility(View.VISIBLE);
+                    btnValidarSMS.setVisibility(View.VISIBLE);
+                    btnAutenticar.setVisibility(View.GONE);
+                    btnAutenticar.setEnabled(false);
+                    et_usuario.setFocusable(false);
+                    et_usuario.setEnabled(false);
+                    et_contrasena.setFocusable(false);
+                    et_contrasena.setEnabled(false);
+                } else {
+                    globales.sesionEntity.Autenticado = true;
+                    globales.secuenciaSuperUsuario = "";
+
+                    if (loginResponseEntity.Parametros != null) {
+                        DbConfigMgr.getInstance().setFrecuenciaFotoCalidad(this, loginResponseEntity.Parametros.FrecuenciaFotoCalidad);
+                        DbConfigMgr.getInstance().setAgregarEtiquetasFotos(this, loginResponseEntity.Parametros.AgregarEtiquetaFoto);
+
+                        if (globales != null)
+                            globales.ActivarControlCalidadFotos();
+                    }
+
+                    irActivityMain();
+                }
             }
+        } catch (Throwable t) {
+            mostrarMensaje("Alerta", "Problema inesperado", t, null);
         }
     }
 
@@ -1172,17 +1190,28 @@ public class CPL extends Activity {
     }
 
     private void procesarValidacionSMS(LoginResponseEntity loginResponseEntity) {
-        if (loginResponseEntity.Error) {
-            globales.sesionEntity = null;
-            showMessageLong("No hay conexión a internet. Intente nuevamente. (4) : " + loginResponseEntity.Mensaje);
-            return;
-        }
+        try {
+            if (loginResponseEntity.Error) {
+                globales.sesionEntity = null;
+                showMessageLong("No hay conexión a internet. Intente nuevamente. (4) : " + loginResponseEntity.Mensaje);
+                return;
+            }
 
-        if (loginResponseEntity.Exito) {
-            globales.sesionEntity = new SesionEntity(loginResponseEntity);
-            globales.sesionEntity.Autenticado = true;
-            globales.secuenciaSuperUsuario = "";
-            irActivityMain();
+            if (loginResponseEntity.Exito) {
+                globales.sesionEntity = new SesionEntity(loginResponseEntity);
+                globales.sesionEntity.Autenticado = true;
+                globales.secuenciaSuperUsuario = "";
+
+                if (loginResponseEntity.Parametros != null) {
+                    DbConfigMgr.getInstance().setFrecuenciaFotoCalidad(this, loginResponseEntity.Parametros.FrecuenciaFotoCalidad);
+                    DbConfigMgr.getInstance().setAgregarEtiquetasFotos(this, loginResponseEntity.Parametros.AgregarEtiquetaFoto);
+                    globales.ActivarControlCalidadFotos();
+                }
+
+                irActivityMain();
+            }
+        } catch (Throwable t) {
+            mostrarMensaje("Alerta", "Problema inesperado", t, null);
         }
     }
 
@@ -1226,8 +1255,7 @@ public class CPL extends Activity {
                 esLecturista = globales.sesionEntity.EsLecturista;
                 is_nombre_Lect = globales.sesionEntity.Usuario;
             }
-        }
-        else
+        } else
             esAdministrador = esSuperUsuario;
 
         switch (ii_perfil) {

@@ -23,6 +23,7 @@ public class SesionEntity {
     public long idArchivoUnidad;
     public String MensajeLecturista = "";
     public boolean hacerSincronizacion = false;
+    public ParametrosCplEntity Parametros;
 
     public SesionEntity() {
 
@@ -40,6 +41,7 @@ public class SesionEntity {
         this.empleado = loginResponseEntity.Empleado;
         this.Token = loginResponseEntity.Token;
         this.MensajeLecturista = loginResponseEntity.MensajeLecturista;
+        this.Parametros = loginResponseEntity.Parametros;
 
         inicializarHoraVencimiento();
     }
@@ -47,7 +49,11 @@ public class SesionEntity {
     public void inicializarHoraVencimiento() {
         Calendar calendar = Calendar.getInstance();
 
-        calendar.add(Calendar.HOUR, 4);
+        if (Parametros != null)
+            calendar.add(Calendar.MINUTE, Parametros.MinutosSesionApp);
+        else
+            calendar.add(Calendar.HOUR, 8);
+
         HoraFinSesion = calendar.getTime();
     }
 

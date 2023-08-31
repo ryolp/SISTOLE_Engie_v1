@@ -88,6 +88,7 @@ public class Lectura extends DbBaseMgr {
     private int mIntercambiarSerieMedidor;  // RL, 2023-01-17, Indicar de si se intercambia la serieMedidor por el código de barras del
     // ... medidor en la pantalla de Toma de Lecturas, Input y Búsqueda de Medidor.
     private String mCodigoRespuestaEncuesta = "";
+    private String mMotivoLectura = "";
 
     private Resources res;
 
@@ -258,6 +259,7 @@ public class Lectura extends DbBaseMgr {
             mIdUnidadLect = getInt(c, "idUnidadLect", 0);
             mIdRegionalLect = getInt(c, "idRegionalLect", 0);
             mIntercambiarSerieMedidor = getInt(c, "IntercambiarSerieMedidor", 0);
+            mMotivoLectura = getString(c, "MotivoLectura", "");
 
 //			if (ls_anomalia.equals("") && secuencia%3==0)
 //				ls_anomalia="AC*";
@@ -1698,6 +1700,10 @@ public class Lectura extends DbBaseMgr {
 
     public void setCodigoRespuestaEncuesta(String valor) {
         mCodigoRespuestaEncuesta = valor;
+    }
+
+    public String getmMotivoLectura() {
+        return mMotivoLectura;
     }
 
 }
