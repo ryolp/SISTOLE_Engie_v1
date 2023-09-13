@@ -6,7 +6,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import enruta.sistole_engie.clases.AppException;
-import enruta.sistole_engie.entities.InfoFotoEntity;
+import enruta.sistole_engie.entities.DatosEnvioEntity;
 import enruta.sistole_engie.entities.ResumenEntity;
 import enruta.sistole_engie.clases.Utils;
 import enruta.sistole_engie.entities.EmpleadoCplEntity;
@@ -372,10 +372,10 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
     // RL, 2023-01-02, Regresar una estructura de datos, con la información suficiente para transmitir la foto con sus datos relacionados.
 
-    public InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia) {
+    public DatosEnvioEntity getInfoFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia) {
         String ls_nombre = "", ls_unicom;
         Cursor c;
-        InfoFotoEntity infoFoto = new InfoFotoEntity();
+        DatosEnvioEntity infoFoto = new DatosEnvioEntity();
         Lectura lect;
 
         /**
@@ -418,10 +418,10 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
 
     // RL, 2023-01-02, Regresar una estructura de datos, con la información suficiente para transmitir la foto con sus datos relacionados.
 
-    public InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db) throws Exception {
+    public DatosEnvioEntity getInfoFoto(Globales globales, SQLiteDatabase db) throws Exception {
         String ls_nombre = "", ls_unicom;
         Cursor c;
-        InfoFotoEntity infoFoto = new InfoFotoEntity();
+        DatosEnvioEntity infoFoto = new DatosEnvioEntity();
         Lectura lect;
 
         /**
@@ -770,66 +770,12 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
     @Override
     public long regresaDeCamposGenericos(Bundle bu_params, String anomalia) throws Exception {
         String cadena =/*globales.lote*/"";
-        Lectura lectura;
-        ContentValues cv_datos = new ContentValues();
         long idValorInsertado = 0;
 
         if (anomalia.equals("noregistrados")) {
-            lectura = globales.tll.getLecturaActual();
-
-            if (lectura == null)
-                throw new Exception("No se encontró una lectura para realizar la operación.");
-
-            openDatabase();
-
-//            cadena += Main.rellenaString(bu_params.getString(String.valueOf(CALLE)), " ", 30, false);
-//            cadena += Main.rellenaString(bu_params.getString(String.valueOf(COLONIA)), " ", 50, false);
-//            cadena += Main.rellenaString(bu_params.getString(String.valueOf(NUM_MEDIDOR)), " ", 20, false);
-//            cadena += Main.rellenaString(bu_params.getString(String.valueOf(NUM_ESFERAS)), "0", 2, true);
-//            cadena += Main.rellenaString(bu_params.getString(String.valueOf(LECTURA)), "0", 8, true);
-//
-//            cadena += Main.rellenaString(bu_params.getString(String.valueOf(OBSERVACIONES)), " ", 25, false);
-
-            cv_datos.put("envio", 1);
-            cv_datos.put("idArchivo", lectura.idArchivo);
-            cv_datos.put("idLectura", lectura.poliza);
-            cv_datos.put("idUnidadLect", lectura.mIdUnidadLect);
-            cv_datos.put("idEmpleado", globales.getIdEmpleado());
-            cv_datos.put("Calle", bu_params.getString(String.valueOf(CALLE)));
-            cv_datos.put("Colonia", bu_params.getString(String.valueOf(COLONIA)));
-            cv_datos.put("NumMedidor", bu_params.getString(String.valueOf(NUM_MEDIDOR)));
-            cv_datos.put("Lectura", bu_params.getString(String.valueOf(LECTURA)));
-            cv_datos.put("Observaciones", bu_params.getString(String.valueOf(OBSERVACIONES)));
-            cv_datos.put("TipoRegistro", "NR");
-
-            //Guardamos en la bd
-            //db.execSQL("insert into noRegistrados (envio, poliza) values(1, '" + cadena + "')");
-
-            idValorInsertado = db.insert("noRegistrados", null, cv_datos);
-
-            closeDatabase();
+            idValorInsertado = guardarMedidorNoRegistrado(bu_params);
         } else if (anomalia.equals("cambiomedidor")) {
-            lectura = globales.tll.getLecturaActual();
-
-            if (lectura == null)
-                throw new Exception("No se encontró una lectura para realizar la operación.");
-
-            cv_datos.put("envio", 1);
-            cv_datos.put("idArchivo", lectura.idArchivo);
-            cv_datos.put("idLectura", lectura.poliza);
-            cv_datos.put("idUnidadLect", lectura.mIdUnidadLect);
-            cv_datos.put("Calle", lectura.getDireccion());
-            cv_datos.put("Colonia", lectura.getColonia());
-            cv_datos.put("NumMedidor", bu_params.getString(String.valueOf(NUM_MEDIDOR)));
-            cv_datos.put("TipoRegistro", "CM");
-
-            openDatabase();
-
-            // db.execSQL("insert into noRegistrados(envio, poliza) values(1, '" + cadena + "')");
-
-            idValorInsertado = db.insert("noRegistrados", null, cv_datos);
-
-            closeDatabase();
+            idValorInsertado = guardarCambioMedidor(bu_params.getString(String.valueOf(NUM_MEDIDOR)));
         } else if (anomalia.equals("sellos")) {
             //Hay que poner el sello de instalacion
             String retirado = bu_params.getString(String.valueOf(SELLO_RET_NUMERO)).trim().equals("") ? "0" : bu_params.getString(String.valueOf(SELLO_RET_NUMERO)).trim();
@@ -847,10 +793,89 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
             closeDatabase();
         } else if (anomalia.equals("observacion")) {
         } else if (anomalia.equals("campana")) {
+        } else if (anomalia.equals("002")) {
+
+            // RL / 2023-09-07 / Cuando la anomalía es Cambio de Medidor guardar un registro
+
+            idValorInsertado = guardarCambioMedidor(bu_params.getString("input"));
         } else {
             globales.tll.getLecturaActual().ls_codigoObservacion = "OB032";
             globales.tll.getLecturaActual().setComentarios(bu_params.getString("input"));
         }
+
+        return idValorInsertado;
+    }
+
+    private long guardarCambioMedidor(String numMedidor) throws Exception {
+        Lectura lectura;
+        ContentValues cv_datos = new ContentValues();
+        long idValorInsertado = 0;
+
+        lectura = globales.tll.getLecturaActual();
+
+        if (lectura == null)
+            throw new Exception("No se encontró una lectura para realizar la operación.");
+
+        lectura.setComentarios("Num Medidor: " + numMedidor);
+
+        cv_datos.put("envio", 1);
+        cv_datos.put("idArchivo", lectura.idArchivo);
+        cv_datos.put("idLectura", lectura.poliza);
+        cv_datos.put("idUnidadLect", lectura.mIdUnidadLect);
+        cv_datos.put("Calle", lectura.getDireccion());
+        cv_datos.put("Colonia", lectura.getColonia());
+        cv_datos.put("NumMedidor", numMedidor);
+        cv_datos.put("TipoRegistro", "CM");
+
+        openDatabase();
+
+        // db.execSQL("insert into noRegistrados(envio, poliza) values(1, '" + cadena + "')");
+
+        idValorInsertado = db.insert("noRegistrados", null, cv_datos);
+
+        closeDatabase();
+
+        return idValorInsertado;
+    }
+
+    private long guardarMedidorNoRegistrado(Bundle bu_params) throws Exception {
+        Lectura lectura;
+        ContentValues cv_datos = new ContentValues();
+        long idValorInsertado = 0;
+
+        lectura = globales.tll.getLecturaActual();
+
+        if (lectura == null)
+            throw new Exception("No se encontró una lectura para realizar la operación.");
+
+        openDatabase();
+
+//            cadena += Main.rellenaString(bu_params.getString(String.valueOf(CALLE)), " ", 30, false);
+//            cadena += Main.rellenaString(bu_params.getString(String.valueOf(COLONIA)), " ", 50, false);
+//            cadena += Main.rellenaString(bu_params.getString(String.valueOf(NUM_MEDIDOR)), " ", 20, false);
+//            cadena += Main.rellenaString(bu_params.getString(String.valueOf(NUM_ESFERAS)), "0", 2, true);
+//            cadena += Main.rellenaString(bu_params.getString(String.valueOf(LECTURA)), "0", 8, true);
+//
+//            cadena += Main.rellenaString(bu_params.getString(String.valueOf(OBSERVACIONES)), " ", 25, false);
+
+        cv_datos.put("envio", 1);
+        cv_datos.put("idArchivo", lectura.idArchivo);
+        cv_datos.put("idLectura", lectura.poliza);
+        cv_datos.put("idUnidadLect", lectura.mIdUnidadLect);
+        cv_datos.put("idEmpleado", globales.getIdEmpleado());
+        cv_datos.put("Calle", bu_params.getString(String.valueOf(CALLE)));
+        cv_datos.put("Colonia", bu_params.getString(String.valueOf(COLONIA)));
+        cv_datos.put("NumMedidor", bu_params.getString(String.valueOf(NUM_MEDIDOR)));
+        cv_datos.put("Lectura", bu_params.getString(String.valueOf(LECTURA)));
+        cv_datos.put("Observaciones", bu_params.getString(String.valueOf(OBSERVACIONES)));
+        cv_datos.put("TipoRegistro", "NR");
+
+        //Guardamos en la bd
+        //db.execSQL("insert into noRegistrados (envio, poliza) values(1, '" + cadena + "')");
+
+        idValorInsertado = db.insert("noRegistrados", null, cv_datos);
+
+        closeDatabase();
 
         return idValorInsertado;
     }
@@ -1331,7 +1356,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
         return new int[0];
     }
 
-    public String getNombreArchvio(int tipo) throws Exception {
+    public String getNombreArchivo(int tipo) throws Exception {
 
         String ls_archivo = "";
         TransmitionObject to = new TransmitionObject();
@@ -1353,7 +1378,7 @@ public class TomaDeLecturasEngie extends TomaDeLecturasGenerica {
                 return to.ls_categoria;
         }
 
-        return super.getNombreArchvio(tipo);
+        return super.getNombreArchivo(tipo);
     }
 
     public Cursor getContenidoDelArchivo(SQLiteDatabase db, int tipo) {

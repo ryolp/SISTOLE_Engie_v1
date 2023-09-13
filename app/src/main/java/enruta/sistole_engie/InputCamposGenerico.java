@@ -177,6 +177,7 @@ public class InputCamposGenerico extends Activity {
                 intent.putExtra(dbField, texto);
             }
         }
+
         if (!is_anomalia.equals("")) {
             String mensaje = globales.tdlg.validaCamposGenericos(is_anomalia, intent.getExtras());
             if (!mensaje.equals("")) {

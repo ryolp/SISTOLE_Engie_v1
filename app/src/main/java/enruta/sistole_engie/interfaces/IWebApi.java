@@ -10,6 +10,8 @@ import enruta.sistole_engie.entities.OperacionRequest;
 import enruta.sistole_engie.entities.OperacionResponse;
 import enruta.sistole_engie.entities.LoginRequestEntity;
 import enruta.sistole_engie.entities.LoginResponseEntity;
+import enruta.sistole_engie.entities.SubirDatosRequest;
+import enruta.sistole_engie.entities.SubirDatosResponse;
 import enruta.sistole_engie.entities.SubirFotoResponse;
 import enruta.sistole_engie.entities.SupervisorLogRequest;
 import enruta.sistole_engie.entities.SupervisorLogResponse;
@@ -77,6 +79,9 @@ public interface IWebApi {
 
     @POST("api/operaciones/OperacionGenerica")
     Call<OperacionGenericaResponse> operacionGenerica(@Body OperacionGenericaRequest request);
+
+    @POST("api/operaciones/SubirDatos")
+    Call<SubirDatosResponse> subirDatos(@Body SubirDatosRequest request);
 
     @Multipart
     @POST("api/operaciones/subirFoto2")

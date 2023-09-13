@@ -17,6 +17,7 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 
 import enruta.sistole_engie.clases.BateriaMgr;
+import enruta.sistole_engie.clases.Utils;
 import enruta.sistole_engie.services.DbBaseMgr;
 import enruta.sistole_engie.services.DbConfigMgr;
 
@@ -79,7 +80,7 @@ public class Lectura extends DbBaseMgr {
     private String mMiLongitud;           // CE, 10/10/22, Geolocalizacion del Medidor
     String estimacionesEngie;    // CE, 10/10/22, Numero de Estimaciones
     String tipoDeCliente;        // CE, 10/10/22, Tipo de Cliente
-    String tipoDeAcuse;          // CE, 10/10/22, Motivo por el que se pide Acuse
+    private String tipoDeAcuse;          // CE, 10/10/22, Motivo por el que se pide Acuse
 
     public String mPorcion;        // RL, 2023-01-02, ID de la porcion
     public String mRegional;    // RL, 2023-01-02, Nombre de la regional
@@ -89,6 +90,7 @@ public class Lectura extends DbBaseMgr {
     // ... medidor en la pantalla de Toma de Lecturas, Input y Búsqueda de Medidor.
     private String mCodigoRespuestaEncuesta = "";
     private String mMotivoLectura = "";
+    private int mEsTuvoControlCalidad = 0;
 
     private Resources res;
 
@@ -522,6 +524,7 @@ public class Lectura extends DbBaseMgr {
         cv_params.put("fix", is_fix);
         cv_params.put("codigoObservacion", ls_codigoObservacion);
         cv_params.put("codigoRespuestaEncuesta", mCodigoRespuestaEncuesta);
+        cv_params.put("ControlCalidad", mEsTuvoControlCalidad);
         cv_params.put("envio", 1);
 
         String params[] = {String.valueOf(secuenciaReal)};
@@ -930,9 +933,21 @@ public class Lectura extends DbBaseMgr {
     }
 
     public boolean confirmarLectura() {
-        return is_supervisionLectura.equals("1")
-                || is_reclamacionLectura.equals("1");
+        Boolean esConfirmar = false;
+        Boolean hacerControlCalidad = false;
+        Boolean esSospechosa;
 
+        esConfirmar = is_supervisionLectura.equals("1") || is_reclamacionLectura.equals("1")
+                || this.getEsAcuseRecibo();
+
+        esSospechosa = (Utils.convToInt(sospechosa) > 0);
+
+        if (!esConfirmar && !esSospechosa) {
+            hacerControlCalidad = globales.getHacerControlCalidad();
+            mEsTuvoControlCalidad = hacerControlCalidad ? 1:0;
+        }
+
+        return esConfirmar  || hacerControlCalidad;
     }
 
     public Spanned getInfoPreview(int tipoDeBusqueda, String textoBuscado, int totalMedidores) {
@@ -1666,6 +1681,40 @@ public class Lectura extends DbBaseMgr {
 
     public String getTipoDeAcuse() {
         return tipoDeAcuse;
+    }
+
+    public boolean getEsAcuseRecibo() {
+        String s;
+
+        s = tipoDeAcuse.trim();
+
+        if (s.equals("1"))
+            return true;
+
+        if (s.equals("2"))
+            return true;
+
+        if (s.equals("3"))
+            return true;
+
+        if (s.equals("4"))
+            return true;
+
+        if (s.equals("5"))
+            return true;
+
+        return false;
+    }
+
+    public boolean getEsFaunaNociva() {
+        String s;
+
+        s = tipoDeAcuse.trim();
+
+        if (s.equals("6"))
+            return true;
+        else
+            return false;
     }
 
     public boolean getIntercambiarSerieMedidor() throws Exception {

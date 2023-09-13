@@ -1,5 +1,6 @@
 package enruta.sistole_engie;
 
+import java.util.Random;
 import java.util.Vector;
 
 import android.app.Application;
@@ -92,6 +93,8 @@ public class Globales extends Application {
      * Por cada cuantas lecturas malas toma una foto
      **/
     int controlCalidadFotos = 1;
+    int controlCalidadFotoIndice = 0;
+    int controlCalidadFotoContador = 0;
     boolean ignorarContadorControlCalidad = false;
     boolean ignorarfoto = false;
 
@@ -445,6 +448,32 @@ public class Globales extends Application {
             return 0;
 
         return sesionEntity.Parametros.FrecuenciaFotoCalidad;
+    }
+
+    public boolean getHacerControlCalidad() {
+        int n;
+        int random;
+
+        n = getFrecuenciaFotoCalidad();
+        if (n <= 0)
+            return false;
+
+        if (controlCalidadFotoContador == 0) {
+            Random r = new Random();
+
+            controlCalidadFotoContador = n;
+            controlCalidadFotoIndice = r.nextInt(n) + 1;
+        }
+
+        if (controlCalidadFotoContador == controlCalidadFotoIndice)
+        {
+            controlCalidadFotoContador -= 1;
+            return true;
+        }
+        else {
+            controlCalidadFotoContador -= 1;
+            return false;
+        }
     }
 
     public void ActivarControlCalidadFotos() {

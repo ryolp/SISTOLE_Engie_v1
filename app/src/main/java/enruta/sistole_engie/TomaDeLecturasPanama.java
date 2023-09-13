@@ -5,8 +5,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import enruta.sistole_engie.R;
-import enruta.sistole_engie.entities.InfoFotoEntity;
+import enruta.sistole_engie.entities.DatosEnvioEntity;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -344,10 +343,10 @@ public class TomaDeLecturasPanama extends TomaDeLecturasGenerica {
     Obtiene el nombre de la foto que se utilizará para guardarla
     RL, 2023-01-02, Se agrega porque en la clase padre se define como un método abstracto que tiene que ser implementado.
 */
-	public InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia ){
+	public DatosEnvioEntity getInfoFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia ){
 		String ls_nombre="", ls_unicom;
 		Cursor c;
-		InfoFotoEntity infoFotoEntity = new InfoFotoEntity();
+		DatosEnvioEntity datosEnvioEntity = new DatosEnvioEntity();
 
 		/**
 		 * Este es el fotmato del nombre de la foto
@@ -362,12 +361,12 @@ public class TomaDeLecturasPanama extends TomaDeLecturasGenerica {
 		ls_nombre+=Main.obtieneFecha("his");
 		ls_nombre+=".JPG";
 
-		infoFotoEntity.nombreFoto = ls_nombre;
+		datosEnvioEntity.nombreFoto = ls_nombre;
 
-		return infoFotoEntity;
+		return datosEnvioEntity;
 	}
 
-	public InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db) {
+	public DatosEnvioEntity getInfoFoto(Globales globales, SQLiteDatabase db) {
 		// No implementado en esta clase
 		return null;
 	}
@@ -1043,7 +1042,7 @@ public class TomaDeLecturasPanama extends TomaDeLecturasGenerica {
 		return new int[0];
 	}
 	
-	public String getNombreArchvio(int tipo) throws  Exception {
+	public String getNombreArchivo(int tipo) throws  Exception {
 		
 		String ls_archivo="";
 		TransmitionObject to= new TransmitionObject();
@@ -1065,7 +1064,7 @@ public class TomaDeLecturasPanama extends TomaDeLecturasGenerica {
 			return to.ls_categoria;
 		}
 		
-		return super.getNombreArchvio(tipo);
+		return super.getNombreArchivo(tipo);
 	}
 	
 public Cursor getContenidoDelArchivo(SQLiteDatabase db, int tipo){

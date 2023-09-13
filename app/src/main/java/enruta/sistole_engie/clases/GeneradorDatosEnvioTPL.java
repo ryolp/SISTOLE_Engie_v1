@@ -34,7 +34,8 @@ public class GeneradorDatosEnvioTPL {
                 getString("idRegionalLect"),
                 getString("Regional"),
                 getString("Porcion"),
-                getString("CodigoRespuestaEncuesta")
+                getString("CodigoRespuestaEncuesta"),
+                getString("ControlCalidad")
         );
 
         return dato;

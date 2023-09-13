@@ -1,7 +1,6 @@
 package enruta.sistole_engie;
 
 import java.net.UnknownHostException;
-import java.util.Hashtable;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,7 +16,7 @@ import android.util.Log;
 import enruta.sistole_engie.clases.FotosMgr;
 import enruta.sistole_engie.clases.GeneradorDatosEnvioTPL;
 import enruta.sistole_engie.clases.Utils;
-import enruta.sistole_engie.entities.InfoFotoEntity;
+import enruta.sistole_engie.entities.DatosEnvioEntity;
 
 public class ThreadTransmitirWifi extends TimerTask {
     final static int TRANSMITIR_FOTOS = 1;
@@ -124,7 +123,7 @@ public class ThreadTransmitirWifi extends TimerTask {
         String fechaAnio = "";
         String fechaAnioMes = "";
         String fechaAnioMesDia = "";
-        InfoFotoEntity infoFoto = new InfoFotoEntity();
+        DatosEnvioEntity infoFoto = new DatosEnvioEntity();
 //        long idLectura = 0;
 //        long idArchivo = 0;
 //        long idEmpleado = 0;
@@ -414,33 +413,33 @@ public class ThreadTransmitirWifi extends TimerTask {
 
     }
 
-    private void borrarArchivo(String ls_ruta) throws Throwable {
-        // HCG 20/07/2012 Manda los datos del wifi antes de cerrar la conexion
-        String ruta, cadenaAEnviar;
-
-        Hashtable params = new Hashtable();
-        // params.put("cadena",cadenaAEnviar);
-        params.put("ruta", ls_ruta);
-
-        try {
-            HttpMultipartRequest http = new HttpMultipartRequest(ls_servidor
-                    + "/deleteFile.php", params, "upload_field", "",
-                    "text/plain", new String("").getBytes());
-            byte[] response = http.send();
-            // new String (response); Esta es la respuesta del servidor
-
-            if (!new String(response).trim().equals("0")) {
-                throw new Throwable(new String(response));
-            }
-
-            // Enviamos las fotos que tenemos pendientes
-            // enviaFotosWifi();
-
-        } catch (Throwable e) {
-            throw e;
-        }
-
-    }
+//    private void borrarArchivo(String ls_ruta) throws Throwable {
+//        // HCG 20/07/2012 Manda los datos del wifi antes de cerrar la conexion
+//        String ruta, cadenaAEnviar;
+//
+//        Hashtable params = new Hashtable();
+//        // params.put("cadena",cadenaAEnviar);
+//        params.put("ruta", ls_ruta);
+//
+//        try {
+//            HttpMultipartRequest http = new HttpMultipartRequest(ls_servidor
+//                    + "/deleteFile.php", params, "upload_field", "",
+//                    "text/plain", new String("").getBytes());
+//            byte[] response = http.send();
+//            // new String (response); Esta es la respuesta del servidor
+//
+//            if (!new String(response).trim().equals("0")) {
+//                throw new Throwable(new String(response));
+//            }
+//
+//            // Enviamos las fotos que tenemos pendientes
+//            // enviaFotosWifi();
+//
+//        } catch (Throwable e) {
+//            throw e;
+//        }
+//
+//    }
 
     protected void marcarComoDescargada() {
         openDatabase();
@@ -474,6 +473,7 @@ public class ThreadTransmitirWifi extends TimerTask {
             String ls_cadenaAEnviar = "";
             String query = "";
             GeneradorDatosEnvioTPL genDatosEnvioTPL = new GeneradorDatosEnvioTPL();
+            DatosEnvioEntity datosEnvio = new DatosEnvioEntity();
 
             c = globales.tdlg.lineasAEscribir(db);
 
@@ -491,14 +491,16 @@ public class ThreadTransmitirWifi extends TimerTask {
                         dt.getString(R.string.str_espere));
             }
 
-            if (!globales.enviarSoloLoMarcado || globales.transmitirTodo)
-                borrarArchivo(ls_carpeta
-                        + "/"
-                        + globales.tdlg
-                        .getNombreArchvio(TomaDeLecturasGenerica.SALIDA));
+//            if (!globales.enviarSoloLoMarcado || globales.transmitirTodo)
+//                borrarArchivo(ls_carpeta
+//                        + "/"
+//                        + globales.tdlg
+//                        .getNombreArchvio(TomaDeLecturasGenerica.SALIDA));
 
-            serial.open(ls_servidor, ls_carpeta, globales.tdlg.getNombreArchvio(TomaDeLecturasGenerica.SALIDA),
-                    Serializacion.ESCRITURA, 0, 0, null, globales);
+            datosEnvio.Sobreescribir = (!globales.enviarSoloLoMarcado || globales.transmitirTodo);
+            datosEnvio.idEmpleado = globales.getIdEmpleado();
+            serial.open(ls_servidor, ls_carpeta, globales.tdlg.getNombreArchivo(TomaDeLecturasGenerica.SALIDA),
+                    Serializacion.ESCRITURA, 0, 0, datosEnvio, globales);
 
             for (int i = 0; i < cantidad; i++) {
                 if (mostrarMensajes)
@@ -684,95 +686,95 @@ public class ThreadTransmitirWifi extends TimerTask {
 //			db.execSQL("Update NoRegistrados set envio=0");
 
 
-            for (int archivo : globales.tdlg
-                    .getArchivosATransmitir(TransmisionesPadre.WIFI)) {
-                // Aqui enviamos los no registrados
-
-                if (mostrarMensajes) {
-                    dt.mostrarMensaje(dt.PROGRESO, globales.tdlg
-                            .regresaMensajeDeTransmision(archivo));
-                    dt.mostrarMensaje(dt.MENSAJE,
-                            dt.getString(R.string.str_espere));
-                    dt.mostrarMensaje(dt.BARRA, String.valueOf(0));
-                }
-
-                c = globales.tdlg.getContenidoDelArchivo(db, archivo);
-
-                ls_nombre_final = globales.tdlg.getNombreArchvio(archivo);
-                borrarArchivo(ls_carpeta + "/" + ls_nombre_final);
-
-                cantidad = c.getCount();
-
-                serial.open(ls_servidor, ls_carpeta, ls_nombre_final,
-                        Serializacion.ESCRITURA, 0, 0, null, globales);
-
-                if (mostrarMensajes) {
-                    dt.mHandler.post(new Runnable() {
-                        public void run() {
-                            dt.pb_progress.setMax(cantidad);
-                        }
-                    });
-                }
-
-                for (int i = 0; i < cantidad; i++) {
-                    if (mostrarMensajes) {
-                        dt.stop();
-                    }
-
-                    c.moveToPosition(i);
-
-                    // ls_cadena=generaCadenaAEnviar(c);
-                    // lby_cadenaEnBytes=ls_cadena.getBytes();
-
-                    // Ya tenemos los datos a enviar (que emocion!) asi que
-                    // hay que agregarlos a la cadena final
-
-                    lby_registro = Utils.getBlob(c, "texto");
-
-                    // for (int j=0; j<lby_cadenaEnBytes.length;j++)
-                    // lby_registro[j+resources.getInteger(R.integer.POS_DATOS_TIPO_LECTURA)]=lby_cadenaEnBytes[j];
-
-                    // Escribimos los bytes en el archivo
-                    serial.write(new String(lby_registro) + "\r\n");
-
-                    String bufferLenght;
-                    int porcentaje = ((i + 1) * 100) / c.getCount();
-                    bufferLenght = String.valueOf(c.getCount());
-
-                    /*
-                     * openDatabase();
-                     *
-                     * String whereClause="secuencial=?"; String[]
-                     * whereArgs=
-                     * {String.valueOf(c.getLong(c.getColumnIndex(
-                     * "secuencial" )))}; ContentValues cv_datos=new
-                     * ContentValues(1);
-                     *
-                     * cv_datos.put("envio",TomaDeLecturas.ENVIADA);
-                     *
-                     * int j=db.update("lecturas", cv_datos, whereClause,
-                     * whereArgs);
-                     *
-                     * closeDatabase();
-                     */
-                    // Marcar como enviada
-                    if (mostrarMensajes) {
-                        dt.mostrarMensaje(
-                                dt.MENSAJE,
-                                (i + 1) + " " + dt.getString(R.string.de)
-                                        + " " + bufferLenght + " "
-                                        + dt.getString(R.string.registros)
-                                        + ".\n"
-                                        + String.valueOf(porcentaje) + "%");
-                        dt.mostrarMensaje(dt.BARRA, String.valueOf(1));
-                    }
-
-                }
-                serial.close();
-
-                c.close();
-
-            }
+//            for (int archivo : globales.tdlg
+//                    .getArchivosATransmitir(TransmisionesPadre.WIFI)) {
+//                // Aqui enviamos los no registrados
+//
+//                if (mostrarMensajes) {
+//                    dt.mostrarMensaje(dt.PROGRESO, globales.tdlg
+//                            .regresaMensajeDeTransmision(archivo));
+//                    dt.mostrarMensaje(dt.MENSAJE,
+//                            dt.getString(R.string.str_espere));
+//                    dt.mostrarMensaje(dt.BARRA, String.valueOf(0));
+//                }
+//
+//                c = globales.tdlg.getContenidoDelArchivo(db, archivo);
+//
+//                ls_nombre_final = globales.tdlg.getNombreArchivo(archivo);
+//                borrarArchivo(ls_carpeta + "/" + ls_nombre_final);
+//
+//                cantidad = c.getCount();
+//
+//                serial.open(ls_servidor, ls_carpeta, ls_nombre_final,
+//                        Serializacion.ESCRITURA, 0, 0, null, globales);
+//
+//                if (mostrarMensajes) {
+//                    dt.mHandler.post(new Runnable() {
+//                        public void run() {
+//                            dt.pb_progress.setMax(cantidad);
+//                        }
+//                    });
+//                }
+//
+//                for (int i = 0; i < cantidad; i++) {
+//                    if (mostrarMensajes) {
+//                        dt.stop();
+//                    }
+//
+//                    c.moveToPosition(i);
+//
+//                    // ls_cadena=generaCadenaAEnviar(c);
+//                    // lby_cadenaEnBytes=ls_cadena.getBytes();
+//
+//                    // Ya tenemos los datos a enviar (que emocion!) asi que
+//                    // hay que agregarlos a la cadena final
+//
+//                    lby_registro = Utils.getBlob(c, "texto");
+//
+//                    // for (int j=0; j<lby_cadenaEnBytes.length;j++)
+//                    // lby_registro[j+resources.getInteger(R.integer.POS_DATOS_TIPO_LECTURA)]=lby_cadenaEnBytes[j];
+//
+//                    // Escribimos los bytes en el archivo
+//                    serial.write(new String(lby_registro) + "\r\n");
+//
+//                    String bufferLenght;
+//                    int porcentaje = ((i + 1) * 100) / c.getCount();
+//                    bufferLenght = String.valueOf(c.getCount());
+//
+//                    /*
+//                     * openDatabase();
+//                     *
+//                     * String whereClause="secuencial=?"; String[]
+//                     * whereArgs=
+//                     * {String.valueOf(c.getLong(c.getColumnIndex(
+//                     * "secuencial" )))}; ContentValues cv_datos=new
+//                     * ContentValues(1);
+//                     *
+//                     * cv_datos.put("envio",TomaDeLecturas.ENVIADA);
+//                     *
+//                     * int j=db.update("lecturas", cv_datos, whereClause,
+//                     * whereArgs);
+//                     *
+//                     * closeDatabase();
+//                     */
+//                    // Marcar como enviada
+//                    if (mostrarMensajes) {
+//                        dt.mostrarMensaje(
+//                                dt.MENSAJE,
+//                                (i + 1) + " " + dt.getString(R.string.de)
+//                                        + " " + bufferLenght + " "
+//                                        + dt.getString(R.string.registros)
+//                                        + ".\n"
+//                                        + String.valueOf(porcentaje) + "%");
+//                        dt.mostrarMensaje(dt.BARRA, String.valueOf(1));
+//                    }
+//
+//                }
+//                serial.close();
+//
+//                c.close();
+//
+//            }
 
             if (mostrarMensajes) {
                 dt.mostrarMensaje(dt.BARRA, String.valueOf(0));

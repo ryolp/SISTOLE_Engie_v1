@@ -371,7 +371,7 @@ public abstract class TransmisionesPadre extends Activity {
 //		c.close();
 //		closeDatabase();
 
-            ls_categoria = globales.tdlg.getNombreArchvio(TomaDeLecturasGenerica.SALIDA);
+            ls_categoria = globales.tdlg.getNombreArchivo(TomaDeLecturasGenerica.SALIDA);
 
             if (ls_categoria.trim().equals("")) {
                 muere(true, String.format(getString(R.string.msj_config_no_guardada), getString(R.string.info_CPL)));

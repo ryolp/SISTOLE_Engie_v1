@@ -46,7 +46,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import enruta.sistole_engie.clases.Utils;
-import enruta.sistole_engie.entities.InfoFotoEntity;
+import enruta.sistole_engie.entities.DatosEnvioEntity;
 
 public class CamaraActivity extends Activity {
 
@@ -561,7 +561,7 @@ public class CamaraActivity extends Activity {
             SQLiteDatabase db = dbHelper.getReadableDatabase();
             String ls_unicom, ls_nisrad;
             String ls_nombre;
-            InfoFotoEntity infoFoto = new InfoFotoEntity();
+            DatosEnvioEntity infoFoto = new DatosEnvioEntity();
 
 //    	Cursor c= db.rawQuery("Select registro from encabezado", null);
 //    	
@@ -750,9 +750,9 @@ public class CamaraActivity extends Activity {
         }
     };
 
-    private InfoFotoEntity getInfoFoto() throws Exception {
+    private DatosEnvioEntity getInfoFoto() throws Exception {
         try {
-            InfoFotoEntity infoFoto = new InfoFotoEntity();
+            DatosEnvioEntity infoFoto = new DatosEnvioEntity();
             DBHelper dbHelper = new DBHelper(this);
             SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -793,7 +793,7 @@ public class CamaraActivity extends Activity {
 
     public void muestraPreview() throws Exception {
         try {
-            InfoFotoEntity infoFoto = new InfoFotoEntity();
+            DatosEnvioEntity infoFoto = new DatosEnvioEntity();
             DBHelper dbHelper = new DBHelper(this);
             SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -1125,7 +1125,7 @@ public class CamaraActivity extends Activity {
 
     protected void hacerFirmar() {
         try {
-            InfoFotoEntity infoFoto;
+            DatosEnvioEntity infoFoto;
 
             // Sustituir por el código que permita llamar el Activity para firmar
 
@@ -1209,7 +1209,7 @@ public class CamaraActivity extends Activity {
 //        }
     }
 
-    private void agregarInfoImagen(Bitmap bitmap, InfoFotoEntity info) {
+    private void agregarInfoImagen(Bitmap bitmap, DatosEnvioEntity info) {
         Canvas canvas;
         int width;
         int height;
@@ -1233,6 +1233,9 @@ public class CamaraActivity extends Activity {
         if (info == null)
             return;
 
+        if (!globales.getAgregarEtiquetaFotos())
+            return;
+
         texto1 = "M: " + info.SerieMedidor;
         texto2 = "L: " + info.Lectura;
 
@@ -1243,7 +1246,7 @@ public class CamaraActivity extends Activity {
 
         Paint paintTexto = new Paint(Paint.ANTI_ALIAS_FLAG);
         paintTexto.setColor(Color.BLACK);
-        paintTexto.setTextSize(16);
+        paintTexto.setTextSize(20);
         paintTexto.setShadowLayer(1f, 0f, 1f, Color.DKGRAY);
 
         Rect boundsTexto1 = new Rect();
