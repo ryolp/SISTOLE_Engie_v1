@@ -187,7 +187,7 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
                     }
                     break;
                 case FOTO_NO_REGISTRADO:
-                    procesarFotoNoRegistrado();
+                    //procesarFotoNoRegistrado();
                     break;
             }
 
@@ -3384,7 +3384,7 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
         camara.putExtra("secuencial", reg.idLectura);
         camara.putExtra("caseta", String.valueOf(reg.idNoRegistrado));
         camara.putExtra("terminacion", "NoReg");
-        camara.putExtra("temporal", 1);
+        camara.putExtra("temporal", CamaraActivity.ANOMALIA);
         camara.putExtra("cantidad", 1);
         camara.putExtra("anomalia", "SinAnomalia");
         camara.putExtra("TipoFoto", CamaraActivity.TIPO_FOTO_MEDIDOR_NO_REGISTRADO);
@@ -3584,10 +3584,6 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
         //regreseDe=FOTOS;
 
         voyATomarFoto = false;
-    }
-
-    private void procesarFotoNoRegistrado() {
-
     }
 
     private void procesarAnomalia(final int requestCode, final Intent data, final int resultCode) {

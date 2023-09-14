@@ -177,6 +177,7 @@ public class CamaraActivity extends Activity {
             } else {
                 displayFlashMode();
             }
+
             if (!tieneZoom) {
                 btnBajarResolucion.setVisibility(View.GONE);
                 btnSubirResolucion.setVisibility(View.GONE);
@@ -271,6 +272,7 @@ public class CamaraActivity extends Activity {
                                 otraFoto = false;
                                 guardarFotoBD();
                                 mostrarInformacion();
+
                                 if (tieneFlash) {
                                     ib_flash.setVisibility(View.VISIBLE);
                                 } else ib_flash.setVisibility(View.GONE);
@@ -286,6 +288,7 @@ public class CamaraActivity extends Activity {
                                     btnBajarResolucion.setVisibility(View.GONE);
                                     btnSubirResolucion.setVisibility(View.GONE);
                                 } else btnCambiarCamara.setVisibility(View.VISIBLE);
+
                                 iniciaCamara();
                                 cPreview.setVisibility(View.VISIBLE);
                                 fotoPreview.setVisibility(View.GONE);
@@ -668,6 +671,7 @@ public class CamaraActivity extends Activity {
 
             id = db.insertOrThrow("fotos", null, mCv_datos);
 
+
             //Guardar las fotos en la memoria del telefono, si me piden esto despues lo habilito pero por mientras vamos a quitarlo, ya que no tenemos control de esto.
     	/*File pictureFile = getOutputMediaFile(1, ls_nombre);
         if (pictureFile == null){
@@ -686,6 +690,9 @@ public class CamaraActivity extends Activity {
 
             db.close();
             dbHelper.close();
+
+            if (id == 0)
+                throw new Exception("Error al guardar foto");
         } catch (Throwable t) {
             throw new Exception("Error al guardar foto", t);
         }
@@ -883,9 +890,10 @@ public class CamaraActivity extends Activity {
             Display display = wm.getDefaultDisplay();
             Point size = new Point();
 
-
             // createa matrix for the manipulation
+
             Matrix matrix = new Matrix();
+
             // rotate the Bitmap
 
             int numRotation = 0;
@@ -897,6 +905,7 @@ public class CamaraActivity extends Activity {
             matrix.postRotate(numRotation);
 
             // recreate the new Bitmap
+
             Bitmap resizedBitmap = Bitmap.createBitmap(theImage, 0, 0,
                     theImage.getWidth(), theImage.getHeight(), matrix, true);
 
@@ -943,7 +952,6 @@ public class CamaraActivity extends Activity {
             Matrix matrix = new Matrix();
             // resize the bit map
             matrix.postScale(scaleWidth, scaleHeight);
-
 
             // recreate the new Bitmap
             Bitmap resizedBitmap = Bitmap.createBitmap(theImage, 0, 0,
@@ -1290,9 +1298,9 @@ public class CamaraActivity extends Activity {
         canvas.drawText(texto2, x, y, paintTexto);
     }
 
-       /* -------------------------------------------------------------------------------------------
-    Muestra el diálogo o ventana para mostrar mensajes diversos o de error.
-    El detalle del error está oculto hasta que se hace click en el mensaje.
+    /* -------------------------------------------------------------------------------------------
+        Muestra el diálogo o ventana para mostrar mensajes diversos o de error.
+        El detalle del error está oculto hasta que se hace click en el mensaje.
     ------------------------------------------------------------------------------------------- */
 
     private void mostrarMensaje(String titulo, String mensaje, String detalleError, DialogoMensaje.Resultado resultado) {
