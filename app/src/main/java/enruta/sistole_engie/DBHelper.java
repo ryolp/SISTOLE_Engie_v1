@@ -27,7 +27,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private static DBHelper mInstance = null;
 
-    private static int version = 42;
+    private static int version = 38;
 
     /**
      * Constructor Toma referencia hacia el contexto de la aplicación que lo
