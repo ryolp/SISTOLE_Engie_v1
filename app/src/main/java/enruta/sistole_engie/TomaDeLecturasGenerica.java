@@ -10,10 +10,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.text.SpannableStringBuilder;
 
 import enruta.sistole_engie.clases.Utils;
-import enruta.sistole_engie.entities.InfoFotoEntity;
+import enruta.sistole_engie.entities.DatosEnvioEntity;
 
 /**
  * Esta clase crea las validaciones y los campos a mostrar
@@ -101,7 +100,9 @@ public abstract class TomaDeLecturasGenerica {
      */
     public abstract String getNombreFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia);
 
-    public abstract InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia);
+    public abstract DatosEnvioEntity getInfoFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia);
+
+    public abstract DatosEnvioEntity getInfoFoto(Globales globales, SQLiteDatabase db) throws Exception;
 
     public abstract Vector<String> getInformacionDelMedidor(Lectura lectura) throws Exception;
 
@@ -187,7 +188,7 @@ public abstract class TomaDeLecturasGenerica {
      *
      * @param bu_params Parametros regresados por la pantalla de input generico
      */
-    public abstract void regresaDeCamposGenericos(Bundle bu_params, String anomalia) throws Exception;
+    public abstract long regresaDeCamposGenericos(Bundle bu_params, String anomalia) throws Exception;
 
     /**
      * Inicializa campos que no se encuentran en el archivo
@@ -442,11 +443,20 @@ public abstract class TomaDeLecturasGenerica {
      * @param tipo Tipo de archivo
      * @return
      */
-    public String getNombreArchvio(int tipo) throws Exception {
+    public String getNombreArchivo(int tipo) throws Exception {
 
         //Por default es el numero de CPL
         String ls_extension = "TPL";
         String ls_archivo = "";
+        long idEmpleado;
+        String idEmpleadoStr;
+
+        idEmpleado = globales.getIdEmpleado();
+
+        if (idEmpleado != 0)
+            idEmpleadoStr = "-" + String.format("%06d", idEmpleado);
+        else
+            idEmpleadoStr = "";
 
         switch (tipo) {
             case ENTRADA:
@@ -466,7 +476,7 @@ public abstract class TomaDeLecturasGenerica {
                     closeDatabase();
                     return "";
                 }
-                ls_archivo = c.getString(c.getColumnIndex("value")) + "." + ls_extension;
+                ls_archivo = c.getString(c.getColumnIndex("value")) + idEmpleadoStr + "." + ls_extension;
                 c.close();
                 closeDatabase();
 

@@ -11,7 +11,15 @@ import java.util.Vector;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.util.Base64;
+
+import enruta.sistole_engie.entities.DatosEnvioEntity;
+import enruta.sistole_engie.entities.SubirDatosRequest;
+import enruta.sistole_engie.entities.SubirDatosResponse;
+import enruta.sistole_engie.entities.SubirFotoRequest;
+import enruta.sistole_engie.entities.SubirFotoResponse;
+import enruta.sistole_engie.services.WebApiManager;
 
 
 public class Serializacion {
@@ -73,6 +81,11 @@ public class Serializacion {
     Vector vFotos;
     Vector vNombres;
 
+    // RL / 2023-08-21 / Se agrega el parámetro con el contexto
+
+    private Context mContext;
+    private DatosEnvioEntity mDatosEnvio;
+
     Serializacion(int li_tipo) {
         //Le indicamos el tipo de conexion (bluetooth, wifi o sdCard)
         ii_tipo = li_tipo;
@@ -81,7 +94,8 @@ public class Serializacion {
     }
 
 
-    public void open(String ls_servidor, String ls_carpeta, String ls_archivo, int li_modo, int li_zip, int li_encripta) throws Throwable {
+    public void open(String ls_servidor, String ls_carpeta, String ls_archivo, int li_modo, int li_zip,
+                     int li_encripta, DatosEnvioEntity datosEnvio, Context context) throws Throwable {
         //HCG 20/07/2012 Esta funcion es la encargada de abrir la conexion por bluetooth
         //Recibe :
         //				ls_servidor: El servidor donde esta el archivo a leer
@@ -98,6 +112,9 @@ public class Serializacion {
         is_servidor = ls_servidor;
         is_carpeta = ls_carpeta;
         is_archivo = ls_archivo;
+
+        mDatosEnvio = datosEnvio;
+        mContext = context;
 
         String ls_url, ls_urlConArchivo;
 
@@ -242,11 +259,11 @@ public class Serializacion {
                 EOF = true;
                 throw e;
             }
-		
+
 
 		/*try{
 			if (ii_modo==LECTURA){
-				
+
 				conexionHttp = (HttpConnection)Connector.open(ls_urlConArchivo);
 				if (conexionHttp.getResponseCode() != HttpConnection.HTTP_OK)
 		        {
@@ -254,12 +271,12 @@ public class Serializacion {
 					throw new Exception ("El archivo no existe / Ruta invalida");
 		        }
 				iis_entrada=conexionHttp.openDataInputStream();
-				
+
 				leerDatos();
-				
+
 				conexionHttp.close();
-				
-				
+
+
 				//EOF=false;
 			}
 		}catch(Throwable e){
@@ -271,6 +288,7 @@ public class Serializacion {
 
         estaAbierto = true;
     }
+
 
 
     public int read(byte[] lby_cadena) throws Throwable {
@@ -407,8 +425,6 @@ public class Serializacion {
             throw new Exception("No se encuentra en modo de escritura.");
 
         write(ls_cadena.getBytes());
-
-
     }
 
     public void writeInt(int li_param) throws Exception {
@@ -560,39 +576,66 @@ public class Serializacion {
         return longitudDelArchivo;
     }
 
+//    private void closeWIFI() throws Throwable {
+//        //HCG 20/07/2012 Manda los datos del wifi antes de cerrar la conexion
+//        String ruta, cadenaAEnviar;
+//        String msg;
+//        cadenaAEnviar = new String(bytesAEnviar);
+//        if (is_carpeta.equals(""))
+//            ruta = is_archivo;
+//        else
+//            ruta = is_carpeta + "\\" + is_archivo;
+//        Hashtable params = new Hashtable();
+//        params.put("cadena", cadenaAEnviar);
+//        params.put("ruta", ruta);
+//
+//
+//        try {
+//            http = new HttpMultipartRequest(is_servidor + "/upload_string_and.php", params, "upload_field", "", "text/plain", new String("").getBytes());
+//            byte[] response = http.send();
+//            //new String (response); Esta es la respuesta del servidor
+//
+//            if (!new String(response).trim().equals("0")) {
+//                msg = new String(response);
+//                throw new Throwable(msg);
+//            }
+//
+//            //Enviamos las fotos que tenemos pendientes
+//            //enviaFotosWifi();
+//
+//        } catch (Throwable e) {
+//            throw e;
+//        }
+//    }
+
     private void closeWIFI() throws Throwable {
         //HCG 20/07/2012 Manda los datos del wifi antes de cerrar la conexion
+        //RL, 2023-08-31, Nuevo código para enviar a través de webapis de .Net en lugar de .PHP
+
         String ruta, cadenaAEnviar;
         String msg;
-        cadenaAEnviar = new String(bytesAEnviar);
-        if (is_carpeta.equals(""))
-            ruta = is_archivo;
-        else
-            ruta = is_carpeta + "\\" + is_archivo;
-        Hashtable params = new Hashtable();
-        params.put("cadena", cadenaAEnviar);
-        params.put("ruta", ruta);
 
+        cadenaAEnviar = new String(bytesAEnviar);
 
         try {
-            http = new HttpMultipartRequest(is_servidor + "/upload_string_and.php", params, "upload_field", "", "text/plain", new String("").getBytes());
-            byte[] response = http.send();
-            //new String (response); Esta es la respuesta del servidor
+            SubirDatosRequest req = new SubirDatosRequest();
 
-            if (!new String(response).trim().equals("0")) {
-                msg = new String(response);
-                throw new Throwable(msg);
-            }
+            req.NombreArchivo = is_archivo;
+            req.Carpeta = is_carpeta;
+            req.Datos = cadenaAEnviar;
 
-            //Enviamos las fotos que tenemos pendientes
-            //enviaFotosWifi();
+            SubirDatosResponse resp = WebApiManager.getInstance(mContext).subirDatos(req);
 
+            if (resp == null)
+                throw new Exception("Error al enviar datos al servidor. No se recibieron datos.");
+
+            if (resp.NumError != 0)
+                throw new Exception("Error al enviar datos al servidor (" + String.valueOf(resp.NumError) + ")");
         } catch (Throwable e) {
-            throw e;
+            throw new Exception("Error al enviar mensaje : " + e.getMessage());
         }
-
-
     }
+
 
     private void closeSDCard() throws Throwable {
         //HCG 20/07/2012 Manda los datos de la SDCard antes de cerrar la conexion
@@ -758,6 +801,7 @@ public class Serializacion {
         Enumeration en_Nombres, en_Fotos;
         Hashtable params;
         String msg;
+        SubirFotoResponse respFoto;
 
         byte[] foto;
 
@@ -798,20 +842,41 @@ public class Serializacion {
                     params.put("cadena", ls_foto);
                     params.put("carpeta", "/" + is_carpeta);
 
+                    SubirFotoRequest req = new SubirFotoRequest();
+
+                    req.carpeta = "/" + is_carpeta;
+                    req.ruta = ls_urlConArchivo;
+                    req.nombre = nombre;
+
+                    if (mDatosEnvio != null) {
+                        req.idLectura = mDatosEnvio.idLectura;
+                        req.idEmpleado = mDatosEnvio.idEmpleado;
+                        req.idArchivo = mDatosEnvio.idArchivo;
+                        req.NumId = mDatosEnvio.NumId;
+                    }
+
+                    respFoto = WebApiManager.getInstance(mContext).subirFoto(req, foto);
+
+                    if (respFoto == null)
+                        throw new Exception("Error al enviar la foto");
+
+                    if (respFoto.NumError > 0)
+                        throw new Exception("Error al enviar la foto. " + respFoto.Mensaje);
+
                     //Creamos una instancia del objeto que se conectara con el archivo en PHP
                     //HttpMultipartRequest http = new HttpMultipartRequest(is_servidor + "/upload_imagebytes.php", params, "upload_field", nombre, "image/jpg", foto);
 
                     //Prueba para ver la forma de sustituir el código PHP por llamadas a WebApis.
-                    HttpMultipartRequest http = new HttpMultipartRequest(is_servidor + "/api/operaciones/SubirFoto", params, "upload_field", nombre, "image/jpg", foto);
+                    //HttpMultipartRequest http = new HttpMultipartRequest(is_servidor + "/api/operaciones/SubirFoto", params, "upload_field", nombre, "image/jpg", foto);
 
                     //Mandamos el archivo y esa variable response nos ayudara a obtener el estado de la carga del archivo
-                    response = http.send();
+                    //response = http.send();
 
-                    msg = new String(response).trim();
-
-                    if (!(msg.equals("0") || msg.equals("\"0\""))) {
-                        throw new Throwable(new String(response));
-                    }
+//                    msg = new String(response).trim();
+//
+//                    if (!(msg.equals("0") || msg.equals("\"0\""))) {
+//                        throw new Throwable(new String(response));
+//                    }
                 }
             }
         } catch (Exception e) {

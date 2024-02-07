@@ -27,7 +27,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private static DBHelper mInstance = null;
 
-    private static int version = 37;
+    private static int version = 38;
 
     /**
      * Constructor Toma referencia hacia el contexto de la aplicación que lo
@@ -199,13 +199,14 @@ public class DBHelper extends SQLiteOpenHelper {
                 "selloInstNumero default '', selloInstColor default '', selloInstModelo default '', codigoObservacion default '', observacion default '', datosCampana default '', toma default '', giro default '', envio default 0, " +
                 "idArchivo default 0, codigoBarras default '', nota1 default '', nota2 default '', miLatitud default '', miLongitud default '', EstimacionesEngie default '', TipoDeCliente default '', TipoDeAcuse default '', " +
                 "Porcion default '', idUnidadLect default 0, idRegionalLect default 0, Regional default '', idEmpleado default 0, nivelBateria default 0, " +
-                "IntercambiarSerieMedidor default 0, CodigoRespuestaEncuesta default '') ");
+                "IntercambiarSerieMedidor default 0, CodigoRespuestaEncuesta default '', MotivoLectura DEFAULT '', ControlCalidad DEFAULT 0) ");
         //Usuarios
         db.execSQL("CREATE TABLE usuarios (usuario , contrasena , nombre, rol default 1, fotosControlCalidad default 1, baremo default 75)");
         //fotos
-        db.execSQL("CREATE TABLE fotos (secuencial, nombre , foto, envio default 0, temporal, idLectura default 0)");
+        db.execSQL("CREATE TABLE fotos (secuencial, nombre , foto, envio default 0, temporal, idLectura default 0, idEmpleado default 0, "
+            + " idArchivo default 0, NumId default 0)");
         //Encabezado
-        db.execSQL("CREATE TABLE encabezado (cpl , centro , lote , descargada, lecturista, registro, ultimoSeleccionado default 0)");
+        db.execSQL("CREATE TABLE encabezado (cpl, centro, lote, descargada, lecturista, registro, ultimoSeleccionado default 0)");
         //Configuraciones globales y extras
         db.execSQL("CREATE TABLE config (key, value, selected)");
         //Configuraciones globales y extras
@@ -444,8 +445,13 @@ public class DBHelper extends SQLiteOpenHelper {
         verifyColumnInTable(db, "ruta", "nivelBateria", "0");
         verifyColumnInTable(db, "ruta", "IntercambiarSerieMedidor", "0");
         verifyColumnInTable(db, "ruta", "CodigoRespuestaEncuesta", "''");
+        verifyColumnInTable(db, "ruta", "MotivoLectura", "''");
+        verifyColumnInTable(db, "ruta", "ControlCalidad", "0");
 
         verifyColumnInTable(db, "fotos", "idLectura", "0");
+        verifyColumnInTable(db, "fotos", "idArchivo", "0");
+        verifyColumnInTable(db, "fotos", "idEmpleado", "0");
+        verifyColumnInTable(db, "fotos", "NumId", "0");
 
         verifyColumnInTable(db, "NoRegistrados", "idLectura", "0");
         verifyColumnInTable(db, "NoRegistrados", "idUnidadLect", "0");
@@ -457,6 +463,7 @@ public class DBHelper extends SQLiteOpenHelper {
         verifyColumnInTable(db, "NoRegistrados", "Lectura", "''");
         verifyColumnInTable(db, "NoRegistrados", "Observaciones", "''");
         verifyColumnInTable(db, "NoRegistrados", "TipoRegistro", "''");
+        //verifyColumnInTableAutoincrement(db, "NoRegistrados", "idNoRegistrado");
     }
 
     /*
@@ -467,6 +474,11 @@ public class DBHelper extends SQLiteOpenHelper {
     private void verifyColumnInTable(SQLiteDatabase inDatabase, String inTable, String columnToCheck, String defaultValue) {
         if (!existsColumnInTable(inDatabase, inTable, columnToCheck))
             inDatabase.execSQL("ALTER TABLE "+inTable + " add column "+columnToCheck +" default " + defaultValue);
+    }
+
+    private void verifyColumnInTableAutoincrement(SQLiteDatabase inDatabase, String inTable, String columnToCheck) {
+        if (!existsColumnInTable(inDatabase, inTable, columnToCheck))
+            inDatabase.execSQL("ALTER TABLE "+inTable + " add column "+columnToCheck +" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL");
     }
 
     /*

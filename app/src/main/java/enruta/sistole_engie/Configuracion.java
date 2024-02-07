@@ -15,6 +15,7 @@ import android.graphics.Typeface;
 import android.hardware.Camera;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +24,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import enruta.sistole_engie.clases.Utils;
 
 public class Configuracion extends Activity {
 
@@ -162,7 +165,7 @@ public class Configuracion extends Activity {
         items.add(new XmlSpinnerItem(getString(R.string.info_modo_sin_fotos), "1"));
         items.add(new XmlSpinnerItem(getString(R.string.info_modo_fotos), "2"));
         items.add(new XmlSpinnerItem(getString(R.string.info_modo_fotos_cc), "3"));
-        objetosAMostar.add(new XmlSpinner("", "16", "Spinner", true, "modo", "modo_config", "0", items));
+        objetosAMostar.add(new XmlSpinner("", "16", "Spinner", true, "modo", "modo_config", "2", items));
 
         objetosAMostar.add(new XmlTextView(getString(R.string.info_sonidos), "16", "TextView", null, true, "", 0, Typeface.ITALIC));
         items = new Vector<XmlSpinnerItem>();
@@ -251,8 +254,11 @@ public class Configuracion extends Activity {
                     c = db.rawQuery("Select * from config where key='" + entry.dbField + "'", null);
                     if (c.getCount() > 0) {
                         c.moveToFirst();
-                        tmp_text = c.getString(c.getColumnIndex("value"));
-
+                        try {
+                            tmp_text = Utils.getString(c, "value", "");
+                        } catch (Exception e) {
+                            tmp_text = "";
+                        }
 
                     }
 
@@ -325,11 +331,12 @@ public class Configuracion extends Activity {
                     spinner.setTag(tmp.view_name);
                 }
 
-                /* RL / 2022-09-12
-                Deshabilitar el control Spinner del modo */
+                /* RL / 2022-09-12 / Deshabilitar el control Spinner del modo
+                    RL / 2023-06-16 / Habilitar el control cuando se tienen los permisos de superusuario
+                * */
 
                 if (tmp.view_name.equals("modo"))
-                    spinner.setEnabled(false);
+                    spinner.setEnabled(globales.esSuperUsuario);
 
                 /* RL - 2022-10-04
                 Deshabilitar el control Spínner del tamaño de fotos si no es Superusuario  */
@@ -367,8 +374,12 @@ public class Configuracion extends Activity {
                 c = db.rawQuery("Select * from config where key='" + entry.dbField + "'", null);
                 if (c.getCount() > 0) {
                     c.moveToFirst();
-                    tmp_text = c.getString(c.getColumnIndex("value"));
 
+                    try {
+                        tmp_text = Utils.getString(c, "value", "");
+                    } catch(Exception e) {
+                        tmp_text = "";
+                    }
 
                 }
 

@@ -119,7 +119,11 @@ public class DescargarLecturasMgr extends BaseMgr {
             resp.NumError = numError;
             resp.MensajeError = mensajeError;
         }
-        if (mCallback != null)
-            mCallback.enFalloComunicacion(req, resp, numError, mensajeError, t.getMessage());
+        if (mCallback != null) {
+            if (t != null)
+                msg = t.getMessage();
+
+            mCallback.enFalloComunicacion(req, resp, numError, mensajeError, msg);
+        }
     }
 }

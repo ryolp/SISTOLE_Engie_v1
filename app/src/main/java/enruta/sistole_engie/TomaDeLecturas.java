@@ -1,7 +1,6 @@
 package enruta.sistole_engie;
 
 import java.util.Calendar;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
@@ -48,7 +47,9 @@ import enruta.sistole_engie.clases.BuscarMedidorMgr;
 import enruta.sistole_engie.clases.EmergenciaCallback;
 import enruta.sistole_engie.clases.EmergenciaMgr;
 import enruta.sistole_engie.clases.Utils;
+import enruta.sistole_engie.entities.NoRegistradoEntity;
 import enruta.sistole_engie.entities.OperacionResponse;
+import enruta.sistole_engie.services.DbLecturasMgr;
 
 public class TomaDeLecturas extends TomaDeLecturasPadre implements
         OnGestureListener {
@@ -74,19 +75,19 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 
     // EditText et_lectura/*, et_presion*/;
     // TextView tv_informacion, tv_lectura, tv_presion;
-    TextView tv_caseta, tv_min, tv_max, tv_mensaje, tv_respuesta/*
+    private TextView tv_caseta, tv_min, tv_max, tv_mensaje, tv_respuesta/*
      * ,
      * tv_lectura
      */, tv_contador, tv_presion, tv_comentarios, tv_lectura,
             tv_anomalia, tv_contadorOpcional, tv_lecturaAnterior, tv_campo0, tv_campo1, tv_campo2, tv_campo3, tv_campo4,
             label_campo0, label_campo1, label_campo2, label_campo3, label_campo4, tv_advertencia;
-    Button button1, button2, button3, button4, button5, button6, b_repetir_anom;
-    View layout;
+    private Button button1, button2, button3, button4, button5, button6, b_repetir_anom;
+    private View layout;
 
     // String globales.is_lectura, globales.is_presion, globales.is_caseta,
     // globales.is_terminacion;
 
-    LinearLayout ll_limites, ll_linearLayout1, ll_generica, ll_linearLayout2, cuadricula, celda0, celda1, celda2, celda3, celda4;
+    private LinearLayout ll_limites, ll_linearLayout1, ll_generica, ll_linearLayout2, cuadricula, celda0, celda1, celda2, celda3, celda4;
 
     boolean filtrarComentarios = false;
     //boolean captureAnomalias=false;
@@ -130,178 +131,10 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 
             switch (requestCode) {
                 case FOTOS:
-
-                    if (globales.estoyTomandoFotosConsecutivas) {
-                        tomaFotosConsecutivas(globales.idMedidorUltimaLectura);
-                    } else {
-                        tieneFotos();
-
-                        //avanzarDespuesDeAnomalia();
-
-
-                    }
-
-                    if (regreseDe == ANOMALIA && globales.legacyCaptura) {
-                        if (globales.tll.getLecturaActual().requiereLectura() == Anomalia.LECTURA_AUSENTE && !globales.tdlg.avanzarDespuesDeAnomalia(ultimaAnomaliaSeleccionada, ultimaSubAnomaliaSeleccionada, false)) {
-
-
-                            capturar();
-                        } else if (globales.tdlg.avanzarDespuesDeAnomalia(ultimaAnomaliaSeleccionada, ultimaSubAnomaliaSeleccionada, false)) {
-                            avanzarDespuesDeAnomalia();
-                        }
-
-                    } else if (globales.legacyCaptura && regreseDe == LECTURA) {
-
-                        capturar();
-                    }
-                    //regreseDe=FOTOS;
-
-                    voyATomarFoto = false;
-
+                    procesarFotos();
                     break;
                 case LECTURA:
-                    boolean cambiandoDeLectura = false;
-                    regreseDe = LECTURA;
-                    voyATomarFoto = false;
-                    if (resultCode == Activity.RESULT_OK) {
-                        bu_params = data.getExtras();
-                        globales.is_lectura = bu_params.getString("input");
-
-                        globales.tdlg.setConsumo();
-
-                        if (globales.is_lectura.equals("")) {
-                            globales.tdlg.regresaDeBorrarLectura();
-                        }
-
-                        regresaDeBorrar();
-                        if (globales.is_lectura.trim().length() > 0
-                                || globales.tll.getLecturaActual().anomalias.size() > 0) {
-                            globales.tll.getLecturaActual().sospechosa = String.valueOf(bu_params
-                                    .getInt("confirmada"));
-                            globales.tll.getLecturaActual().guardarSospechosa();
-                            int requiereLectura = globales.tll.getLecturaActual().requiereLectura();
-                            if (!globales.is_lectura.equals("") ||
-                                    requiereLectura == Anomalia.LECTURA_AUSENTE)
-                                setModoCaptura();
-                            else
-                                salirModoCaptura();
-
-                        } else {
-                            globales.modoCaptura = false;
-                            salirModoCaptura();
-                            permiteTomarFoto = false;
-                        }
-
-
-                        if (globales.ignorarTomaDeFoto && !globales.bModificar) {
-                            permiteTomarFoto = false;
-                        }
-
-                        if (globales.bModificar && !globales.tdlg.tomarFotoModificar()) {
-                            permiteTomarFoto = false;
-                        }
-
-
-                        // borramos fotos temporales anteriores
-                        openDatabase();
-
-                        db.execSQL("delete from fotos where temporal="
-                                + CamaraActivity.TEMPORAL);
-
-                        closeDatabase();
-
-                        globales.is_terminacion = bu_params.getString("terminacion");
-                        globales.tll.getLecturaActual().setTerminacion(
-                                globales.is_terminacion);
-
-                        tv_lectura.setText(getString(R.string.lbl_tdl_indica_lectura) + globales.is_lectura);
-                        tv_anomalia.setText(getString(R.string.lbl_tdl_indica_anomalia) + (globales.is_presion.length() > 3 ? "***" : globales.is_presion));
-
-                        if ((bu_params.getBoolean("sospechosa") || globales.fotoForzada || globales.bModificar)
-                                && permiteTomarFoto && globales.is_lectura.length() > 0) {
-
-                            if (modo == Input.FOTOS) {
-                                globales.ignorarContadorControlCalidad = true;
-                            }
-
-//					if (!globales.ignorarGeneracionCalidadOverride){
-                            globales.calidadOverride = globales.tdlg.cambiaCalidadSegunTabla("", "");
-//					}
-//					else{
-//						globales.ignorarGeneracionCalidadOverride=false;
-//					}
-
-                            if (globales.ignorarContadorControlCalidad) {
-
-                                tomarFoto(CamaraActivity.TEMPORAL, 1);
-                                globales.ignorarContadorControlCalidad = false;
-                            } else {
-                                if (contadorControlCalidadFotos == 0) {
-                                    tomarFoto(CamaraActivity.TEMPORAL, 1);
-                                    contadorControlCalidadFotos++;
-                                } else {
-                                    contadorControlCalidadFotos++;
-                                    if (contadorControlCalidadFotos >= globales.controlCalidadFotos) {
-                                        contadorControlCalidadFotos = 0;
-                                    }
-                                }
-                            }
-
-
-                        }
-
-
-                        if (bu_params.getBoolean("sospechosa")) {
-                            globales.tll.getLecturaActual().sospechosa = String.valueOf(bu_params.getInt("confirmada"));
-                            globales.tll.getLecturaActual().guardarSospechosa();
-                        }
-
-                        boolean mostrarVentanaDeSellos = globales.tdlg.mostrarVentanaDeSellos();
-
-                        if (!voyATomarFoto && globales.legacyCaptura && !mostrarVentanaDeSellos && !globales.is_lectura.equals("")) {
-                            capturar();
-                            cambiandoDeLectura = true;
-                        }
-
-                    } else if (resultCode == Activity.RESULT_CANCELED) {
-                        setDatos(false);
-                        if (globales.inputMandaCierre) {
-                            globales.inputMandaCierre = false;
-                            muere();
-
-
-                            return;
-                        }
-
-                        bu_params = data.getExtras();
-                        if (bu_params.getBoolean("sospechosa")) {
-                            globales.tll.getLecturaActual().sospechosa = String.valueOf(bu_params
-                                    .getInt("confirmada"));
-                            globales.tll.getLecturaActual().guardarSospechosa();
-                        }
-                        if (globales.bModificar) {
-                            //establcemos el fondo de correccion
-                            setFondoCorreccion();
-                        } else {
-                            layout.setBackgroundResource(0);
-                        }
-
-                        if (secuencialAntesDeInput != globales.tll.getLecturaActual().secuencia)
-                            setDatos();
-                    }
-                    voyATomarFoto = false;
-
-                    //checamos si va a tomar sellos
-                    if (globales.tdlg.mostrarVentanaDeSellos() && !cambiandoDeLectura) {
-                        Intent intent = new Intent(this, InputCamposGenerico.class);
-                        intent.putExtra("campos", globales.tdlg.getCamposGenerico("sellos"));
-                        intent.putExtra("label", "");
-                        intent.putExtra("anomalia", "sellos");
-                        intent.putExtra("titulo", "Retirar Sellos");
-                        intent.putExtra("boton", "Grabar");
-                        intent.putExtra("puedoCerrar", false);
-                        startActivityForResult(intent, INPUT_CAMPOS_GENERICO_ME);
-                    }
+                    permiteTomarFoto = procesarLectura(data, resultCode);
                     break;
                 /*
                  * case COMENTARIOS: if (resultCode == Activity.RESULT_OK){ bu_params
@@ -320,178 +153,8 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
                  */
 
                 case ANOMALIA:
-                    regreseDe = ANOMALIA;
-                    voyATomarFoto = false;
-                    //Si se hicieron cambois en el nombre del usuario se verán
-                    setDatos(false);
-                    String ls_comentarios = "";
-                    boolean anomaliaCapturada = true;
-                    String ls_anomalia = "", ls_subAnomalia = "";
-
-                    Anomalia anom = null;
-
-                    if (resultCode == Activity.RESULT_OK) {
-                        bu_params = data.getExtras();
-                        ls_anomalia = bu_params.getString("anomalia");
-                        ls_subAnomalia = bu_params.getString("subAnomalia");
-
-
-                        if (!ls_subAnomalia.equals("")) {
-                            anom = new Anomalia(this, ls_subAnomalia, ls_anomalia, true);
-                        } else {
-                            anom = new Anomalia(this, ls_anomalia, "", false);
-                        }
-                        if (preguntaSiBorrarEnAnomaliaAusentes && !globales.is_lectura.equals("")/*&& !globales.bModificar*/) {
-                            if (anom.requiereLectura() == Anomalia.LECTURA_AUSENTE) {
-                                if (globales.bloquearBorrarSiIntento && !globales.tll.getLecturaActual().intento6.equals("")) {
-                                    mensajeOK("La lectura para la anomalia seleccionada es 'Ausente' y se ha superado la cantidad de veces que se puede ingresar una lectura. No se ingresará la anomalia.", "Toma de Lecturas");
-                                    return;
-                                }
-
-                                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                                AlertDialog alert;
-
-                                //Si ingresé datos, estoy en modo captura y  me estoy moviendo deberia preguntar
-                                builder.setMessage(R.string.str_pregunta_guardar_cambios_anomalia_ausente)
-                                        .setCancelable(false).setPositiveButton(R.string.continuar, new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                //recepcion();
-                                                preguntaSiBorrarEnAnomaliaAusentes = false;
-                                                onActivityResult(requestCode, resultCode, data);
-
-
-                                                dialog.dismiss();
-
-                                            }
-                                        })
-                                        .setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                dialog.cancel();
-
-                                            }
-                                        });
-
-                                alert = builder.create();
-                                alert.show();
-                                return;
-                            }
-                        }
-
-                        preguntaSiBorrarEnAnomaliaAusentes = true;
-
-                        //Realizamos los cambios necesarios en la anomalia
-                        globales.tdlg.cambiosAnomalia(bu_params.getString("anomalia"));
-
-                        // Tomamos la anomalia y la subAnomalia en caso de requerir
-                        globales.tll.getLecturaActual().setAnomalia(
-                                bu_params.getString("anomalia"));
-
-                        globales.tll.getLecturaActual().setSubAnomalia(
-                                bu_params.getString("subAnomalia"));
-
-//				globales.tll.getLecturaActual().setComentarios(
-//						bu_params.getString("comentarios"));
-
-                        ultimaAnomaliaSeleccionada = bu_params.getString("anomalia");
-                        ultimaSubAnomaliaSeleccionada = bu_params.getString("subAnomalia");
-
-                        //Aqui guardamos si debe repetir anomalia o no
-//				String ls_anomalia=globales.tll.getLecturaActual().getAnomaliaAMostrar();
-//				if (ls_anomalia.endsWith("A") || ls_anomalia.endsWith("AC") || ls_anomalia.endsWith("CA")|| ls_anomalia.endsWith("R")|| ls_anomalia.endsWith("Z"))
-//					globales.anomaliaARepetir=globales.convertirAnomalias?
-//							globales.tll.getLecturaActual().getUltimaAnomalia().is_conv:
-//								globales.tll.getLecturaActual().getUltimaAnomalia().is_anomalia;
-//				else
-//					globales.anomaliaARepetir="";
-                        //captureAnomalias=true;
-                        preguntaSiBorraDatos = true;
-                        if (bu_params.getString("subAnomalia").equals(""))
-                            muestraRespuestaSeleccionadaAutomatica(globales.tdlg.regresaDeAnomalias(bu_params.getString("anomalia")));
-                        else
-                            muestraRespuestaSeleccionadaAutomatica(globales.tdlg.regresaDeAnomalias(bu_params.getString("subAnomalia"), false));
-
-
-                    } else if (resultCode == Activity.RESULT_CANCELED) {
-                        anomaliaCapturada = false;
-                    }
-
-
-                    globales.is_presion = globales.tll.getLecturaActual().getAnomaliaAMostrar();
-
-//				tv_anomalia.setText(getString(R.string.lbl_tdl_indica_anomalia) + (globales.is_presion.length()>3?"***":globales.is_presion));
-//
-//				if (globales.tll.getLecturaActual().anomalias.size() != 0) {
-//					// Tiene una anomalia
-//					ls_comentarios = getString(R.string.str_anomalia)+": "  + globales.tll.getLecturaActual().getAnomaliaAMostrar();
-//					if (globales.tll.getLecturaActual().subAnomalias.size() != 0) {
-//						// Tiene una subanomalia
-//						ls_comentarios += ", "
-//								+ getString(R.string.str_subanomalia)+": " 
-//								+ globales.tll.getLecturaActual().getSubAnomaliaAMostrar();
-//					}
-//					ls_comentarios += "\n";
-//
-//					// //Hay que verificar si la anomalia es ausente
-//					// if
-//					// (globales.tll.getLecturaActual().anomalia.ii_lectura==0
-//					// || globales.tll.getLecturaActual().anomalia.ii_ausente==4
-//					// ){
-//					// //Si es ausente, tiene que borrar la lectura...
-//					// globales.is_lectura="";
-//					// tv_lectura.setText(getString(R.string.lbl_tdl_indica_lectura) +globales.is_lectura);
-//					// }
-//				}
-//
-//				tv_comentarios.setText(ls_comentarios
-//						+ globales.tll.getLecturaActual().getComentarios());
-
-                    setDatos(false);
-                    //setModoCaptura();
-
-
-                    //Fotos tomadas con las anomalias se almacenan sin importar que se borren, just like the nokia does it
-//				openDatabase();
-//				db.execSQL("delete from fotos where temporal="
-//						+ CamaraActivity.ANOMALIA);
-//				closeDatabase();
-
-                    permiteCambiarModoCaptura = !is_anomaliasIngresadasAnteriormente.equals(globales.is_presion);
-
-                    // Aqui manejamos el si requiere lectura o no
-                    //if (!bu_params.getString("anomalia").equals("")) {
-                    if (globales.tll.getLecturaActual().anomalias.size() != 0) {
-//					if (globales.tll.getLecturaActual().subAnomalias.size() != 0) {
-//						presentacionAnomalias();
-                        // Hay que verificar si la anomalia es ausente
-
-                        //} else if (globales.tll.getLecturaActual().anomalias.size() != 0) {
-
-
-                        presentacionAnomalias(anomaliaCapturada, ls_anomalia, ls_subAnomalia);
-                        //}
-                    } else {
-                        // Hay que verificar si aun hay que seguir en modo de
-                        // captura...
-                        if (globales.is_lectura.equals("")) {
-                            globales.modoCaptura = false;
-                            salirModoCaptura();
-                        }
-                        button1.setEnabled(true);
-
-                    }
-
-                    if (anom != null) {
-                        if (anom.requiereLectura() == Anomalia.LECTURA_AUSENTE && !voyATomarFoto && !globales.tdlg.avanzarDespuesDeAnomalia(ultimaAnomaliaSeleccionada, ultimaSubAnomaliaSeleccionada, false)) {
-                            capturar();
-
-                        }
-                    }
-
-                    voyATomarFoto = false;
-
-
+                    procesarAnomalia(requestCode, data, resultCode);
                     break;
-
                 case BUSCAR_MEDIDOR:
                     procesarBuscarMedidor(data, resultCode);
                     break;
@@ -522,6 +185,9 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
                             mostrarMensaje("Error", "Error inesperado. Contacte soporte", t.getMessage(), null);
                         }
                     }
+                    break;
+                case FOTO_NO_REGISTRADO:
+                    //procesarFotoNoRegistrado();
                     break;
             }
 
@@ -829,30 +495,8 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
         View.OnClickListener clicLectura = new View.OnClickListener() {
             public void onClick(View v) {
                 // Capturamos la lectura
-                cancelaTimer();
-                if (button1.isEnabled()) {
-                    cancelaTimer();
 
-                    if (globales.bloquearBorrarSiIntento && !globales.tll.getLecturaActual().intento6.equals("")) {
-                        mensajeOK("Se ha superado la cantidad de veces que se puede ingresar una lectura.", "Toma de Lecturas");
-                        return;
-                    }
-
-
-                    Intent intent = new Intent(parent, Input.class);
-                    intent.putExtra("tipo", Input.LECTURA);
-                    intent.putExtra("min", globales.il_lect_min);
-                    intent.putExtra("max", globales.il_lect_max);
-                    intent.putExtra("act", globales.is_lectura);
-                    intent.putExtra("validar", /*globales.validar*/true); //Siempre va a validar
-                    intent.putExtra("modo", modo);
-                    intent.putExtra("secuencia", globales.il_lect_act);
-
-                    secuencialAntesDeInput = globales.tll.getLecturaActual().secuencia;
-                    startActivityForResult(intent, LECTURA);
-
-                }
-
+                procesarBotonLectura(parent);
             }
         };
 
@@ -2475,7 +2119,7 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
         MenuItem mi_areaCaptura = menu.findItem(R.id.m_font_areaCaptura);
         MenuItem mi_cambioMedidor = menu.findItem(R.id.m_cambio_medidor);
 
-        mi_cambioMedidor.setVisible(globales.mostrarCambioMedidor);
+        // mi_cambioMedidor.setVisible(globales.mostrarCambioMedidor);
 
         mi_correcion
                 .setTitle(globales.bModificar ? R.string.m_str_salirCorreccion
@@ -2550,8 +2194,68 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
         } else {
             mi_gps.setVisible(false);
         }
+    }
 
+    protected void procesarBotonLectura(Context context)
+    {
+        Lectura lect;
+        boolean esAcuseRecibo;
 
+        cancelaTimer();
+
+        if (button1.isEnabled()) {
+            cancelaTimer();
+
+            if (globales.bloquearBorrarSiIntento && !globales.tll.getLecturaActual().intento6.equals("")) {
+                mensajeOK("Se ha superado la cantidad de veces que se puede ingresar una lectura.", "Toma de Lecturas");
+                return;
+            }
+
+            Intent intent = new Intent(context, Input.class);
+            intent.putExtra("tipo", Input.LECTURA);
+            intent.putExtra("min", globales.il_lect_min);
+            intent.putExtra("max", globales.il_lect_max);
+            intent.putExtra("act", globales.is_lectura);
+            intent.putExtra("validar", /*globales.validar*/true); //Siempre va a validar
+            intent.putExtra("modo", modo);
+            intent.putExtra("secuencia", globales.il_lect_act);
+
+            lect = globales.tll.getLecturaActual();
+
+            secuencialAntesDeInput = lect.secuencia;
+
+            esAcuseRecibo = lect.getEsAcuseRecibo();
+
+//            if (lect.getEsFaunaNociva())
+//                procesarFaunaNociva(intent, esAcuseRecibo);
+//            else
+            procesarBotonLectura2(intent, esAcuseRecibo);
+        }
+    }
+
+    private void procesarFaunaNociva(Intent intent, boolean esAcuseRecibo){
+        mostrarAlerta("Fauna nociva", "Tome sus precauciones. Aviso de fauna nociva", "",
+                new DialogoMensaje.Resultado() {
+                    @Override
+                    public void Aceptar(boolean EsOk) {
+                        procesarBotonLectura2(intent, esAcuseRecibo);
+                    }
+                });
+    }
+
+    private void procesarBotonLectura2(Intent intent, boolean esAcuseRecibo) {
+        if (!esAcuseRecibo)
+            startActivityForResult(intent, LECTURA);
+        else
+        {
+            mostrarMensaje("Acuse de recibo", "El cliente tiene un acuse de recibo. Realice las acciones necesarias y tome foto", "",
+                    new DialogoMensaje.Resultado() {
+                        @Override
+                        public void Aceptar(boolean EsOk) {
+                            startActivityForResult(intent, LECTURA);
+                        }
+                    });
+        }
     }
 
     public void presentacionAnomalias(boolean anomaliaCapturada, String anomalia, String subAnomalia) {
@@ -2851,7 +2555,7 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
             //Esto se genera genericamente, asi que hay que rehacerlo
             //globales.tdlg.getInformacionDelMedidor(ll_generica, globales.tll.getLecturaActual(), sizeGenerico);
             preparaDatosGenericos();
-        } catch (Throwable t){
+        } catch (Throwable t) {
             mostrarMensaje("Error", "Error inesperado. Pida ayuda a soporte técnico", t.getMessage(), null);
         }
     }
@@ -3146,23 +2850,14 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 
     public void muestraRespuestaSeleccionadaAutomatica(final MensajeEspecial me) {
         if (me != null) {
-
-
             switch (me.tipo) {
                 case MensajeEspecial.MENSAJE_SI_NO:
-
                     preguntaSiNo(me);
-
                     break;
-
                 case MensajeEspecial.OPCION_MULTIPLE:
-
                     preguntaOpcionMultiple(me);
-
                     break;
-
             }
-
         }
     }
 
@@ -3656,6 +3351,8 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
 
     protected void procesarNoRegistrados(final Intent data, final int resultCode) {
         Bundle bu_params;
+        long idNoRegistrado;
+        NoRegistradoEntity reg;
 
         try {
             if (data == null)
@@ -3664,7 +3361,15 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
             bu_params = data.getExtras();
 
             if (resultCode == Activity.RESULT_OK) {
-                globales.tdlg.regresaDeCamposGenericos(bu_params, "noregistrados");
+                idNoRegistrado = globales.tdlg.regresaDeCamposGenericos(bu_params, "noregistrados");
+
+                if (idNoRegistrado != 0) {
+                    reg = DbLecturasMgr.getInstance().getNoRegistrado(this, idNoRegistrado);
+
+                    if (reg != null)
+                        fotoNoRegistrado(reg);
+                }
+
                 // if (globales.tomarFotoNoRegistrados)
                 //this.tomarFoto(0, 1); no puedo
             }
@@ -3673,6 +3378,419 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
             mostrarMensaje("Error", "Error inesperado. Contacte soporte", t.getMessage(), null);
         }
     }
+
+    public void fotoNoRegistrado(NoRegistradoEntity reg) {
+        Intent camara = new Intent(this, CamaraActivity.class);
+        camara.putExtra("secuencial", reg.idLectura);
+        camara.putExtra("caseta", String.valueOf(reg.idNoRegistrado));
+        camara.putExtra("terminacion", "NoReg");
+        camara.putExtra("temporal", CamaraActivity.ANOMALIA);
+        camara.putExtra("cantidad", 1);
+        camara.putExtra("anomalia", "SinAnomalia");
+        camara.putExtra("TipoFoto", CamaraActivity.TIPO_FOTO_MEDIDOR_NO_REGISTRADO);
+        // vengoDeFotos = true;
+        startActivityForResult(camara, FOTO_NO_REGISTRADO);
+    }
+
+    private boolean procesarLectura(final Intent data, final int resultCode) {
+        Bundle bu_params;
+
+        boolean cambiandoDeLectura = false;
+        boolean permiteTomarFoto = true;
+//        int frecuenciaFotosCalidad = 0;
+        Lectura lect;
+
+        try {
+            regreseDe = LECTURA;
+            voyATomarFoto = false;
+
+            lect = globales.tll.getLecturaActual();
+
+            if (resultCode == Activity.RESULT_OK) {
+                bu_params = data.getExtras();
+                globales.is_lectura = bu_params.getString("input");
+
+                globales.tdlg.setConsumo();
+
+                if (globales.is_lectura.equals("")) {
+                    globales.tdlg.regresaDeBorrarLectura();
+                }
+
+                regresaDeBorrar();
+                if (globales.is_lectura.trim().length() > 0 || lect.anomalias.size() > 0) {
+                    lect.sospechosa = String.valueOf(bu_params.getInt("confirmada"));
+                    lect.guardarSospechosa();
+
+                    int requiereLectura = lect.requiereLectura();
+
+                    if (!globales.is_lectura.equals("") ||
+                            requiereLectura == Anomalia.LECTURA_AUSENTE)
+                        setModoCaptura();
+                    else
+                        salirModoCaptura();
+
+                } else {
+                    globales.modoCaptura = false;
+                    salirModoCaptura();
+                    permiteTomarFoto = false;
+                }
+
+
+                if (globales.ignorarTomaDeFoto && !globales.bModificar) {
+                    permiteTomarFoto = false;
+                }
+
+                if (globales.bModificar && !globales.tdlg.tomarFotoModificar()) {
+                    permiteTomarFoto = false;
+                }
+
+
+                // borramos fotos temporales anteriores
+                openDatabase();
+
+                db.execSQL("delete from fotos where temporal="
+                        + CamaraActivity.TEMPORAL);
+
+                closeDatabase();
+
+                globales.is_terminacion = bu_params.getString("terminacion");
+                lect.setTerminacion(globales.is_terminacion);
+
+                tv_lectura.setText(getString(R.string.lbl_tdl_indica_lectura) + globales.is_lectura);
+                tv_anomalia.setText(getString(R.string.lbl_tdl_indica_anomalia) + (globales.is_presion.length() > 3 ? "***" : globales.is_presion));
+
+                if ((bu_params.getBoolean("sospechosa") || globales.fotoForzada || globales.bModificar)
+                        && permiteTomarFoto && globales.is_lectura.length() > 0) {
+
+                    if (modo == Input.FOTOS) {
+                        globales.ignorarContadorControlCalidad = true;
+                    }
+
+//					if (!globales.ignorarGeneracionCalidadOverride){
+                    globales.calidadOverride = globales.tdlg.cambiaCalidadSegunTabla("", "");
+//					}
+//					else{
+//						globales.ignorarGeneracionCalidadOverride=false;
+//					}
+
+                    if (globales.ignorarContadorControlCalidad) {
+                        tomarFoto(CamaraActivity.TEMPORAL, 1);
+                        globales.ignorarContadorControlCalidad = false;
+                    }
+//                    else {
+//                        if (contadorControlCalidadFotos == 0) {
+//                            tomarFoto(CamaraActivity.TEMPORAL, 1);
+//                            contadorControlCalidadFotos++;
+//                        } else {
+//                            contadorControlCalidadFotos++;
+//                            if (contadorControlCalidadFotos >= globales.controlCalidadFotos) {
+//                                contadorControlCalidadFotos = 0;
+//                            }
+//                        }
+//                    }
+                } else if (!lect.getmMotivoLectura().equals("01") && globales.getTomarFotoCambioMedidor()) {
+                    tomarFoto(CamaraActivity.TEMPORAL, 1);
+                }
+//                else {
+//                    frecuenciaFotosCalidad = globales.getFrecuenciaFotoCalidad();
+//                    if (frecuenciaFotosCalidad > 0) {
+//                        if (contadorControlCalidadFotos > frecuenciaFotosCalidad) {
+//                            contadorControlCalidadFotos = 0;
+//                            tomarFoto(CamaraActivity.TEMPORAL, 1);
+//                        }
+//
+//                        contadorControlCalidadFotos++;
+//                    }
+//                }
+
+
+                if (bu_params.getBoolean("sospechosa")) {
+                    lect.sospechosa = String.valueOf(bu_params.getInt("confirmada"));
+                    lect.guardarSospechosa();
+                }
+
+                boolean mostrarVentanaDeSellos = globales.tdlg.mostrarVentanaDeSellos();
+
+                if (!voyATomarFoto && globales.legacyCaptura && !mostrarVentanaDeSellos && !globales.is_lectura.equals("")) {
+                    capturar();
+                    cambiandoDeLectura = true;
+                }
+
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                setDatos(false);
+                if (globales.inputMandaCierre) {
+                    globales.inputMandaCierre = false;
+                    muere();
+
+                    return false;
+                }
+
+                bu_params = data.getExtras();
+                if (bu_params.getBoolean("sospechosa")) {
+                    lect.sospechosa = String.valueOf(bu_params.getInt("confirmada"));
+                    lect.guardarSospechosa();
+                }
+                if (globales.bModificar) {
+                    //establcemos el fondo de correccion
+                    setFondoCorreccion();
+                } else {
+                    layout.setBackgroundResource(0);
+                }
+
+                if (secuencialAntesDeInput != lect.secuencia)
+                    setDatos();
+            }
+            voyATomarFoto = false;
+
+            //checamos si va a tomar sellos
+            if (globales.tdlg.mostrarVentanaDeSellos() && !cambiandoDeLectura) {
+                Intent intent = new Intent(this, InputCamposGenerico.class);
+                intent.putExtra("campos", globales.tdlg.getCamposGenerico("sellos"));
+                intent.putExtra("label", "");
+                intent.putExtra("anomalia", "sellos");
+                intent.putExtra("titulo", "Retirar Sellos");
+                intent.putExtra("boton", "Grabar");
+                intent.putExtra("puedoCerrar", false);
+                startActivityForResult(intent, INPUT_CAMPOS_GENERICO_ME);
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+
+        return permiteTomarFoto;
+    }
+
+    private void procesarFotos() {
+        Lectura lect;
+
+        if (globales.estoyTomandoFotosConsecutivas) {
+            tomaFotosConsecutivas(globales.idMedidorUltimaLectura);
+        } else {
+            tieneFotos();
+            //avanzarDespuesDeAnomalia();
+        }
+
+        if (regreseDe == ANOMALIA && globales.legacyCaptura) {
+            lect = globales.tll.getLecturaActual();
+
+            if (lect.requiereLectura() == Anomalia.LECTURA_AUSENTE && !globales.tdlg.avanzarDespuesDeAnomalia(ultimaAnomaliaSeleccionada, ultimaSubAnomaliaSeleccionada, false)) {
+                capturar();
+            } else if (globales.tdlg.avanzarDespuesDeAnomalia(ultimaAnomaliaSeleccionada, ultimaSubAnomaliaSeleccionada, false)) {
+                avanzarDespuesDeAnomalia();
+            }
+        } else if (globales.legacyCaptura && regreseDe == LECTURA) {
+            capturar();
+        }
+        //regreseDe=FOTOS;
+
+        voyATomarFoto = false;
+    }
+
+    private void procesarAnomalia(final int requestCode, final Intent data, final int resultCode) {
+        Bundle bu_params;
+
+        regreseDe = ANOMALIA;
+        voyATomarFoto = false;
+        //Si se hicieron cambois en el nombre del usuario se verán
+        setDatos(false);
+        String ls_comentarios = "";
+        boolean anomaliaCapturada = true;
+        String ls_anomalia = "", ls_subAnomalia = "";
+
+        Anomalia anom = null;
+
+        if (resultCode == Activity.RESULT_OK) {
+            bu_params = data.getExtras();
+            ls_anomalia = bu_params.getString("anomalia");
+            ls_subAnomalia = bu_params.getString("subAnomalia");
+
+
+            if (!ls_subAnomalia.equals("")) {
+                anom = new Anomalia(this, ls_subAnomalia, ls_anomalia, true);
+            } else {
+                anom = new Anomalia(this, ls_anomalia, "", false);
+            }
+
+            if (preguntaSiBorrarEnAnomaliaAusentes && !globales.is_lectura.equals("")/*&& !globales.bModificar*/) {
+                if (anom.requiereLectura() == Anomalia.LECTURA_AUSENTE) {
+                    if (globales.bloquearBorrarSiIntento && !globales.tll.getLecturaActual().intento6.equals("")) {
+                        mensajeOK("La lectura para la anomalia seleccionada es 'Ausente' y se ha superado la cantidad de veces que se puede ingresar una lectura. No se ingresará la anomalia.", "Toma de Lecturas");
+                        return;
+                    }
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    AlertDialog alert;
+
+                    //Si ingresé datos, estoy en modo captura y  me estoy moviendo deberia preguntar
+                    builder.setMessage(R.string.str_pregunta_guardar_cambios_anomalia_ausente)
+                            .setCancelable(false).setPositiveButton(R.string.continuar, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    //recepcion();
+                                    preguntaSiBorrarEnAnomaliaAusentes = false;
+                                    onActivityResult(requestCode, resultCode, data);
+
+
+                                    dialog.dismiss();
+
+                                }
+                            })
+                            .setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+
+                                }
+                            });
+
+                    alert = builder.create();
+                    alert.show();
+                    return;
+                }
+            }
+
+            preguntaSiBorrarEnAnomaliaAusentes = true;
+
+            //Realizamos los cambios necesarios en la anomalia
+            globales.tdlg.cambiosAnomalia(bu_params.getString("anomalia"));
+
+            // Tomamos la anomalia y la subAnomalia en caso de requerir
+            globales.tll.getLecturaActual().setAnomalia(
+                    bu_params.getString("anomalia"));
+
+            globales.tll.getLecturaActual().setSubAnomalia(
+                    bu_params.getString("subAnomalia"));
+
+//				globales.tll.getLecturaActual().setComentarios(
+//						bu_params.getString("comentarios"));
+
+            ultimaAnomaliaSeleccionada = bu_params.getString("anomalia");
+            ultimaSubAnomaliaSeleccionada = bu_params.getString("subAnomalia");
+
+            postProcesarAnomalias(globales.tll.getLecturaActual(), ls_anomalia);
+
+            //Aqui guardamos si debe repetir anomalia o no
+//				String ls_anomalia=globales.tll.getLecturaActual().getAnomaliaAMostrar();
+//				if (ls_anomalia.endsWith("A") || ls_anomalia.endsWith("AC") || ls_anomalia.endsWith("CA")|| ls_anomalia.endsWith("R")|| ls_anomalia.endsWith("Z"))
+//					globales.anomaliaARepetir=globales.convertirAnomalias?
+//							globales.tll.getLecturaActual().getUltimaAnomalia().is_conv:
+//								globales.tll.getLecturaActual().getUltimaAnomalia().is_anomalia;
+//				else
+//					globales.anomaliaARepetir="";
+            //captureAnomalias=true;
+            preguntaSiBorraDatos = true;
+            if (bu_params.getString("subAnomalia").equals(""))
+                muestraRespuestaSeleccionadaAutomatica(globales.tdlg.regresaDeAnomalias(bu_params.getString("anomalia")));
+            else
+                muestraRespuestaSeleccionadaAutomatica(globales.tdlg.regresaDeAnomalias(bu_params.getString("subAnomalia"), false));
+
+
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            anomaliaCapturada = false;
+        }
+
+
+        globales.is_presion = globales.tll.getLecturaActual().getAnomaliaAMostrar();
+
+//				tv_anomalia.setText(getString(R.string.lbl_tdl_indica_anomalia) + (globales.is_presion.length()>3?"***":globales.is_presion));
+//
+//				if (globales.tll.getLecturaActual().anomalias.size() != 0) {
+//					// Tiene una anomalia
+//					ls_comentarios = getString(R.string.str_anomalia)+": "  + globales.tll.getLecturaActual().getAnomaliaAMostrar();
+//					if (globales.tll.getLecturaActual().subAnomalias.size() != 0) {
+//						// Tiene una subanomalia
+//						ls_comentarios += ", "
+//								+ getString(R.string.str_subanomalia)+": "
+//								+ globales.tll.getLecturaActual().getSubAnomaliaAMostrar();
+//					}
+//					ls_comentarios += "\n";
+//
+//					// //Hay que verificar si la anomalia es ausente
+//					// if
+//					// (globales.tll.getLecturaActual().anomalia.ii_lectura==0
+//					// || globales.tll.getLecturaActual().anomalia.ii_ausente==4
+//					// ){
+//					// //Si es ausente, tiene que borrar la lectura...
+//					// globales.is_lectura="";
+//					// tv_lectura.setText(getString(R.string.lbl_tdl_indica_lectura) +globales.is_lectura);
+//					// }
+//				}
+//
+//				tv_comentarios.setText(ls_comentarios
+//						+ globales.tll.getLecturaActual().getComentarios());
+
+        setDatos(false);
+        //setModoCaptura();
+
+
+        //Fotos tomadas con las anomalias se almacenan sin importar que se borren, just like the nokia does it
+//				openDatabase();
+//				db.execSQL("delete from fotos where temporal="
+//						+ CamaraActivity.ANOMALIA);
+//				closeDatabase();
+
+        permiteCambiarModoCaptura = !is_anomaliasIngresadasAnteriormente.equals(globales.is_presion);
+
+        // Aqui manejamos el si requiere lectura o no
+        //if (!bu_params.getString("anomalia").equals("")) {
+        if (globales.tll.getLecturaActual().anomalias.size() != 0) {
+//					if (globales.tll.getLecturaActual().subAnomalias.size() != 0) {
+//						presentacionAnomalias();
+            // Hay que verificar si la anomalia es ausente
+
+            //} else if (globales.tll.getLecturaActual().anomalias.size() != 0) {
+
+
+            presentacionAnomalias(anomaliaCapturada, ls_anomalia, ls_subAnomalia);
+            //}
+        } else {
+            // Hay que verificar si aun hay que seguir en modo de
+            // captura...
+            if (globales.is_lectura.equals("")) {
+                globales.modoCaptura = false;
+                salirModoCaptura();
+            }
+            button1.setEnabled(true);
+
+        }
+
+        if (anom != null) {
+            if (anom.requiereLectura() == Anomalia.LECTURA_AUSENTE && !voyATomarFoto && !globales.tdlg.avanzarDespuesDeAnomalia(ultimaAnomaliaSeleccionada, ultimaSubAnomaliaSeleccionada, false)) {
+                capturar();
+
+            }
+        }
+
+        voyATomarFoto = false;
+    }
+
+    protected void postProcesarAnomalias(Lectura lect, String anomalia) {
+        if (lect == null)
+            return;
+
+//        if (anomalia.equals("002")) {
+//            procesarAnomaliaCambioMedidor(lect);
+//        }
+    }
+
+//    protected void procesarAnomaliaCambioMedidor(Lectura lect)
+//    {
+//        ContentValues cv_datos = new ContentValues();
+//        long idValorInsertado = 0;
+//
+//        cv_datos.put("envio", 1);
+//        cv_datos.put("idArchivo", lect.idArchivo);
+//        cv_datos.put("idLectura", lect.poliza);
+//        cv_datos.put("idUnidadLect", lect.mIdUnidadLect);
+//        cv_datos.put("Calle", lect.getDireccion());
+//        cv_datos.put("Colonia", lect.getColonia());
+//        cv_datos.put("NumMedidor", "");
+//        cv_datos.put("TipoRegistro", "CM");
+//
+//        openDatabase();
+//
+//        idValorInsertado = db.insert("noRegistrados", null, cv_datos);
+//
+//        closeDatabase();
+//    }
 
     /*
     Procesa el resultado de regresar del Activity InputCamposGenerico y el resultCode = CAMBIAR_MEDIDOR
@@ -3684,7 +3802,7 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
             if (resultCode == Activity.RESULT_OK) {
                 bu_params = data.getExtras();
                 globales.tdlg.regresaDeCamposGenericos(bu_params, "cambiomedidor");
-                this.tomarFoto(0, 1);
+                this.tomarFoto(0, 1, CamaraActivity.TIPO_FOTO_MEDIDOR_CAMBIO_MEDIDOR);
             }
         } catch (Throwable t) {
             t.printStackTrace();
@@ -3743,9 +3861,9 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
             //uri = "https://maps.google.com/maps/@?api=1&map_action=map&center=" + miLatitud + "," + miLongitud + "&zoom=20";
 
             if (!intercambiarSerieMedidor)
-                uri = "geo:" + miLatitud + "," + miLongitud + "?q=" + miLatitud+","+miLongitud + "(" + serieMedidor + ")&z=24";
+                uri = "geo:" + miLatitud + "," + miLongitud + "?q=" + miLatitud + "," + miLongitud + "(" + serieMedidor + ")&z=24";
             else
-                uri = "geo:" + miLatitud + "," + miLongitud + "?q=" + miLatitud+","+miLongitud + "(" + codigoBarras + ")&z=24";
+                uri = "geo:" + miLatitud + "," + miLongitud + "?q=" + miLatitud + "," + miLongitud + "(" + codigoBarras + ")&z=24";
 
 
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
@@ -3767,6 +3885,17 @@ public class TomaDeLecturas extends TomaDeLecturasPadre implements
             mDialogoMsg = new DialogoMensaje(this);
         }
 
+        mDialogoMsg.setIdColorFondo(R.color.White);
+        mDialogoMsg.setOnResultado(resultado);
+        mDialogoMsg.mostrarMensaje(titulo, mensaje, detalleError);
+    }
+
+    private void mostrarAlerta(String titulo, String mensaje, String detalleError, DialogoMensaje.Resultado resultado) {
+        if (mDialogoMsg == null) {
+            mDialogoMsg = new DialogoMensaje(this);
+        }
+
+        mDialogoMsg.setIdColorFondo(R.color.Pink);
         mDialogoMsg.setOnResultado(resultado);
         mDialogoMsg.mostrarMensaje(titulo, mensaje, detalleError);
     }

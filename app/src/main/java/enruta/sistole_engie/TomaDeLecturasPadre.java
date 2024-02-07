@@ -46,6 +46,8 @@ public abstract class TomaDeLecturasPadre extends Activity {
     final static int NO_SOSPECHOSA = 0;
     final static int SOSPECHOSA = 1;
 
+    // Activity results
+
     final static int FOTOS = 3;
     final static int BUSCAR_MEDIDOR = 4;
     final static int NO_REGISTADOS = 5;
@@ -53,6 +55,9 @@ public abstract class TomaDeLecturasPadre extends Activity {
     final static int INPUT_CAMPOS_GENERICO_ME = 7;
     final static int CAMBIAR_MEDIDOR = 8;
     final static int RESULTADO_ACTIVITY_ENTRAR_SUPERVISOR = 9;
+
+    //RL, 2023-08-28, Foto de no registrado
+    protected final static int FOTO_NO_REGISTRADO = 10;
 
     final static int LECTURA = 0;
     final static int PRESION = 1;
@@ -161,6 +166,9 @@ public abstract class TomaDeLecturasPadre extends Activity {
                 globales.bcerrar = false;
             else
                 globales.bcerrar = true;
+
+            c.close();
+
             closeDatabase();
         }
     }
@@ -467,7 +475,7 @@ public abstract class TomaDeLecturasPadre extends Activity {
                 globales.tll.anteriorMedidorACapturar(globales.bModificar,
                         globales.bcerrar);
         } catch (Throwable e) {
-
+            e.printStackTrace();
         }
         globales.moverPosicion = false;
         globales.bEstabaModificando = false;
@@ -563,7 +571,7 @@ public abstract class TomaDeLecturasPadre extends Activity {
                 }
             } else {
                 Toast.makeText(this, "Bluetooth no disponible.",
-                        Toast.LENGTH_SHORT);
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -839,6 +847,17 @@ public abstract class TomaDeLecturasPadre extends Activity {
     abstract void muere();
 
     /**
+     * Version sin anomalia de tomar foto e indicando el tipo de la foto
+     *
+     * @param temporal Indica quien tomo la foto, cambia a 0 cuando ya no es de nadie y se puede borrar
+     * @param cantidad Cantidad de fotos a tomar
+     * @param tipoFoto: indica el tipo de la foto: Ver tipos en CamaraActivity
+     */
+    public void tomarFoto(int temporal, int cantidad, int tipoFoto) {
+        tomarFoto(temporal, cantidad, "");
+    }
+
+    /**
      * Version sin anomalia de tomar foto
      *
      * @param temporal Indica quien tomo la foto, cambia a 0 cuando ya no es de nadie y se puede borrar
@@ -862,9 +881,27 @@ public abstract class TomaDeLecturasPadre extends Activity {
                     Lectura.FOTO_AL_FINAL);
 
         } else {
-            tomarFoto(temporal, globales.tll.getLecturaActual(), cantidad, ls_anomalia);
+            tomarFoto(temporal, globales.tll.getLecturaActual(), cantidad, ls_anomalia, CamaraActivity.TIPO_FOTO_LECTURA);
         }
+    }
 
+    /**
+     * Version con anomalia de tomar foto y con el tipo de la foto
+     *
+     * @param temporal    Indica quien tomo la foto, cambia a 0 cuando ya no es de nadie y se puede borrar
+     * @param cantidad    Cantidad de fotos a tomar
+     * @param ls_anomalia anomalia que se acaba de insertar
+     * @param tipoFoto indica el tipo de la foto: Ver tipos en CamaraActivity
+     */
+    public void tomarFoto(int temporal, int cantidad, String ls_anomalia, int tipoFoto) {
+
+        if (globales.sonLecturasConsecutivas) {
+            globales.tll.getLecturaActual().establecerFotoAlFinal(
+                    Lectura.FOTO_AL_FINAL);
+
+        } else {
+            tomarFoto(temporal, globales.tll.getLecturaActual(), cantidad, ls_anomalia, tipoFoto);
+        }
     }
 
     /**
@@ -875,7 +912,7 @@ public abstract class TomaDeLecturasPadre extends Activity {
      * @param cantidad Cantidad de fotos a tomar
      */
     public void tomarFoto(int temporal, Lectura lectura, int cantidad) {
-        tomarFoto(temporal, lectura, cantidad, "");
+        tomarFoto(temporal, lectura, cantidad, "", CamaraActivity.TIPO_FOTO_LECTURA);
     }
 
     /**
@@ -885,8 +922,9 @@ public abstract class TomaDeLecturasPadre extends Activity {
      * @param lectura     Objeto de lectura
      * @param cantidad    Cantidad de fotos a tomar
      * @param ls_anomalia anomalia que se acaba de insertar
+     * @param tipoFoto indica el tipo de la foto: Ver tipos en CamaraActivity
      */
-    public void tomarFoto(int temporal, Lectura lectura, int cantidad, String ls_anomalia) {
+    public void tomarFoto(int temporal, Lectura lectura, int cantidad, String ls_anomalia, int tipoFoto) {
 
         voyATomarFoto = false;
         if (modo == Input.SIN_FOTOS) {
@@ -916,6 +954,9 @@ public abstract class TomaDeLecturasPadre extends Activity {
         camara.putExtra("temporal", temporal);
         camara.putExtra("cantidad", cantidad);
         camara.putExtra("anomalia", ls_anomalia);
+
+        // RL, 2023-08-30, Se agrega el tipo de la foto
+        camara.putExtra("TipoFoto", tipoFoto);
         // vengoDeFotos = true;
         startActivityForResult(camara, FOTOS);
         voyATomarFoto = true;

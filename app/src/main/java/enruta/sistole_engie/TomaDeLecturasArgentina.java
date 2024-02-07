@@ -3,8 +3,7 @@ package enruta.sistole_engie;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import enruta.sistole_engie.R;
-import enruta.sistole_engie.entities.InfoFotoEntity;
+import enruta.sistole_engie.entities.DatosEnvioEntity;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -12,7 +11,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.InputType;
-import android.text.SpannableStringBuilder;
 import android.widget.TextView;
 
 /** Esta clase crea las validaciones y los campos a mostrar**/
@@ -315,10 +313,10 @@ public class TomaDeLecturasArgentina extends TomaDeLecturasGenerica {
 		Obtiene el nombre de la foto que se utilizará para guardarla
 		RL, 2023-01-02, Se agrega porque en la clase padre se define como un método abstracto que tiene que ser implementado.
 	*/
-	public InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion,   String ls_anomalia ){
+	public DatosEnvioEntity getInfoFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia ){
 		String ls_nombre="", ls_unicom;
 		Cursor c;
-		InfoFotoEntity infoFotoEntity = new InfoFotoEntity();
+		DatosEnvioEntity datosEnvioEntity = new DatosEnvioEntity();
 
 		/**
 		 * Este es el fotmato del nombre de la foto
@@ -355,10 +353,15 @@ public class TomaDeLecturasArgentina extends TomaDeLecturasGenerica {
 		//Hay que preguntar por la terminacion
 		ls_nombre+= ls_anomalia.equals("")?is_terminacion:"_"+ls_anomalia +".JPG";
 
-		infoFotoEntity.nombreFoto = ls_nombre;
+		datosEnvioEntity.nombreFoto = ls_nombre;
 
-		return infoFotoEntity;
+		return datosEnvioEntity;
 
+	}
+
+	public DatosEnvioEntity getInfoFoto(Globales globales, SQLiteDatabase db) {
+		// No implementado en esta clase
+		return null;
 	}
 
 	public  Vector<String> getInformacionDelMedidor(Lectura lectura) {
@@ -941,7 +944,7 @@ public class TomaDeLecturasArgentina extends TomaDeLecturasGenerica {
 	}
 
 	@Override
-	public void regresaDeCamposGenericos(Bundle bu_params, String anomalia) {
+	public long regresaDeCamposGenericos(Bundle bu_params, String anomalia) {
 		// TODO Auto-generated method stub
 		if (anomalia.equals("C")) {
 			globales.tll.getLecturaActual().setComentarios("MA:" +bu_params.getString(String.valueOf(MEDIDOR_ANTERIOR)) +",MP:"+bu_params.getString(String.valueOf(MEDIDOR_POSTERIOR)));
@@ -975,7 +978,9 @@ public class TomaDeLecturasArgentina extends TomaDeLecturasGenerica {
 		} 
 		else if (anomalia.equals("V")) {
 			globales.tll.getLecturaActual().setComentarios("AC:" +bu_params.getString("input"));
-		} 
+		}
+
+		return 0;
 	}
 	
 

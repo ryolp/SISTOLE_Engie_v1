@@ -5,8 +5,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import enruta.sistole_engie.R;
-import enruta.sistole_engie.entities.InfoFotoEntity;
+import enruta.sistole_engie.entities.DatosEnvioEntity;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -361,10 +360,10 @@ public class TomaDeLecturasComapaTampico extends TomaDeLecturasGenerica {
     	RL, 2023-01-02, Se agrega porque en la clase padre se define como un método abstracto que tiene que ser implementado.
 	*/
 
-	public InfoFotoEntity getInfoFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia ){
+	public DatosEnvioEntity getInfoFoto(Globales globales, SQLiteDatabase db, long secuencial, String is_terminacion, String ls_anomalia ){
 		String ls_nombre="", ls_unicom;
 		Cursor c;
-		InfoFotoEntity infoFoto = new InfoFotoEntity();
+		DatosEnvioEntity infoFoto = new DatosEnvioEntity();
 
 		/**
 		 * Este es el fotmato del nombre de la foto
@@ -392,6 +391,11 @@ public class TomaDeLecturasComapaTampico extends TomaDeLecturasGenerica {
 		infoFoto.nombreFoto = ls_nombre;
 
 		return infoFoto;
+	}
+
+	public DatosEnvioEntity getInfoFoto(Globales globales, SQLiteDatabase db) {
+		// No implementado en esta clase
+		return null;
 	}
 
 // CE, REVISAR
@@ -627,7 +631,7 @@ public class TomaDeLecturasComapaTampico extends TomaDeLecturasGenerica {
 	}
 
 	@Override
-	public void regresaDeCamposGenericos(Bundle bu_params, String anomalia) {
+	public long regresaDeCamposGenericos(Bundle bu_params, String anomalia) {
 		String cadena=/*globales.lote*/"";
 		
 		if (anomalia.equals("noregistrados")) {
@@ -680,6 +684,8 @@ public class TomaDeLecturasComapaTampico extends TomaDeLecturasGenerica {
 			globales.tll.getLecturaActual().ls_codigoObservacion="OB032";
 			globales.tll.getLecturaActual().setComentarios(bu_params.getString("input"));
 		}
+
+		return 0;
 	}
 
 // CE, REVISAR
@@ -1058,7 +1064,7 @@ public class TomaDeLecturasComapaTampico extends TomaDeLecturasGenerica {
 		return new int[0];
 	}
 	
-	public String getNombreArchvio(int tipo) throws  Exception {
+	public String getNombreArchivo(int tipo) throws  Exception {
 		
 		String ls_archivo="";
 		TransmitionObject to= new TransmitionObject();
@@ -1080,7 +1086,7 @@ public class TomaDeLecturasComapaTampico extends TomaDeLecturasGenerica {
 			return to.ls_categoria;
 		}
 		
-		return super.getNombreArchvio(tipo);
+		return super.getNombreArchivo(tipo);
 	}
 	
 public Cursor getContenidoDelArchivo(SQLiteDatabase db, int tipo){

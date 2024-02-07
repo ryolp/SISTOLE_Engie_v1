@@ -1,5 +1,24 @@
 package enruta.sistole_engie;
 
+import enruta.sistole_engie.clases.ArchivosLectCallback;
+import enruta.sistole_engie.clases.ArchivosLectMgr;
+import enruta.sistole_engie.clases.OperacionGenericaCallback;
+import enruta.sistole_engie.clases.OperacionGenericaMgr;
+import enruta.sistole_engie.entities.ArchivosLectRequest;
+import enruta.sistole_engie.entities.ArchivosLectResponse;
+import enruta.sistole_engie.entities.OperacionGenericaRequest;
+import enruta.sistole_engie.entities.OperacionGenericaResponse;
+import enruta.sistole_engie.entities.OperacionRequest;
+import enruta.sistole_engie.entities.OperacionResponse;
+import enruta.sistole_engie.entities.ResumenEntity;
+import enruta.sistole_engie.services.DbConfigMgr;
+import enruta.sistole_engie.services.DbLecturasMgr;
+import enruta.sistole_engie.services.WebApiManager;
+import enruta.sistole_engie.clases.Utils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -11,7 +30,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -46,25 +64,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import enruta.sistole_engie.clases.ArchivosLectCallback;
-import enruta.sistole_engie.clases.ArchivosLectMgr;
-import enruta.sistole_engie.clases.OperacionGenericaCallback;
-import enruta.sistole_engie.clases.OperacionGenericaMgr;
-import enruta.sistole_engie.entities.ArchivosLectRequest;
-import enruta.sistole_engie.entities.ArchivosLectResponse;
-import enruta.sistole_engie.entities.OperacionGenericaRequest;
-import enruta.sistole_engie.entities.OperacionGenericaResponse;
-import enruta.sistole_engie.entities.OperacionRequest;
-import enruta.sistole_engie.entities.OperacionResponse;
-import enruta.sistole_engie.entities.ResumenEntity;
-import enruta.sistole_engie.services.DbConfigMgr;
-import enruta.sistole_engie.services.DbLecturasMgr;
-import enruta.sistole_engie.services.WebApiManager;
-import enruta.sistole_engie.clases.Utils;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 @SuppressLint("NewApi")
 public class Main extends FragmentActivity implements TabListener {
@@ -796,6 +795,9 @@ public class Main extends FragmentActivity implements TabListener {
                 actualizaTabs();
                 bu_params = data.getExtras();
 
+                if (bu_params == null)
+                    return;
+
                 if (resultCode == Activity.RESULT_OK) {
                     if (bu_params.getString("mensaje").length() > 0)
                         mensajeOK(bu_params.getString("mensaje"));
@@ -818,8 +820,10 @@ public class Main extends FragmentActivity implements TabListener {
                 actualizarEstatusArchivos();
                 sincronizarAvance();
                 actualizaTabs();
-                bu_params = data.getExtras();
-                bHabilitarImpresion = bu_params.getBoolean("bHabilitarImpresion");
+                if (data != null) {
+                    bu_params = data.getExtras();
+                    bHabilitarImpresion = bu_params.getBoolean("bHabilitarImpresion");
+                }
                 break;
             case FOTO_CHECK_SEGURIDAD:
                 if (ttw != null)
@@ -1449,6 +1453,7 @@ public class Main extends FragmentActivity implements TabListener {
         camara.putExtra("temporal", 1);
         camara.putExtra("cantidad", 1);
         camara.putExtra("anomalia", "SinAnomalia");
+        camara.putExtra("TipoFoto", CamaraActivity.TIPO_FOTO_EMPLEADO);
         // vengoDeFotos = true;
         startActivityForResult(camara, FOTO_CHECK_SEGURIDAD);
     }

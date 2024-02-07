@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import enruta.sistole_engie.DBHelper;
 import enruta.sistole_engie.clases.Utils;
+import enruta.sistole_engie.entities.NoRegistradoEntity;
 import enruta.sistole_engie.entities.ResumenEntity;
 
 public class DbLecturasMgr extends DbBaseMgr {
@@ -151,6 +152,34 @@ public class DbLecturasMgr extends DbBaseMgr {
             throw e;
         } finally {
             closeDatabase();
+        }
+    }
+
+    public NoRegistradoEntity getNoRegistrado(Context context, long idNoRegistrado) {
+        NoRegistradoEntity reg = null;
+        String poliza;
+
+        try {
+            openDatabase(context);
+
+            Cursor c = db.rawQuery("Select * from NoRegistrados where rowid = " + String.valueOf(idNoRegistrado), null);
+            c.moveToFirst();
+
+            if (c.getCount() == 0)
+                return null;
+
+            reg = new NoRegistradoEntity();
+
+            reg.idNoRegistrado = idNoRegistrado;
+            reg.idLectura =  getLong(c, "idLectura", 0);
+            reg.idEmpleado = getLong(c, "idEmpleado", 0);
+            reg.idUnidadLect = getLong(c, "idUnidadLect", 0);
+        } catch (Exception e) {
+            String error;
+            error = e.getMessage();
+        } finally {
+            closeDatabase();
+            return reg;
         }
     }
 }

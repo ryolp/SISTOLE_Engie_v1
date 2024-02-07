@@ -44,6 +44,8 @@ public class SignaturePadActivity extends Activity {
     private long idLectura;
     private SignaturePadActivity thisIsMe;
 
+    private boolean mInicializado = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,64 +56,77 @@ public class SignaturePadActivity extends Activity {
         secuencial = bu_params.getInt("secuencial");
         caseta = bu_params.getString("caseta");
         is_terminacion = bu_params.getString("terminacion");
-        ls_nombre= bu_params.getString("ls_nombre");
+        ls_nombre = bu_params.getString("ls_nombre");
         temporal = bu_params.getInt("temporal");
         cantidad = bu_params.getInt("cantidad");
-        idLectura= bu_params.getLong("idLectura");
-        thisIsMe= this;
+        idLectura = bu_params.getLong("idLectura");
+        thisIsMe = this;
 
-        mSignaturePad = (SignaturePad) findViewById(R.id.signature_pad);
-        mSignaturePad.setOnSignedListener(new SignaturePad.OnSignedListener() {
-            @Override
-            public void onStartSigning() {
-                Toast.makeText(SignaturePadActivity.this, "OnStartSigning", Toast.LENGTH_SHORT).show();
-            }
+        inicializar();
+    }
 
-            @Override
-            public void onSigned() {
-                mSaveButton.setEnabled(true);
-                mClearButton.setEnabled(true);
-            }
+    private void inicializar() {
+        try {
+            mSignaturePad = (SignaturePad) findViewById(R.id.signature_pad);
+            mSignaturePad.setOnSignedListener(new SignaturePad.OnSignedListener() {
+                @Override
+                public void onStartSigning() {
+                    Toast.makeText(SignaturePadActivity.this, "OnStartSigning", Toast.LENGTH_SHORT).show();
+                }
 
-            @Override
-            public void onClear() {
-                mSaveButton.setEnabled(false);
-                mClearButton.setEnabled(false);
-            }
-        });
+                @Override
+                public void onSigned() {
+                    mSaveButton.setEnabled(true);
+                    mClearButton.setEnabled(true);
+                }
 
-        mClearButton = (Button) findViewById(R.id.clear_button);
-        mSaveButton = (Button) findViewById(R.id.save_button);
+                @Override
+                public void onClear() {
+                    mSaveButton.setEnabled(false);
+                    mClearButton.setEnabled(false);
+                }
+            });
 
-        mClearButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mSignaturePad.clear();
-            }
-        });
+            mClearButton = (Button) findViewById(R.id.clear_button);
+            mSaveButton = (Button) findViewById(R.id.save_button);
 
-        mSaveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Bitmap signatureBitmap = mSignaturePad.getSignatureBitmap();
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                signatureBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-                byte[] firmaAGuardar = out.toByteArray();
+            mClearButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        mSignaturePad.clear();
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    }
+                }
+            });
 
-                cv_datos = new ContentValues(4);
-                cv_datos.put("secuencial", secuencial);
-                cv_datos.put("nombre", ls_nombre);
-                cv_datos.put("foto", firmaAGuardar);
-                cv_datos.put("envio", TomaDeLecturas.NO_ENVIADA);
-                cv_datos.put("temporal", temporal);
-                cv_datos.put("idLectura", idLectura);
+            mSaveButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        Bitmap signatureBitmap = mSignaturePad.getSignatureBitmap();
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        signatureBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                        byte[] firmaAGuardar = out.toByteArray();
 
-                DBHelper dbHelper = new DBHelper(thisIsMe);
-                SQLiteDatabase db = dbHelper.getReadableDatabase();
-                db.insert("fotos", null, cv_datos);
-                db.close();
-                dbHelper.close();
-                thisIsMe.finish();
+                        cv_datos = new ContentValues(4);
+                        cv_datos.put("secuencial", secuencial);
+                        cv_datos.put("nombre", ls_nombre);
+                        cv_datos.put("foto", firmaAGuardar);
+                        cv_datos.put("envio", TomaDeLecturas.NO_ENVIADA);
+                        cv_datos.put("temporal", temporal);
+                        cv_datos.put("idLectura", idLectura);
+
+                        DBHelper dbHelper = new DBHelper(thisIsMe);
+                        SQLiteDatabase db = dbHelper.getReadableDatabase();
+                        db.insert("fotos", null, cv_datos);
+                        db.close();
+                        dbHelper.close();
+                        thisIsMe.finish();
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    }
 
 //                if (addJpgSignatureToGallery(signatureBitmap)) {
 //                    Toast.makeText(SignaturePadActivity.this, "Se guardo la firma en la galeria de fotos", Toast.LENGTH_SHORT).show();
@@ -123,8 +138,35 @@ public class SignaturePadActivity extends Activity {
 //                } else {
 //                    Toast.makeText(SignaturePadActivity.this, "Unable to store the SVG signature", Toast.LENGTH_SHORT).show();
 //                }
-            }
-        });
+                }
+            });
+
+            mInicializado = true;
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        mInicializado = false;
+        try {
+            mSignaturePad.clear();
+            mSignaturePad.setOnSignedListener(null);
+            mSignaturePad = null;
+            thisIsMe.finish();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        if (!mInicializado)
+            inicializar();
+
+        super.onResume();
     }
 
     @Override
@@ -140,14 +182,19 @@ public class SignaturePadActivity extends Activity {
         }
     }
 
-    public File getAlbumStorageDir(String albumName) {
-        // Get the directory for the user's public pictures directory.
-        File file = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), albumName);
-        if (!file.mkdirs()) {
-            Log.e("SignaturePad", "Directory not created");
+    public File getAlbumStorageDir(String albumName) throws Exception {
+        try {
+            // Get the directory for the user's public pictures directory.
+            File file = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_PICTURES), albumName);
+            if (!file.mkdirs()) {
+                Log.e("SignaturePad", "Directory not created");
+            }
+            return file;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw new Exception("Error al obtener lugar donde guardar la firma", t);
         }
-        return file;
     }
 
     public void saveBitmapToJPG(Bitmap bitmap, File photo) throws IOException {
@@ -160,7 +207,7 @@ public class SignaturePadActivity extends Activity {
         stream.close();
     }
 
-    public boolean addJpgSignatureToGallery(Bitmap signature) {
+    public boolean addJpgSignatureToGallery(Bitmap signature) throws Exception {
         boolean result = false;
         try {
             File photo = new File(getAlbumStorageDir("SignaturePad"), String.format("Signature_%d.jpg", System.currentTimeMillis()));
@@ -169,19 +216,26 @@ public class SignaturePadActivity extends Activity {
             result = true;
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Throwable t) {
+            throw new Exception("Error al guardar la imagen de la firma", t);
         }
         return result;
     }
 
     private void scanMediaFile(File photo) {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        Uri contentUri = Uri.fromFile(photo);
-        mediaScanIntent.setData(contentUri);
-        SignaturePadActivity.this.sendBroadcast(mediaScanIntent);
+        try {
+            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            Uri contentUri = Uri.fromFile(photo);
+            mediaScanIntent.setData(contentUri);
+            SignaturePadActivity.this.sendBroadcast(mediaScanIntent);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
     }
 
-    public boolean addSvgSignatureToGallery(String signatureSvg) {
+    public boolean addSvgSignatureToGallery(String signatureSvg) throws Exception {
         boolean result = false;
+
         try {
             File svgFile = new File(getAlbumStorageDir("SignaturePad"), String.format("Signature_%d.svg", System.currentTimeMillis()));
             OutputStream stream = new FileOutputStream(svgFile);
@@ -194,6 +248,8 @@ public class SignaturePadActivity extends Activity {
             result = true;
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Throwable t) {
+            throw new Exception("Error al guardar imagen", t);
         }
         return result;
     }

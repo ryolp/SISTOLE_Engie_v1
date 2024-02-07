@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class DialogoMensaje {
@@ -15,6 +16,8 @@ public class DialogoMensaje {
     private TextView mTxtDetalle;
     private Button mBtnAceptar;
     private String mMensajeDetalle = "";
+    private int mColorFondo = 0;
+    private LinearLayout mCntrlFondo;
 
     public interface Resultado {
         public void Aceptar(boolean EsOk);
@@ -26,6 +29,10 @@ public class DialogoMensaje {
 
     public void setOnResultado(Resultado resultado) {
         mResultado = resultado;
+    }
+
+    public void setIdColorFondo(int color) {
+        mColorFondo = color;
     }
 
     public void mostrarMensaje(String titulo, String mensajeUsuario, String mensajeDetalle) {
@@ -42,6 +49,8 @@ public class DialogoMensaje {
             mTxtMensaje = (TextView) mDialogo.findViewById(R.id.txtMensaje);
             mTxtDetalle = (TextView) mDialogo.findViewById(R.id.txtDetalle);
             mBtnAceptar = (Button) mDialogo.findViewById(R.id.btnAceptar);
+            mCntrlFondo = (LinearLayout)mDialogo.findViewById(R.id.cntrlFondo);
+
 
             mTxtMensaje.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -61,6 +70,9 @@ public class DialogoMensaje {
                 }
             });
         }
+
+        if (mColorFondo != 0)
+            mDialogo.getWindow().setBackgroundDrawableResource(mColorFondo);
 
         mMensajeDetalle = mensajeDetalle;
         mDialogo.setTitle(titulo);

@@ -34,7 +34,6 @@ import enruta.sistole_engie.clases.ArchivosLectMgr;
 import enruta.sistole_engie.clases.Utils;
 import enruta.sistole_engie.entities.ArchivosLectRequest;
 import enruta.sistole_engie.entities.ArchivosLectResponse;
-import enruta.sistole_engie.services.DbConfigMgr;
 
 public class trasmisionDatos extends TransmisionesPadre {
     boolean quedanMas = true;
@@ -646,9 +645,9 @@ public class trasmisionDatos extends TransmisionesPadre {
                     switch (globales.tipoDeRecepcion) {
 
                         case Globales.TRANSMION_NORMAL:
-                            nombreArchivo = globales.tdlg.getNombreArchvio(TomaDeLecturasGenerica.ENTRADA);
+                            nombreArchivo = globales.tdlg.getNombreArchivo(TomaDeLecturasGenerica.ENTRADA);
                             serial.open(ls_servidor, ls_carpeta, nombreArchivo,
-                                    Serializacion.LECTURA, 0, 0);
+                                    Serializacion.LECTURA, 0, 0, null, globales);
                             context.stop();
                             // lby_cadena= new
                             // byte[context.getResources().getInteger(R.integer.LONG_DATOS_MEDIDOR)];

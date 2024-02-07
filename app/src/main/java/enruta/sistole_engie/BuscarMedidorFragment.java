@@ -1,5 +1,6 @@
 package enruta.sistole_engie;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import android.os.Bundle;
@@ -35,26 +36,26 @@ import enruta.sistole_engie.entities.BuscarMedidorResponse;
 public class BuscarMedidorFragment extends Fragment {
 
     //Button  b_regresar, b_buscar;
-    ImageButton b_clearText;
-    TextView tv_msj_buscar;
-    TodasLasLecturas tll;
-    ListView lv_medidores, lv_anomalias;
-    EditText et_medidor;
-    View layout;
-    int contador = 0;
-    BuscarMedidor bm_papa;
-    int tipo = BuscarMedidorTabsPagerAdapter.MEDIDOR;
-    ProgressBar pb_ruleta;
+    private ImageButton b_clearText;
+    private TextView tv_msj_buscar;
+    private TodasLasLecturas tll;
+    private ListView lv_medidores, lv_anomalias;
+    private EditText et_medidor;
+    private View layout;
+    private int contador = 0;
+    private BuscarMedidor bm_papa;
+    private int tipo = BuscarMedidorTabsPagerAdapter.MEDIDOR;
+    private ProgressBar pb_ruleta;
 
-    DBHelper dbHelper;
+    private DBHelper dbHelper;
 
-    SQLiteDatabase db;
+    private SQLiteDatabase db;
 
-    Handler mHandler;
+    private Handler mHandler;
 
-    View rootView;
+    private View rootView;
 
-    BuscarMedidorGridAdapter adapter;
+    private BuscarMedidorGridAdapter adapter;
 
     protected Vector<Lectura> vLecturas = new Vector<Lectura>();
     protected Vector<String> vStrings = new Vector<String>();
@@ -67,6 +68,21 @@ public class BuscarMedidorFragment extends Fragment {
 
     // RL, 2023-01-10, Se agrega el mostrar un diálogo para mostrar mensajes o errores.
     private DialogoMensaje mDialogoMsg = null;
+
+    // RL, 2023-05-11, Se agrega botón para cambiar el layout del teclado
+    private ImageButton b_CambiarTeclado = null;
+    private  ArrayList<InputTypeItem> mInputTypes;
+    private int mInputTypeSelected = 0;
+
+    // RL, 2023-05-11, Se agrega botón para cambiar el layout del teclado
+    class InputTypeItem {
+        private String name;
+        private int value;
+        InputTypeItem(String name, int value) {
+            this.name = name;
+            this.value = value;
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -93,10 +109,9 @@ public class BuscarMedidorFragment extends Fragment {
 //		b_regresar= (Button) rootView.findViewById(R.id.b_regresar);
 //		b_buscar= (Button) rootView.findViewById(R.id.b_buscar);
         b_clearText = (ImageButton) rootView.findViewById(R.id.im_clearText);
+        b_CambiarTeclado = (ImageButton) rootView.findViewById(R.id.im_CambiarTeclado);
 
         et_medidor = (EditText) rootView.findViewById(R.id.et_medidor);
-
-        et_medidor.setInputType(InputType.TYPE_CLASS_NUMBER + InputType.TYPE_CLASS_TEXT);
 
         tv_msj_buscar = (TextView) rootView.findViewById(R.id.tv_msj_buscar); //tv_msj_buscar
 
@@ -114,6 +129,7 @@ public class BuscarMedidorFragment extends Fragment {
                 break;
         }
 
+        inicializarInputTypes();
 
         tv_msj_buscar.setVisibility(View.VISIBLE);
 
@@ -163,6 +179,23 @@ public class BuscarMedidorFragment extends Fragment {
 
         });
 
+        b_CambiarTeclado.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                //Cambiar el teclado
+
+                if (mInputTypeSelected == 0)
+                    mInputTypeSelected = 1;
+                else
+                    mInputTypeSelected = 0;
+
+                et_medidor.setInputType(mInputTypes.get(mInputTypeSelected).value);
+            }
+
+        });
+
+
 //		b_buscar.setOnClickListener(new OnClickListener(){
 //
 //			@Override
@@ -192,9 +225,15 @@ public class BuscarMedidorFragment extends Fragment {
 
     }
 
+    private void inicializarInputTypes() {
+        mInputTypes = new ArrayList<InputTypeItem>();
+
+        mInputTypes.add(new InputTypeItem("number",  InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL));
+        mInputTypes.add(new InputTypeItem("text",  InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL));
+    }
+
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         super.onStart();
 
         if (et_medidor != null) {
@@ -543,14 +582,19 @@ public class BuscarMedidorFragment extends Fragment {
         mDialogoMsg.mostrarMensaje(titulo, mensaje, detalleError);
     }
 
-    private void mostrarMensaje(String titulo, String mensaje, Throwable
-            t, DialogoMensaje.Resultado resultado) {
+    private void mostrarMensaje(String titulo, String mensaje,
+                                Throwable t, DialogoMensaje.Resultado resultado) {
+        String msg = "";
+
+        if (t != null)
+            msg = t.getMessage();
+
         if (mDialogoMsg == null) {
             mDialogoMsg = new DialogoMensaje(this.getActivity());
         }
 
         mDialogoMsg.setOnResultado(resultado);
-        mDialogoMsg.mostrarMensaje(titulo, mensaje, t.getMessage());
+        mDialogoMsg.mostrarMensaje(titulo, mensaje, msg);
     }
 
     private void mostrarMensaje(String titulo, String mensaje) {
